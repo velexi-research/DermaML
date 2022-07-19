@@ -2,7 +2,7 @@
 name = "DermaML"
 version = "0.0.0"
 description = ""
-authors = ["Kevin Chu <kevin@velexi.com>"]
+authors = ["April Zhang <april.zhang@berkeley.edu>", "Kevin Chu <kevin@velexi.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"

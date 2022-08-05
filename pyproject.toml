@@ -10,15 +10,20 @@ dvc = {extras = ["all"], version = "^2.10.1"}
 fastds = "^0.6.0"
 ipython = "^8.2.0"
 jupyterlab = "^3.3.4"
+matplotlib = "^3.5.2"
 mlflow = "^1.25.1"
+opencv-python = "^4.6"
+pillow = "^9.2"
 python-slugify = "^6.1.1"
 PyYAML = "^6.0"
 typer = "^0.4.1"
-pywin32 = [  # required to fix security vulnerability
-    { version = '>=301', platform = 'win32' },
-]
 pdoc3 = "^0.10.0"
 tqdm = "^4.64.0"
+
+# security vulnerability fixes
+pywin32 = [
+    { version = '>=301', platform = 'win32' },
+]
 
 [tool.poetry.dev-dependencies]
 # TODO: change section name to [tool.poetry.group.dev.dependencies]

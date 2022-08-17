@@ -14579,8 +14579,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="2022-08-06:-Pipeline-Component-Development-Example">2022-08-06: Pipeline Component Development Example<a class="anchor-link" href="#2022-08-06:-Pipeline-Component-Development-Example">&#182;</a></h2><p><em>Last Updated</em>: 2022-08-06</p>
-<h3 id="Authors">Authors<a class="anchor-link" href="#Authors">&#182;</a></h3><ul>
+<h1 id="2022-08-06:-Pipeline-Component-Development-Example">2022-08-06: Pipeline Component Development Example<a class="anchor-link" href="#2022-08-06:-Pipeline-Component-Development-Example">&#182;</a></h1><h3 id="Authors">Authors<a class="anchor-link" href="#Authors">&#182;</a></h3><ul>
 <li>Kevin Chu (kevin@velexi.com)</li>
 </ul>
 <h3 id="Overview">Overview<a class="anchor-link" href="#Overview">&#182;</a></h3><p>This Jupyter notebook provides an example a notebook designed to facilitate rapid experimentation and development of a data pipeline component (i.e., a single data processing stage).</p>
@@ -14611,7 +14610,27 @@ data pipeline component</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Data-Processing-Functions">Data Processing Functions<a class="anchor-link" href="#Data-Processing-Functions">&#182;</a></h3>
+<h2 id="History">History<a class="anchor-link" href="#History">&#182;</a></h2><h3 id="2022-08-16">2022-08-16<a class="anchor-link" href="#2022-08-16">&#182;</a></h3><ul>
+<li><p>Improved implementation for converting between integer and floating-point representations of pixel values.</p>
+</li>
+<li><p>Improved heading conventions.</p>
+</li>
+</ul>
+<h3 id="2022-08-06">2022-08-06<a class="anchor-link" href="#2022-08-06">&#182;</a></h3><ul>
+<li>Initial version of notebook.</li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Data-Processing-Functions">Data Processing Functions<a class="anchor-link" href="#Data-Processing-Functions">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -14657,17 +14676,17 @@ data pipeline component</p>
     <span class="k">if</span> <span class="n">R</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;float64&#39;</span><span class="p">:</span>
         <span class="n">R</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-        <span class="n">R</span> <span class="o">=</span> <span class="p">(</span><span class="n">R</span><span class="o">/</span><span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
 
     <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;float64&#39;</span><span class="p">:</span>
         <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-        <span class="n">G</span> <span class="o">=</span> <span class="p">(</span><span class="n">G</span><span class="o">/</span><span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
 
     <span class="k">if</span> <span class="n">B</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;float64&#39;</span><span class="p">:</span>
         <span class="n">B</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-        <span class="n">B</span> <span class="o">=</span> <span class="p">(</span><span class="n">B</span><span class="o">/</span><span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
 
     <span class="c1"># --- Convert image to grayscale</span>
 
@@ -14752,17 +14771,17 @@ data pipeline component</p>
     <span class="k">if</span> <span class="n">R</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;float64&#39;</span><span class="p">:</span>
         <span class="n">R</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">R</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-        <span class="n">R</span> <span class="o">=</span> <span class="p">(</span><span class="n">R</span><span class="o">/</span><span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">R</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
 
     <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;float64&#39;</span><span class="p">:</span>
         <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-        <span class="n">G</span> <span class="o">=</span> <span class="p">(</span><span class="n">G</span><span class="o">/</span><span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">G</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
 
     <span class="k">if</span> <span class="n">B</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">&#39;float64&#39;</span><span class="p">:</span>
         <span class="n">B</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-        <span class="n">B</span> <span class="o">=</span> <span class="p">(</span><span class="n">B</span><span class="o">/</span><span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span>
+        <span class="n">B</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
 
     <span class="c1"># --- Convert image to grayscale</span>
 
@@ -14812,7 +14831,7 @@ data pipeline component</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Experimentation-&amp;-Development">Experimentation &amp; Development<a class="anchor-link" href="#Experimentation-&amp;-Development">&#182;</a></h3>
+<h2 id="Experimentation-&amp;-Development">Experimentation &amp; Development<a class="anchor-link" href="#Experimentation-&amp;-Development">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -14843,7 +14862,7 @@ data pipeline component</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h4 id="Imports">Imports<a class="anchor-link" href="#Imports">&#182;</a></h4>
+<h3 id="Imports">Imports<a class="anchor-link" href="#Imports">&#182;</a></h3>
 </div>
 </div>
 </div>
@@ -14877,7 +14896,7 @@ data pipeline component</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h4 id="Prepare-Data">Prepare Data<a class="anchor-link" href="#Prepare-Data">&#182;</a></h4>
+<h3 id="Prepare-Data">Prepare Data<a class="anchor-link" href="#Prepare-Data">&#182;</a></h3>
 </div>
 </div>
 </div>
@@ -14968,7 +14987,7 @@ jp-needs-light-background
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h4 id="Process-Data">Process Data<a class="anchor-link" href="#Process-Data">&#182;</a></h4>
+<h3 id="Process-Data">Process Data<a class="anchor-link" href="#Process-Data">&#182;</a></h3>
 </div>
 </div>
 </div>
@@ -14997,7 +15016,7 @@ jp-needs-light-background
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h4 id="Display-Output">Display Output<a class="anchor-link" href="#Display-Output">&#182;</a></h4>
+<h3 id="Display-Output">Display Output<a class="anchor-link" href="#Display-Output">&#182;</a></h3>
 </div>
 </div>
 </div>

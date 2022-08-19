@@ -34,19 +34,19 @@ def remove_background(
 
     Parameters
     ----------
-    R_in: red channel of original image
+    * R_in: red channel of original image
 
-    G_in: green channel of original image
+    * G_in: green channel of original image
 
-    B_in: blue channel of original image
+    * B_in: blue channel of original image
 
     Return value
     ------------
-    R_out: red channel of image with background removed
+    * R_out: red channel of image with background removed
 
-    G_out: green channel of image with background removed
+    * G_out: green channel of image with background removed
 
-    B_out: blue channel of image with background removed
+    * B_out: blue channel of image with background removed
     """
     # --- Check arguments
 

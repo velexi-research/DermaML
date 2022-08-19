@@ -20,6 +20,7 @@ PyYAML = ">=5.4"
 pdoc3 = "^0,>=0.10"
 pillow = "^9.2"
 pycaret = "^2.3.10"
+scikit-image = "^0.19.3"
 tqdm = "^4.64"
 typer = "^0,>=0.6"
 

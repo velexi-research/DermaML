@@ -29,22 +29,46 @@ import numpy as np
 
 # --- Public functions
 
+def remove_alpha_channel(image: np.ndarray) -> np.ndarray:
+    """
+    Remove alpha channel from image.
+
+    Parameters
+    ----------
+    image: NumPy array containing image. The array is expected to be arranged
+        such that the right-most dimension specifies the color channel in the
+        following order: R, G, B, A (if present)
+
+    Return value
+    ------------
+    image_out: NumPy array containing image with alpha channel removed. The
+        array is arranged such that the right-most dimension specifies the
+        color channel:
+
+        * image_out[:,:,0] contains the red channel
+
+        * image_out[:,:,1] contains the green channel
+
+        * image_out[:,:,2] contains the blue channel
+    """
+    # Remove alpha channel (if present)
+    if image.shape[-1] == 4:
+        return image[:, :, 0:-1]
+
+    return image
+
+
 def remove_background(image: np.ndarray,
-                      lower_threshold: List,
-                      upper_threshold: List) -> np.ndarray:
+                      lower_threshold: List = (25, 75, 85),
+                      upper_threshold: List = (130, 255, 190)) -> np.ndarray:
     """
     Remove green background from image.
 
     Parameters
     ----------
     image: NumPy array containing image. The array is expected to be arranged
-        such that
-
-        * image[:,:,0] contains the red channel
-
-        * image[:,:,1] contains the green channel
-
-        * image[:,:,2] contains the blue channel
+        such that the right-most dimension specifies the color channel in the
+        following order: R, G, B, A (if present)
 
     lower_threshold: (R, G, B) value to use as lower threshold for identifying
         green pixels
@@ -54,8 +78,9 @@ def remove_background(image: np.ndarray,
 
     Return value
     ------------
-    image_out: NumPy array containing image with background removed. The array
-        arranged such that
+    image_out: NumPy array containing image with background removed. The
+        array is arranged such that the right-most dimension specifies the
+        color channel:
 
         * image_out[:,:,0] contains the red channel
 
@@ -65,11 +90,13 @@ def remove_background(image: np.ndarray,
     """
     # --- Check arguments
 
-    # Convert color values in the interval [0, 1) with type 'float32'
-    if image.dtype == 'int64':
-        image = (image/255).astype('float32')
-    elif image.dtype == 'float64':
-        image = image.astype('float32')
+    # Convert color values in the interval [0, 255) with type 'int64'
+    if image.dtype in ['float32', 'float64']:
+        if np.max(image) >= 1:
+            image = (255*image).astype('int64')
+
+    # Remove alpha channel
+    image = remove_alpha_channel(image)
 
     # --- Remove background
 

@@ -20,58 +20,61 @@ The dermaml.data module supports data pre- and post-processing.
 # --- Imports
 
 # Standard library
+from typing import List
 
 # External packages
+import cv2
 import numpy as np
 
 
 # --- Public functions
 
-def remove_background(
-        R_in: np.ndarray, G_in: np.ndarray, B_in: np.ndarray) -> tuple:
+def remove_background(image: np.ndarray,
+                      lower_threshold: List,
+                      upper_threshold: List) -> np.ndarray:
     """
     Remove green background from image.
 
     Parameters
     ----------
-    * R_in: red channel of original image
+    image: NumPy array containing image. The array is expected to be arranged
+        such that
 
-    * G_in: green channel of original image
+        * image[:,:,0] contains the red channel
 
-    * B_in: blue channel of original image
+        * image[:,:,1] contains the green channel
+
+        * image[:,:,2] contains the blue channel
+
+    lower_threshold: (R, G, B) value to use as lower threshold for identifying
+        green pixels
+
+    upper_threshold: (R, G, B) value to use as upper threshold for identifying
+        green pixels
 
     Return value
     ------------
-    * R_out: red channel of image with background removed
+    image_out: NumPy array containing image with background removed. The array
+        arranged such that
 
-    * G_out: green channel of image with background removed
+        * image_out[:,:,0] contains the red channel
 
-    * B_out: blue channel of image with background removed
+        * image_out[:,:,1] contains the green channel
+
+        * image_out[:,:,2] contains the blue channel
     """
     # --- Check arguments
 
     # Convert color values in the interval [0, 1) with type 'float32'
-
-    if R_in.dtype == 'float64':
-        R_in = R_in.astype('float32')
-    elif np.issubdtype(R_in.dtype, np.integer):
-        R_in = R_in.astype('float32') / 255
-
-    if G_in.dtype == 'float64':
-        G_in = G_in.astype('float32')
-    elif np.issubdtype(G_in.dtype, np.integer):
-        G_in = G_in.astype('float32') / 255
-
-    if B_in.dtype == 'float64':
-        B_in = B_in.astype('float32')
-    elif np.issubdtype(B_in.dtype, np.integer):
-        B_in = B_in.astype('float32') / 255
+    if image.dtype == 'int64':
+        image = (image/255).astype('float32')
+    elif image.dtype == 'float64':
+        image = image.astype('float32')
 
     # --- Remove background
 
-    # TODO
-    R_out = R_in.copy()
-    G_out = G_in.copy()
-    B_out = B_in.copy()
+    image_out = image.copy()
+    mask = cv2.inRange(image_out, lower_threshold, upper_threshold)
+    image_out[mask != 0] = [0, 0, 0]
 
-    return (R_out, G_out, B_out)
+    return image_out

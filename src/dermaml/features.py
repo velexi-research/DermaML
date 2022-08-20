@@ -23,22 +23,25 @@ The dermaml.features module supports feature extraction from images.
 
 # External packages
 import numpy as np
+import skimage
 
 
 # --- Public functions
 
-def extract_features(
-        R_in: np.ndarray, G_in: np.ndarray, B_in: np.ndarray) -> dict:
+def extract_features(image: np.ndarray) -> dict:
     """
     Extract features from image.
 
     Parameters
     ----------
-    R_in: red channel of original image
+    image: NumPy array containing image. The array is expected to be arranged
+        such that
 
-    G_in: green channel of original image
+        * image[:,:,0] contains the red channel
 
-    B_in: blue channel of original image
+        * image[:,:,1] contains the green channel
+
+        * image[:,:,2] contains the blue channel
 
     Return value
     ------------
@@ -47,25 +50,69 @@ def extract_features(
     # --- Check arguments
 
     # Convert color values in the interval [0, 1) with type 'float32'
+    if image.dtype == 'int64':
+        image = (image/255).astype('float32')
+    elif image.dtype == 'float64':
+        image = image.astype('float32')
 
-    if R_in.dtype == 'float64':
-        R_in = R_in.astype('float32')
-    elif np.issubdtype(R_in.dtype, np.integer):
-        R_in = R_in.astype('float32') / 255
+    # --- Preparations
 
-    if G_in.dtype == 'float64':
-        G_in = G_in.astype('float32')
-    elif np.issubdtype(G_in.dtype, np.integer):
-        G_in = G_in.astype('float32') / 255
+    # Transform image to grayscale
+    image_grayscale = skimage.color.rgb2gray(image)
 
-    if B_in.dtype == 'float64':
-        B_in = B_in.astype('float32')
-    elif np.issubdtype(B_in.dtype, np.integer):
-        B_in = B_in.astype('float32') / 255
+    # Initialize features
+    features = {}
 
     # --- Extract features
 
-    # TODO
-    features = {}
+    # Compute texture histogram
+    _, lbp_hist = compute_lbp(image_grayscale)
+    features['texture'] = lbp_hist
 
     return features
+
+
+def compute_lbp(image: np.ndarray, radius=3, num_points=None) -> np.ndarray:
+    """
+    Compute local binary patterns (LBP) for image using "uniform" method.
+
+    Parameters
+    ----------
+    image: grayscale image
+
+    radius: radius of circle used to compute local binary patterns.
+
+    num_points: number of points on circle used to compute local binary
+        patterns. If num_points is set to None, (3 * radius) points are
+        used to compute LBP values.
+
+    Return values
+    -------------
+    lbp_hist: histogram of local binary pattern (LBP) values
+
+    lbp: grayscale image with pixel values equal to LBP values
+    """
+    # --- Check arguments
+
+    # Set num_points
+    if num_points is None:
+        num_points = 3 * radius
+
+        # Convert pixel values to the interval [0, 1) with type 'integer'
+    if image.dtype == 'float32':
+        if np.max(image) > 1:
+            image = (255*image).astype('int')
+
+    # --- Compute LBP image
+
+    lbp = skimage.feature.local_binary_pattern(
+        image, num_points, radius, method="uniform")
+
+    # --- Compute LBP histogram
+
+    lbp_hist, _ = np.histogram(lbp.ravel(),
+                               bins=np.arange(0, num_points + 3),
+                               range=(0, num_points + 2),
+                               density=True)
+
+    return lbp_hist, lbp

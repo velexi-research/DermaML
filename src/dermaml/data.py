@@ -169,7 +169,7 @@ def generate_synthetic_dataset(image_path: Path,
     is_color = len(src_image.shape) > 2
 
     # Compute zero-padding size
-    padding_size = math.ceil(math.log(size) / math.log(10))
+    padding_size = math.floor(math.log(size) / math.log(10)) + 1
 
     # --- Generate synthetic dataset
 

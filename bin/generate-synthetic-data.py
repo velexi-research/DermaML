@@ -23,7 +23,8 @@ import dermaml.data
 
 def main(src_dir: Path,
          dst_dir: Path,
-         image_type: Optional[str] = "all") -> None:
+         image_type: Optional[str] = "all",
+         size: int = 20) -> None:
     """
     Generate synthetic data from source data.
     """
@@ -51,7 +52,7 @@ def main(src_dir: Path,
 
     for image_path in image_paths:
         # Generate synthetic dataset for image
-        dermaml.data.generate_synthetic_dataset(image_path, dst_dir)
+        dermaml.data.generate_synthetic_dataset(image_path, dst_dir, size=size)
 
 
 # --- Run app

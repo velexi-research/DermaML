@@ -57,16 +57,13 @@ def extract_features(image: np.ndarray) -> dict:
 
     # --- Preparations
 
-    # Transform image to grayscale
-    image_grayscale = skimage.color.rgb2gray(image)
-
     # Initialize features
     features = {}
 
     # --- Extract features
 
     # Compute texture histogram
-    _, lbp_hist = compute_lbp(image_grayscale)
+    _, lbp_hist = compute_lbp(image)
     features['texture'] = lbp_hist
 
     return features
@@ -102,6 +99,10 @@ def compute_lbp(image: np.ndarray, radius=3, num_points=None) -> np.ndarray:
     if image.dtype == 'float32':
         if np.max(image) > 1:
             image = (255*image).astype('int')
+
+    # Transform image to grayscale
+    if len(image.shape) > 2:
+        image = skimage.color.rgb2gray(image)
 
     # --- Compute LBP image
 

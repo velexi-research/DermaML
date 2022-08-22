@@ -64,7 +64,7 @@ def extract_features(image: np.ndarray) -> dict:
 
     # Compute texture histogram
     lbp_hist, _ = compute_lbp(image)
-    features['texture'] = lbp_hist
+    features['texture'] = lbp_hist.tolist()
 
     return features
 

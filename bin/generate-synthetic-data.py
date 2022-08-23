@@ -9,9 +9,9 @@ Script for generating synthetic data from source data.
 import glob
 import os
 from pathlib import Path
-from typing import Optional
 
 # External packages
+import pandas as pd
 import typer
 
 # Local packages
@@ -23,12 +23,29 @@ import dermaml.data
 
 def main(src_dir: Path,
          dst_dir: Path,
-         image_type: Optional[str] = "all",
+         image_type: str = "all",
+         src_metadata_file: Path = "metadata.csv",
          size: int = 20) -> None:
     """
     Generate synthetic data from source data.
+
+    The metadata file is expected to be a CSV file with the following columns:
+    'file' and 'target'. For each record, the 'file' column should contain the
+    source data file and the 'target' column should contain the class or
+    numerical value to be predicted.
     """
     # --- Check arguments
+
+    if not os.path.isdir(src_dir):
+        typer.echo(f"src_dir` '{src_dir}' not found", err=True)
+        raise typer.Abort()
+
+    src_metadata_path = os.path.join(src_dir, src_metadata_file)
+    if not os.path.isfile(src_metadata_path):
+        typer.echo(
+            f"src-metadata-file '{src_metadata_file}' not found in src_dir`",
+            err=True)
+        raise typer.Abort()
 
     if image_type is None or image_type.lower() == "all":
         image_ext_list = ["gif", "jpeg", "jpg", "png", "tiff"]
@@ -48,11 +65,31 @@ def main(src_dir: Path,
     for image_ext in image_ext_list:
         image_paths.extend(glob.glob(os.path.join(src_dir, f'*.{image_ext}')))
 
+    # Read source metadata
+    src_metadata = pd.read_csv(src_metadata_path, index_col="file")
+
+    # Initialize metadata for synthetic dataset
+    metadata_synthetic = []
+
     # --- Generate synthetic dataset from images
 
     for image_path in image_paths:
         # Generate synthetic dataset for image
-        dermaml.data.generate_synthetic_dataset(image_path, dst_dir, size=size)
+        images = dermaml.data.generate_synthetic_dataset(image_path,
+                                                         dst_dir,
+                                                         size=size)
+
+        # Generate metadata for synthetic dataset
+        target = src_metadata.at[os.path.basename(image_path), 'target']
+        metadata_synthetic.extend([{"file": filename, "target": target}
+                                   for filename in images])
+
+    # --- Write metadata
+
+    metadata_path = os.path.join(dst_dir, "metadata.csv")
+    metadata_df = pd.DataFrame.from_records(metadata_synthetic,
+                                            columns=["file", "target"])
+    metadata_df.to_csv(metadata_path, index=False)
 
 
 # --- Run app

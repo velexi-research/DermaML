@@ -9,7 +9,7 @@ Script for preparing raw image data for feature extraction.
 import glob
 import os
 from pathlib import Path
-from typing import Optional
+import shutil
 
 # External packages
 import skimage
@@ -24,11 +24,23 @@ import dermaml.data
 
 def main(src_dir: Path,
          dst_dir: Path,
-         image_type: Optional[str] = "all") -> None:
+         image_type: str = "all",
+         src_metadata_file: Path = "metadata.csv") -> None:
     """
     Prepare raw image data for feature extraction.
     """
     # --- Check arguments
+
+    if not os.path.isdir(src_dir):
+        typer.echo(f"src_dir` '{src_dir}' not found", err=True)
+        raise typer.Abort()
+
+    src_metadata_path = os.path.join(src_dir, src_metadata_file)
+    if not os.path.isfile(src_metadata_path):
+        typer.echo(
+            f"src-metadata-file '{src_metadata_file}' not found in src_dir`",
+            err=True)
+        raise typer.Abort()
 
     if image_type is None or image_type.lower() == "all":
         image_ext_list = ["gif", "jpeg", "jpg", "png", "tiff"]
@@ -63,6 +75,10 @@ def main(src_dir: Path,
         output_path = os.path.join(dst_dir,
                                    f"{os.path.splitext(filename)[0]}.png")
         skimage.io.imsave(output_path, image)
+
+    # --- Copy metadata file to dst_dir
+
+    shutil.copy(src_metadata_path, dst_dir)
 
 
 # --- Run app

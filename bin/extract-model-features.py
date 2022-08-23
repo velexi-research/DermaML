@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 
 # External packages
+import pandas as pd
 import skimage
 import typer
 
@@ -24,7 +25,8 @@ import dermaml.features
 
 def main(src_dir: Path,
          dst_dir: Path,
-         image_type: str = "png") -> None:
+         image_type: str = "png",
+         src_metadata_file: Path = "metadata.csv") -> None:
     """
     Extract ML model features from clean image data.
     """
@@ -32,6 +34,13 @@ def main(src_dir: Path,
 
     if not os.path.isdir(src_dir):
         typer.echo(f"src_dir` '{src_dir}' not found", err=True)
+        raise typer.Abort()
+
+    src_metadata_path = os.path.join(src_dir, src_metadata_file)
+    if not os.path.isfile(src_metadata_path):
+        typer.echo(
+            f"src-metadata-file '{src_metadata_file}' not found in src_dir`",
+            err=True)
         raise typer.Abort()
 
     if image_type is None or image_type.lower() == "all":
@@ -52,6 +61,12 @@ def main(src_dir: Path,
     for image_ext in image_ext_list:
         image_paths.extend(glob.glob(os.path.join(src_dir, f'*.{image_ext}')))
 
+    # Read source metadata
+    src_metadata = pd.read_csv(src_metadata_path, index_col="file")
+
+    # Initialize metadata for feature dataset
+    metadata_feature_dataset = []
+
     # --- Extract model features from image files
 
     for image_path in image_paths:
@@ -62,12 +77,23 @@ def main(src_dir: Path,
         features = dermaml.features.extract_features(image)
 
         # Save model features
-        filename = os.path.basename(image_path)
-        output_path = os.path.join(dst_dir,
-                                   f"{os.path.splitext(filename)[0]}.json")
-
+        basename = os.path.basename(image_path)
+        features_file = f"{os.path.splitext(basename)[0]}.json"
+        output_path = os.path.join(dst_dir, features_file)
         with open(output_path, 'w') as file_:
             json.dump(features, file_)
+
+        # Generate metadata
+        target = src_metadata.at[os.path.basename(image_path), 'target']
+        metadata_feature_dataset.append(
+            {"file": features_file, "target": target})
+
+    # --- Write metadata
+
+    metadata_path = os.path.join(dst_dir, "metadata.csv")
+    metadata_df = pd.DataFrame.from_records(metadata_feature_dataset,
+                                            columns=["file", "target"])
+    metadata_df.to_csv(metadata_path, index=False)
 
 
 # --- Run app

@@ -22,11 +22,11 @@ import yaml
 
 def main(data_dir: Path,
          metadata_file: Path = "metadata.csv",
-         best_models_file: Path = typer.Option("automl-best-models.yaml",
+         best_models_file: Path = typer.Option("automl-best.yaml",
                                                "-m", "--models"),
          scores_file: Path = typer.Option("automl-scores.csv",
                                           "-s", "--scores"),
-         num_best_models: int = 5,
+         num_best: int = 5,
          experiment_name: str = "automl",
          ) -> None:
     """
@@ -37,19 +37,19 @@ def main(data_dir: Path,
     # --- Check arguments
 
     if not os.path.isdir(data_dir):
-        typer.echo(f"data_dir` '{data_dir}' not found", err=True)
+        typer.echo(f"data_dir '{data_dir}' not found", err=True)
         raise typer.Abort()
 
     metadata_path = os.path.join(data_dir, metadata_file)
     if not os.path.isfile(metadata_path):
         typer.echo(
-            f"metadata-file '{metadata_file}' not found in data_dir`",
+            f"metadata-file '{metadata_file}' not found in data_dir",
             err=True)
         raise typer.Abort()
 
-    if num_best_models <= 0:
+    if num_best <= 0:
         typer.echo(
-            "num-best-models must be strictly positive",
+            "num-best must be strictly positive",
             err=True)
         raise typer.Abort()
 
@@ -97,7 +97,7 @@ def main(data_dir: Path,
                          verbose=False)
 
     # Automatically train, test, and evaluate models
-    best_models = classification.compare_models(n_select=num_best_models,
+    best_models = classification.compare_models(n_select=num_best,
                                                 verbose=False)
 
     # --- Save results

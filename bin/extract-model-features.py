@@ -33,13 +33,13 @@ def main(src_dir: Path,
     # --- Check arguments
 
     if not os.path.isdir(src_dir):
-        typer.echo(f"src_dir` '{src_dir}' not found", err=True)
+        typer.echo(f"src_dir '{src_dir}' not found", err=True)
         raise typer.Abort()
 
     src_metadata_path = os.path.join(src_dir, src_metadata_file)
     if not os.path.isfile(src_metadata_path):
         typer.echo(
-            f"src-metadata-file '{src_metadata_file}' not found in src_dir`",
+            f"src-metadata-file '{src_metadata_file}' not found in src_dir",
             err=True)
         raise typer.Abort()
 

@@ -6,6 +6,14 @@
 # DVC files
 !*.dvc
 
+# --- Results
+
+# Log files
+*.log
+
+# AutoML
+automl-*
+
 # --- Python
 
 # compiled code
@@ -74,9 +82,6 @@ nbconvert
 .conda
 
 # --- Miscellaneous
-
-# Log files
-*.log
 
 # macOS
 .DS_Store

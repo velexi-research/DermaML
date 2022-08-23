@@ -90,7 +90,6 @@ A description of the project.
 * ___Prerequisites___
 
   * Install Python 3.8.x.
-  * Install [Poetry](https://python-poetry.org/).
 
 * Set up a dedicated virtual environment for the project. Any of the common
   virtual environment options (e.g., `venv`, `direnv`, `conda`) should work.
@@ -119,6 +118,12 @@ A description of the project.
 
   ```shell
   $ pip install --upgrade pip
+  ```
+
+* Install [Poetry](https://python-poetry.org/) in the virtual environment.
+
+  ```shell
+  $ pip install poetry
   ```
 
 * Install the Python packages required for the project.

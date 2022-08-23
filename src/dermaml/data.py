@@ -115,7 +115,7 @@ def remove_background(image: np.ndarray,
 def generate_synthetic_dataset(image_path: Path,
                                dst_dir: Path,
                                size: int = 10,
-                               width: int = 256, height: int = 256) -> None:
+                               width: int = 256, height: int = 256) -> List:
     """
     Generate synthetic dataset from the source image.
 
@@ -134,7 +134,8 @@ def generate_synthetic_dataset(image_path: Path,
 
     Return value
     ------------
-    None
+    synthetic_images: filenames of synthetic images generated from the source
+        image
     """
     # --- Check arguments
 
@@ -171,6 +172,9 @@ def generate_synthetic_dataset(image_path: Path,
     # Compute zero-padding size
     padding_size = math.floor(math.log(size) / math.log(10)) + 1
 
+    # Initialize return value
+    synthetic_images = []
+
     # --- Generate synthetic dataset
 
     # Pick random locations for top-left corner of sub-image
@@ -188,8 +192,13 @@ def generate_synthetic_dataset(image_path: Path,
             image_out = src_image[i:i + height, j:j + width]
 
         # Save sub-image
-        filename = os.path.basename(image_path)
+        basename = os.path.basename(image_path)
         image_id = str(k+1).zfill(padding_size)
-        output_path = os.path.join(
-            dst_dir, f"{os.path.splitext(filename)[0]}-{image_id}.png")
+        filename = f"{os.path.splitext(basename)[0]}-{image_id}.png"
+        output_path = os.path.join(dst_dir, filename)
         skimage.io.imsave(output_path, image_out)
+
+        # Save filename
+        synthetic_images.append(filename)
+
+    return synthetic_images

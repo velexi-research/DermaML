@@ -10,7 +10,6 @@ import glob
 import json
 import os
 from pathlib import Path
-from typing import Optional
 
 # External packages
 import skimage
@@ -25,11 +24,15 @@ import dermaml.features
 
 def main(src_dir: Path,
          dst_dir: Path,
-         image_type: Optional[str] = "png") -> None:
+         image_type: str = "png") -> None:
     """
     Extract ML model features from clean image data.
     """
     # --- Check arguments
+
+    if not os.path.isdir(src_dir):
+        typer.echo(f"src_dir` '{src_dir}' not found", err=True)
+        raise typer.Abort()
 
     if image_type is None or image_type.lower() == "all":
         image_ext_list = ["gif", "jpeg", "jpg", "png", "tiff"]

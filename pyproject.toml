@@ -6,7 +6,7 @@ license = "Apache-2.0"
 authors = ["April Zhang <april.zhang@berkeley.edu>", "Kevin Chu <kevin@velexi.com>"]
 
 [tool.poetry.dependencies]
-python = "3.8"
+python = "3.8.*"
 bcrypt = "^3.2"
 dvc = {extras = ["all"], version = "^2.17"}
 fastds = "^0,>=0.6"

@@ -904,7 +904,7 @@ pgp = ["gpg"]
 
 [[package]]
 name = "dvc"
-version = "2.19.0"
+version = "2.20.0"
 description = "Git for data scientists - manage your code and data together"
 category = "main"
 optional = false
@@ -2174,7 +2174,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "jupyterlab-server"
-version = "2.15.0"
+version = "2.15.1"
 description = "A set of server components for JupyterLab and JupyterLab like applications."
 category = "main"
 optional = false
@@ -4703,8 +4703,8 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 
 [metadata]
 lock-version = "1.1"
-python-versions = "3.8"
-content-hash = "dc3548a506cafc7f746bb4039dc4915b856380fe9461e17f11d9d9681b7de112"
+python-versions = "3.8.*"
+content-hash = "0cc892821e4baafbc14f8f4e1193314e37701dc2fc7fb1249b6642ab8e074244"
 
 [metadata.files]
 adal = [
@@ -5329,8 +5329,8 @@ dulwich = [
     {file = "dulwich-0.20.45.tar.gz", hash = "sha256:70710dd9ca2a442190c7e506892db074c318ac762e221f7529b8ce34802041b7"},
 ]
 dvc = [
-    {file = "dvc-2.19.0-py3-none-any.whl", hash = "sha256:2cfe284230fb028d4a14a216e9bdadc86e354a8deaefd094f39b972fdda1f568"},
-    {file = "dvc-2.19.0.tar.gz", hash = "sha256:935a7373933a637a2647bc48bb973542171590a9445dcfeb38630dd2b7821aad"},
+    {file = "dvc-2.20.0-py3-none-any.whl", hash = "sha256:50229fca1feddc879b2a35b45e881002ea15690cd493466b7de4b727a620ea82"},
+    {file = "dvc-2.20.0.tar.gz", hash = "sha256:59f189750e93fad851ec8dd405915e75aac1412ac1cb051eed9ef87b543b9e94"},
 ]
 dvc-azure = [
     {file = "dvc-azure-0.0.1.tar.gz", hash = "sha256:751a0daabd65f76e7110732ad7fa5824df9c07aa5113e67c7732e1b335d82bc3"},
@@ -5822,8 +5822,8 @@ jupyterlab-pygments = [
     {file = "jupyterlab_pygments-0.2.2.tar.gz", hash = "sha256:7405d7fde60819d905a9fa8ce89e4cd830e318cdad22a0030f7a901da705585d"},
 ]
 jupyterlab-server = [
-    {file = "jupyterlab_server-2.15.0-py3-none-any.whl", hash = "sha256:0e327d7a346874fd8e94c1bcbd69906d18a8558df8f13115c5afd183c3107756"},
-    {file = "jupyterlab_server-2.15.0.tar.gz", hash = "sha256:a91c515e0e7971a8f7c3c9834b748857f7dac502f93604bf283987991fd987ef"},
+    {file = "jupyterlab_server-2.15.1-py3-none-any.whl", hash = "sha256:5e04008a98bfb510471b8b8a7059f7cdbb1797e1f255657f39ea3d838ba00bf6"},
+    {file = "jupyterlab_server-2.15.1.tar.gz", hash = "sha256:305313970e131c590cf77bb6b8ca7e98591bc304111e8d103bc91d212e94796f"},
 ]
 jupyterlab-widgets = [
     {file = "jupyterlab_widgets-3.0.2-py3-none-any.whl", hash = "sha256:98303a281f4004670cdcea2ef4aecba19c580adc297664c593f967025625c8c5"},

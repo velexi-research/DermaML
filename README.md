@@ -91,6 +91,8 @@ A description of the project.
 
   * Install Python 3.8.x.
 
+  * Install [Poetry](https://python-poetry.org/).
+
 * Set up a dedicated virtual environment for the project. Any of the common
   virtual environment options (e.g., `venv`, `direnv`, `conda`) should work.
   Below are instructions for setting up a `direnv` or `poetry` environment.
@@ -119,7 +121,7 @@ A description of the project.
   * __`poetry` Environment__. __Note__: `poetry` only manages the Python
     environment (it does not manage the shell environment).
 
-    * ___Prerequisite___. Install `poetry`.
+    * ___Prerequisite___. Install [Poetry](https://python-poetry.org/).
 
     * Create a `poetry` environment that uses a specific Python executable.
       For instance, if `python3.8` is on your `PATH`, the following command
@@ -146,10 +148,11 @@ A description of the project.
   ```
 
   __Note__. For virtual environments not created with `poetry` (e.g.,
-  `direnv`), a system-level installation of `poetry` might fail if paths to
-  required Python packages are missing from the `PYTHONPATH` environment
-  variable. To avoid having to manually modify `PYTHONPATH`, install `poetry`
-  within the virtual environment before running `poetry install`:
+  `direnv`), a system- or user-level installation of `poetry` might fail
+  (e.g., if paths to Python packages required by `poetry` are missing from the
+  `PYTHONPATH` environment variable in the virtual environment). To avoid
+  having to manually modify `PYTHONPATH`, install `poetry` within the virtual
+  environment before running `poetry install`:
 
   ```shell
   $ pip install poetry

@@ -93,10 +93,12 @@ A description of the project.
 
 * Set up a dedicated virtual environment for the project. Any of the common
   virtual environment options (e.g., `venv`, `direnv`, `conda`) should work.
-  Below are instructions for setting up a `direnv` environment.
+  Below are instructions for setting up a `direnv` or `poetry` environment.
+  __Note__: to avoid conflicts between virtual environments, only one method
+  should be used to manage the virtual environment.
 
-  * __`direnv` Environment__. Set up the project to use `direnv` to manage the
-    environment (for both Python and the shell).
+  * __`direnv` Environment__. __Note__: `direnv` manages the environment for
+    both the Python and shell.
 
     * ___Prerequisite___. Install `direnv`.
 
@@ -114,16 +116,27 @@ A description of the project.
       $ direnv allow
       ```
 
+  * __`poetry` Environment__. __Note__: `poetry` only manages the Python
+    environment (it does not manage the shell environment).
+
+    * ___Prerequisite___. Install `poetry`.
+
+    * Create a `poetry` environment that uses a specific Python executable.
+      For instance, if `python3.8` is on your `PATH`, the following command
+      creates (or activates if it already exists) a Python virtual environment
+      that uses `python3.8`.
+
+      ```shell
+      $ poetry env use python3.8
+      ```
+
+      For commands to use other Python executables for the virtual environment,
+      see the [Poetry Quick Reference][poetry-quick-reference].
+
 * Upgrade `pip` to the latest released version.
 
   ```shell
   $ pip install --upgrade pip
-  ```
-
-* Install [Poetry](https://python-poetry.org/) in the virtual environment.
-
-  ```shell
-  $ pip install poetry
   ```
 
 * Install the Python packages required for the project.
@@ -132,9 +145,15 @@ A description of the project.
   $ poetry install
   ```
 
-  __Note__. If you are not working within an existing Python environment (e.g.,
-  created by `direnv`), `poetry` will automatically create a dedicated Python
-  environment for the project.
+  __Note__. For virtual environments not created with `poetry` (e.g.,
+  `direnv`), a system-level installation of `poetry` might fail if paths to
+  required Python packages are missing from the `PYTHONPATH` environment
+  variable. To avoid having to manually modify `PYTHONPATH`, install `poetry`
+  within the virtual environment before running `poetry install`:
+
+  ```shell
+  $ pip install poetry
+  ```
 
 * Download project data from remote storage.
 

@@ -85,3 +85,6 @@ nbconvert
 
 # macOS
 .DS_Store
+
+# Obsidian
+workspace.json

@@ -26,7 +26,7 @@ Table of Contents
 
 ## 1. Overview
 
-The AIHand project explores the use of machine learning approaches for
+The DermaML project explores the use of machine learning approaches for
 predicting a person's age from an image of her/his hand.
 
 ## References

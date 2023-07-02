@@ -9,7 +9,7 @@ authors = ["April Zhang <april.zhang@berkeley.edu>", "Kevin Chu <kevin@velexi.co
 python = ">=3.9,<3.12"
 dvc = {extras = ["s3"], version = "^3.0"}
 fds = {git = "https://github.com/velexi-research/fds.git"}  # FastDS
-ipython = "^8.4"
+ipython = "^8.0"
 jupyterlab = "^4.0"
 kaleido= "^0,<=0.2.1"
 matplotlib = "^3.5"
@@ -17,7 +17,7 @@ mlflow = "^2.4"
 opencv-python = "^4.6"
 pip = ">=22.2"
 python-slugify = "^8.0"
-PyYAML = ">=5.4"
+PyYAML = "^6.0"
 pdoc = "^14.0"
 pillow = "^9.2"
 pycaret = "^3.0"

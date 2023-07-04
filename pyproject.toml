@@ -46,7 +46,7 @@ pywin32 = [
 ]
 
 # project-specific packages
-kaleido= "^0,<=0.2.1"
+kaleido = "^0,<=0.2.1"
 opencv-python = "^4.6"
 pillow = "^9.2"
 pycaret = "^3.0"

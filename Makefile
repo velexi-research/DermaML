@@ -7,36 +7,36 @@
 SRC_DIR=src
 CODE_DIRS=${SRC_DIR} tests
 
+# Package directories
+PKG_DIR=src/dermaml
+DOCS_DIR=docs/dermaml
+
 # Testing parameters
 NPROCS=auto
 
-PYTEST_SEARCH_PATHS=${CODE_DIRS}
-PYTEST_OPTIONS=-n ${NPROCS} --cov=${SRC_DIR}
+PYTEST_OPTIONS=-n ${NPROCS}
 PYTEST_PYLINT_OPTIONS=
 
 # --- Testing rules
 
-.PHONY: test fast-test full-test \
+.PHONY: test fast-test \
         coverage-report coverage-html
 
 ## Run all tests
 test:
-	py.test ${PYTEST_SEARCH_PATHS} ${PYTEST_OPTIONS} ${PYTEST_PYLINT_OPTIONS}
+	pytest ${PYTEST_OPTIONS} ${PYTEST_PYLINT_OPTIONS}
+	-make coverage-report
 
 ## Run tests in fail-fast mode (i.e., stop at first failure)
 fast-test:
 	make test PYTEST_OPTIONS="-x ${PYTEST_OPTIONS}"
-
-## Run comprehensive tests (includes linting with pylint)
-full-test:
-	make test PYTEST_PYLINT_OPTIONS="--pylint --pylint-error-types=EF";
 
 .coverage:
 	-make test
 
 ## Generate basic coverage report
 coverage-report: .coverage
-	coverage report -m
+	coverage report --show-missing
 
 ## Generate coverage report in HTML format
 coverage-html: .coverage
@@ -79,7 +79,7 @@ radon-raw:
 
 ## Generate API documentation in HTML format.
 docs:
-	pdoc --html -o docs/api ${SRC_DIR}
+	pdoc ${PKG_DIR} -o ${DOCS_DIR} --math
 
 # --- Utility rules
 
@@ -90,11 +90,10 @@ docs:
 clean:
 	find . -type d -name "__pycache__" -delete  # compiled python
 	find . -type f -name "*.py[co]" -delete  # compiled python
-	rm -rf .cache  # pytest
-	rm -rf .coverage .coverage.* coverage htmlcov  # coverage
+	rm -rf .cache .pytest_cache  # pytest
+	rm -rf .coverage .coverage.* coverage htmlcov coverage.xml  # coverage
 	find . -name "*.log" -exec rm -f {} \;  # log files
-	rm -rf docs/api  # generated API documentation
-	rm -f automl*.csv automl*.yaml automl*.json  # AutoML results
+	rm -rf ${DOCS_DIR}  # generated API documentation
 
 # --- Makefile Self-Documentation
 

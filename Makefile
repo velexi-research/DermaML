@@ -77,7 +77,7 @@ radon-raw:
 
 .PHONY: docs
 
-## Generate API documentation in HTML format.{% if cookiecutter.enable_julia == 'yes' %} Note: only generates docs for Python modules.{% endif %}
+## Generate API documentation in HTML format.
 docs:
 	pdoc ${PKG_DIR} -o ${DOCS_DIR} --math
 

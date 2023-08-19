@@ -117,3 +117,41 @@ def compute_lbp(image: np.ndarray, radius=3, num_points=None) -> np.ndarray:
                                density=True)
 
     return lbp_hist, lbp
+
+
+
+def co_occurrence_matrix(im):
+    """
+    Compute gray-level co-occcurence matrix for image.
+
+    Parameters
+    ----------
+    im: grayscale image
+
+    Return values
+    -------------
+    contrast: measures local variations in pixel intensity
+
+    correlation: measures linear dependency between pixel pairs
+
+    energy: quantifies the homogeneity of the texture
+
+    homogeneity: reflects closeness of pixel pairs to the diagonal
+    """
+    arr = np.array(im)
+    opencvim = cv2.cvtColor(arr, cv2.COLOR_BGR2GRAY)
+
+    # Calculate the co-occurrence matrix for the image
+    co_matrix = skimage.feature.graycomatrix(opencvim, [5], [0], levels=256, symmetric=True, normed=True)
+
+# Calculate texture features from the co-occurrence matrix
+    contrast = skimage.feature.graycoprops(co_matrix, 'contrast')
+    correlation = skimage.feature.graycoprops(co_matrix, 'correlation')
+    energy = skimage.feature.graycoprops(co_matrix, 'energy')
+    homogeneity = skimage.feature.graycoprops(co_matrix, 'homogeneity')
+
+# Print the texture features
+    print("Contrast:", contrast)
+    print("Correlation:", correlation)
+    print("Energy:", energy)
+    print("Homogeneity:", homogeneity)

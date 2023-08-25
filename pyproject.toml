@@ -54,6 +54,7 @@ scikit-image = "^0.19.3"
 rembg = "^2.0.49"
 torch = "^2.0.1"
 torchvision = "^0.15.2"
+pip = "^23.2.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

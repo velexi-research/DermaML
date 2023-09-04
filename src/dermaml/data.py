@@ -70,15 +70,13 @@ def remove_bg(image):
 
     Paramerers
     ___________
-    im: Image file
+    image: Opened image file
 
     Return value
     ____________
     output: Numpy array containing image with background removed
     """
-    # Open image
-    image = Image.open(image)
-
+    
     #Remove green screen background
     output = remove(image)
 

@@ -20,7 +20,7 @@ Unit tests for `utils.py` module.
 # --- Imports
 
 # Standard library
-import datetime
+import os
 
 # Local imports
 from dermaml import features
@@ -37,9 +37,17 @@ def test_compute_glcm():
     """
     # --- Preparations
 
-    # im = Image.open("5A7E3A5F-334A-4C8D-9E0D-BD435389C81E.jpeg")
+    # Absolute path of the script
+    script_path = os.path.abspath(__file__)
 
-    generated_im = Image.open("/Applications/DermaML/src/dermaml/tests/Screenshot 2023-08-22 at 1.52.54 PM.png")
+    # Image filename
+    image_filename = "Hand_0000002.jpg"
+
+    # Create absolute path to image file
+    image_path = os.path.join(os.path.dirname(script_path), image_filename)
+
+    # Open image
+    generated_im = Image.open(image_path)
 
     # --- Test
 
@@ -61,5 +69,4 @@ def test_compute_glcm():
     print("Correlation:", correlation)
     print("Energy:", energy)
     print("Homogeneity:", homogeneity)
-
 

@@ -131,13 +131,13 @@ def compute_glcm(im):
 
     Return values
     -------------
-    contrast: measures local variations in pixel intensity
+    contrast: measures the intensity contrast between a pixel and its neighbor over the whole image
 
-    correlation: measures linear dependency between pixel pairs
+    correlation: measures how correlated a pixel is to its neighbor over the whole image
 
-    energy: quantifies the homogeneity of the texture
+    energy: returns the sum of squared elements in the GLCM
 
-    homogeneity: reflects closeness of pixel pairs to the diagonal
+    homogeneity: measures the closeness of the distribution of elements in the GLCM to the GLCM diagonal
     """
     #TO DO: Should image processing happen outside of the function?
     arr = np.array(im)
@@ -155,9 +155,3 @@ def compute_glcm(im):
 
     return contrast, correlation, energy, homogeneity
 
-    
-    # Print the texture features
-    print("Contrast:", contrast)
-    print("Correlation:", correlation)
-    print("Energy:", energy)
-    print("Homogeneity:", homogeneity)

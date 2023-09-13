@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/875984800018608678/16af0244d20740a2bb7947037794c909/artifacts
+end_time: 1694482425414
+entry_point_name: ''
+experiment_id: '875984800018608678'
+lifecycle_stage: active
+run_id: 16af0244d20740a2bb7947037794c909
+run_name: Light Gradient Boosting Machine
+run_uuid: 16af0244d20740a2bb7947037794c909
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1694482425297
+status: 3
+tags: []
+user_id: hannahzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/875984800018608678/bca7531f6f0d4c83b33f602e857e7aa2/artifacts
+end_time: 1694501444330
+entry_point_name: ''
+experiment_id: '875984800018608678'
+lifecycle_stage: active
+run_id: bca7531f6f0d4c83b33f602e857e7aa2
+run_name: Linear Regression
+run_uuid: bca7531f6f0d4c83b33f602e857e7aa2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1694501444216
+status: 3
+tags: []
+user_id: hannahzhang

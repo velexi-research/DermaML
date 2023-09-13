@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/875984800018608678/75a1b57d044a4927acfc52b12fae4c58/artifacts
+end_time: 1694501445880
+entry_point_name: ''
+experiment_id: '875984800018608678'
+lifecycle_stage: active
+run_id: 75a1b57d044a4927acfc52b12fae4c58
+run_name: Decision Tree Regressor
+run_uuid: 75a1b57d044a4927acfc52b12fae4c58
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1694501445846
+status: 3
+tags: []
+user_id: hannahzhang

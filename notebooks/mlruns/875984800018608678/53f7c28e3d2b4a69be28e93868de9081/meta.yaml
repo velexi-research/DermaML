@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/875984800018608678/53f7c28e3d2b4a69be28e93868de9081/artifacts
+end_time: 1694482323925
+entry_point_name: ''
+experiment_id: '875984800018608678'
+lifecycle_stage: active
+run_id: 53f7c28e3d2b4a69be28e93868de9081
+run_name: Orthogonal Matching Pursuit
+run_uuid: 53f7c28e3d2b4a69be28e93868de9081
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1694482323902
+status: 3
+tags: []
+user_id: hannahzhang

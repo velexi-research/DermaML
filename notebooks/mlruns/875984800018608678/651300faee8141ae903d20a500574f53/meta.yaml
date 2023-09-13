@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/875984800018608678/651300faee8141ae903d20a500574f53/artifacts
+end_time: 1694509672168
+entry_point_name: ''
+experiment_id: '875984800018608678'
+lifecycle_stage: active
+run_id: 651300faee8141ae903d20a500574f53
+run_name: Bayesian Ridge
+run_uuid: 651300faee8141ae903d20a500574f53
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1694509672133
+status: 3
+tags: []
+user_id: hannahzhang

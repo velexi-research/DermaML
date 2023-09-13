@@ -41,7 +41,7 @@ def test_compute_glcm():
     script_path = os.path.abspath(__file__)
 
     # Image filename
-    image_filename = "Hand_0000002.jpg"
+    image_filename = "Screenshot 2023-09-12 at 4.30.47 PM.png"
 
     # Create absolute path to image file
     image_path = os.path.join(os.path.dirname(script_path), image_filename)
@@ -62,8 +62,11 @@ def test_compute_glcm():
     # assert energy == pytest.approx(0.02065778)
     # assert homogeneity == pytest.approx(0.19573333)
 
-    # assert energy == np.array([[0.0001]])
-    assert energy == pytest.approx(0.0001)
+    # # assert energy == np.array([[0.0001]])
+    assert energy == pytest.approx(0.5) #obtained 0.58744519
+    assert contrast == pytest.approx(0) #obtained 284.18194503
+    assert homogeneity == pytest.approx(0.8750) #obtained 0.90707618
+    assert correlation == pytest.approx(1) #obtained 0.96327682
 
     print("Contrast:", contrast)
     print("Correlation:", correlation)

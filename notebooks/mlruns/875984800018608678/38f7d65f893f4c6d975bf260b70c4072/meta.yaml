@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/875984800018608678/38f7d65f893f4c6d975bf260b70c4072/artifacts
+end_time: 1694482323546
+entry_point_name: ''
+experiment_id: '875984800018608678'
+lifecycle_stage: active
+run_id: 38f7d65f893f4c6d975bf260b70c4072
+run_name: Least Angle Regression
+run_uuid: 38f7d65f893f4c6d975bf260b70c4072
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1694482323523
+status: 3
+tags: []
+user_id: hannahzhang

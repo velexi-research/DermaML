@@ -24,6 +24,7 @@ The dermaml.features module supports feature extraction from images.
 # External packages
 import numpy as np
 import skimage
+import cv2
 
 
 # --- Public functions
@@ -117,3 +118,40 @@ def compute_lbp(image: np.ndarray, radius=3, num_points=None) -> np.ndarray:
                                density=True)
 
     return lbp_hist, lbp
+
+
+
+def compute_glcm(im):
+    """
+    Compute gray-level co-occcurence matrix for image.
+
+    Parameters
+    ----------
+    im: grayscale image
+
+    Return values
+    -------------
+    contrast: measures the intensity contrast between a pixel and its neighbor over the whole image
+
+    correlation: measures how correlated a pixel is to its neighbor over the whole image
+
+    energy: returns the sum of squared elements in the GLCM
+
+    homogeneity: measures the closeness of the distribution of elements in the GLCM to the GLCM diagonal
+    """
+    #TO DO: Should image processing happen outside of the function?
+    arr = np.array(im)
+    #TO DO: move color processing outside of function
+    opencvim = cv2.cvtColor(arr, cv2.COLOR_BGR2GRAY)
+
+    # Calculate the co-occurrence matrix for the image
+    co_matrix = skimage.feature.graycomatrix(opencvim, [5], [0], levels=256, symmetric=True, normed=True)
+
+    # Calculate texture features from the co-occurrence matrix
+    contrast = skimage.feature.graycoprops(co_matrix, 'contrast')
+    correlation = skimage.feature.graycoprops(co_matrix, 'correlation')
+    energy = skimage.feature.graycoprops(co_matrix, 'energy')
+    homogeneity = skimage.feature.graycoprops(co_matrix, 'homogeneity')
+
+    return contrast, correlation, energy, homogeneity
+

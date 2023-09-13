@@ -30,6 +30,9 @@ import cv2
 import numpy as np
 from numpy.random import default_rng
 import skimage
+from PIL import Image
+from rembg import remove
+import mediapipe as mp
 
 
 # --- Public functions
@@ -62,54 +65,73 @@ def remove_alpha_channel(image: np.ndarray) -> np.ndarray:
 
     return image
 
-
-def remove_background(image: np.ndarray,
-                      lower_threshold: List = (25, 75, 85),
-                      upper_threshold: List = (130, 255, 190)) -> np.ndarray:
+def remove_bg(image):
     """
-    Remove green background from image.
+    Remove green background from images
 
-    Parameters
-    ----------
-    image: NumPy array containing image. The array is expected to be arranged
-        such that the right-most dimension specifies the color channel in the
-        following order: R, G, B, A (if present)
-
-    lower_threshold: (R, G, B) value to use as lower threshold for identifying
-        green pixels
-
-    upper_threshold: (R, G, B) value to use as upper threshold for identifying
-        green pixels
+    Paramerers
+    ___________
+    image: Opened image file
 
     Return value
-    ------------
-    image_out: NumPy array containing image with background removed. The
-        array is arranged such that the right-most dimension specifies the
-        color channel:
-
-        * image_out[:,:,0] contains the red channel
-
-        * image_out[:,:,1] contains the green channel
-
-        * image_out[:,:,2] contains the blue channel
+    ____________
+    output: Numpy array containing image with background removed
     """
-    # --- Check arguments
+    
+    #Remove green screen background
+    output = remove(image)
 
-    # Convert color values in the interval [0, 255) with type 'int64'
-    if image.dtype in ['float32', 'float64']:
-        if np.max(image) >= 1:
-            image = (255*image).astype('int64')
+    #Return numpy array of image cutout
+    return np.array(output)
 
-    # Remove alpha channel
-    image = remove_alpha_channel(image)
 
-    # --- Remove background
+# def remove_background(image: np.ndarray,
+#                       lower_threshold: List = (25, 75, 85),
+#                       upper_threshold: List = (130, 255, 190)) -> np.ndarray:
+#     """
+#     Remove green background from image.
 
-    image_out = image.copy()
-    mask = cv2.inRange(image_out, lower_threshold, upper_threshold)
-    image_out[mask != 0] = [0, 0, 0]
+#     Parameters
+#     ----------
+#     image: NumPy array containing image. The array is expected to be arranged
+#         such that the right-most dimension specifies the color channel in the
+#         following order: R, G, B, A (if present)
 
-    return image_out
+#     lower_threshold: (R, G, B) value to use as lower threshold for identifying
+#         green pixels
+
+#     upper_threshold: (R, G, B) value to use as upper threshold for identifying
+#         green pixels
+
+#     Return value
+#     ------------
+#     image_out: NumPy array containing image with background removed. The
+#         array is arranged such that the right-most dimension specifies the
+#         color channel:
+
+#         * image_out[:,:,0] contains the red channel
+
+#         * image_out[:,:,1] contains the green channel
+
+#         * image_out[:,:,2] contains the blue channel
+#     """
+#     # --- Check arguments
+
+#     # Convert color values in the interval [0, 255) with type 'int64'
+#     if image.dtype in ['float32', 'float64']:
+#         if np.max(image) >= 1:
+#             image = (255*image).astype('int64')
+
+#     # Remove alpha channel
+#     image = remove_alpha_channel(image)
+
+#     # --- Remove background
+
+#     image_out = image.copy()
+#     mask = cv2.inRange(image_out, lower_threshold, upper_threshold)
+#     image_out[mask != 0] = [0, 0, 0]
+
+#     return image_out
 
 
 def generate_synthetic_dataset(image_path: Path,
@@ -202,3 +224,104 @@ def generate_synthetic_dataset(image_path: Path,
         synthetic_images.append(filename)
 
     return synthetic_images
+
+
+
+def crop_palm(image):
+
+    mp_drawing = mp.solutions.drawing_utils
+    mp_hands = mp.solutions.hands
+
+    with mp_hands.Hands(
+        static_image_mode=True,
+        max_num_hands=1,
+        min_detection_confidence=0.5) as hands:
+
+        # Read image file
+        image = cv2.flip(cv2.imread(image), 1)
+
+        # Convert BGR image to RGB
+        results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+
+        if not results.multi_hand_landmarks:
+            print("No hands detected in the image.")
+        else:
+            image_height, image_width, _ = image.shape
+            annotated_image = image.copy()
+
+            # Get first detected hand
+            hand_landmarks = results.multi_hand_landmarks[0]
+
+            landmark_0 = (
+                int(hand_landmarks.landmark[0].x * image_width),
+                int(hand_landmarks.landmark[0].y * image_height)
+            )
+
+            landmark_1 = (
+                int(hand_landmarks.landmark[1].x * image_width),
+                int(hand_landmarks.landmark[1].y * image_height)
+            )
+
+            landmark_2 = (
+                int(hand_landmarks.landmark[2].x * image_width),
+                int(hand_landmarks.landmark[2].y * image_height)
+            )
+
+            landmark_5 = (
+                int(hand_landmarks.landmark[5].x * image_width),
+                int(hand_landmarks.landmark[5].y * image_height)
+            )
+
+            landmark_9 = (
+                int(hand_landmarks.landmark[9].x * image_width),
+                int(hand_landmarks.landmark[9].y * image_height)
+            )
+
+            landmark_13 = (
+                int(hand_landmarks.landmark[13].x * image_width),
+                int(hand_landmarks.landmark[13].y * image_height)
+            )
+
+            landmark_17 = (
+                int(hand_landmarks.landmark[17].x * image_width),
+                int(hand_landmarks.landmark[17].y * image_height)
+            )
+
+            # Draw circles for landmarks
+            cv2.circle(annotated_image, landmark_0, 5, (0, 0, 255), -1) 
+            cv2.circle(annotated_image, landmark_1, 5, (0, 0, 255), -1)  
+            cv2.circle(annotated_image, landmark_2, 5, (0, 0, 255), -1)
+            cv2.circle(annotated_image, landmark_5, 5, (0, 0, 255), -1) 
+            cv2.circle(annotated_image, landmark_9, 5, (0, 0, 255), -1) 
+            cv2.circle(annotated_image, landmark_13, 5, (0, 0, 255), -1)  
+            cv2.circle(annotated_image, landmark_17, 5, (0, 0, 255), -1)  
+
+            landmark_coordinates = [landmark_0, landmark_1, landmark_2, landmark_5, landmark_9, landmark_13, landmark_17]
+
+            for i in range(len(landmark_coordinates) - 1):
+                cv2.line(annotated_image, landmark_coordinates[i], landmark_coordinates[i + 1], (0, 0, 255), 2)
+
+            # Connect the last landmark to the first landmark to complete the loop
+            cv2.line(annotated_image, landmark_coordinates[-1], landmark_coordinates[0], (0, 0, 255), 2)
+
+            # Create a mask of the region within the loop
+            mask = np.zeros_like(image)
+            cv2.fillPoly(mask, [np.array(landmark_coordinates)], (255, 255, 255))
+
+            # Apply the mask to the original image to crop the region
+            cropped_image = cv2.bitwise_and(image, mask)
+
+            colored_image = cropped_image[:,:,::-1]
+
+            if colored_image.shape[2] == 3:  # If the image is RGB
+                resultant_image = cv2.cvtColor(colored_image, cv2.COLOR_RGB2RGBA)
+
+            for i in range(resultant_image.shape[0]):
+                for j in range(resultant_image.shape[1]):
+                    # Check if pixel is black
+                    if all(resultant_image[i, j, :3] == [0, 0, 0]):
+                        # Set the alpha channel to 0 to make it transparent
+                        resultant_image[i, j, 3] = 0
+
+            return resultant_image
+

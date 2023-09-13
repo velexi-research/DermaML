@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/875984800018608678/52886a6d44b34671b656e37d4e07a330/artifacts
+end_time: 1694509672576
+entry_point_name: ''
+experiment_id: '875984800018608678'
+lifecycle_stage: active
+run_id: 52886a6d44b34671b656e37d4e07a330
+run_name: Lasso Least Angle Regression
+run_uuid: 52886a6d44b34671b656e37d4e07a330
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1694509672537
+status: 3
+tags: []
+user_id: hannahzhang

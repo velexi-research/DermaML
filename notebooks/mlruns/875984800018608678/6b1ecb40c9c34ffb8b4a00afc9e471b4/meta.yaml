@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/875984800018608678/6b1ecb40c9c34ffb8b4a00afc9e471b4/artifacts
+end_time: 1694482323830
+entry_point_name: ''
+experiment_id: '875984800018608678'
+lifecycle_stage: active
+run_id: 6b1ecb40c9c34ffb8b4a00afc9e471b4
+run_name: Elastic Net
+run_uuid: 6b1ecb40c9c34ffb8b4a00afc9e471b4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1694482323807
+status: 3
+tags: []
+user_id: hannahzhang

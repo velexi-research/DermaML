@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/875984800018608678/723e3a61df5c4735b50d82abcfc69f38/artifacts
+end_time: 1695713112418
+entry_point_name: ''
+experiment_id: '875984800018608678'
+lifecycle_stage: active
+run_id: 723e3a61df5c4735b50d82abcfc69f38
+run_name: K Neighbors Regressor
+run_uuid: 723e3a61df5c4735b50d82abcfc69f38
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1695713112394
+status: 3
+tags: []
+user_id: hannahzhang

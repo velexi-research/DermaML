@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/875984800018608678/528febb30c024054ab09186c218bf0ab/artifacts
+end_time: 1695711974070
+entry_point_name: ''
+experiment_id: '875984800018608678'
+lifecycle_stage: active
+run_id: 528febb30c024054ab09186c218bf0ab
+run_name: Dummy Regressor
+run_uuid: 528febb30c024054ab09186c218bf0ab
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1695711974047
+status: 3
+tags: []
+user_id: hannahzhang

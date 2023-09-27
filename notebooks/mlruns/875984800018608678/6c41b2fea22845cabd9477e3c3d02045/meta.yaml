@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/875984800018608678/6c41b2fea22845cabd9477e3c3d02045/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '875984800018608678'
+lifecycle_stage: active
+run_id: 6c41b2fea22845cabd9477e3c3d02045
+run_name: Session Initialized 7b69
+run_uuid: 6c41b2fea22845cabd9477e3c3d02045
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1695713713542
+status: 1
+tags: []
+user_id: hannahzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/193395122151960046/a17214786a224190855dbc0c3745d1d5/artifacts
+end_time: 1695421696032
+entry_point_name: ''
+experiment_id: '193395122151960046'
+lifecycle_stage: active
+run_id: a17214786a224190855dbc0c3745d1d5
+run_name: Passive Aggressive Regressor
+run_uuid: a17214786a224190855dbc0c3745d1d5
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1695421695997
+status: 3
+tags: []
+user_id: hannahzhang

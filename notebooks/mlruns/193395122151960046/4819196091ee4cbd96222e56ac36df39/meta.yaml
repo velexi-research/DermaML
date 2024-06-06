@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/193395122151960046/4819196091ee4cbd96222e56ac36df39/artifacts
+end_time: 1695421696161
+entry_point_name: ''
+experiment_id: '193395122151960046'
+lifecycle_stage: active
+run_id: 4819196091ee4cbd96222e56ac36df39
+run_name: Huber Regressor
+run_uuid: 4819196091ee4cbd96222e56ac36df39
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1695421696127
+status: 3
+tags: []
+user_id: hannahzhang

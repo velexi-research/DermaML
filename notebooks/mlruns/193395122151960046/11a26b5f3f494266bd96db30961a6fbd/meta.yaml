@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/193395122151960046/11a26b5f3f494266bd96db30961a6fbd/artifacts
+end_time: 1695421694965
+entry_point_name: ''
+experiment_id: '193395122151960046'
+lifecycle_stage: active
+run_id: 11a26b5f3f494266bd96db30961a6fbd
+run_name: Gradient Boosting Regressor
+run_uuid: 11a26b5f3f494266bd96db30961a6fbd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1695421694822
+status: 3
+tags: []
+user_id: hannahzhang

@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/875984800018608678/2c90509a84674b578309c32ea206cd15/artifacts
+end_time: 1695711973569
+entry_point_name: ''
+experiment_id: '875984800018608678'
+lifecycle_stage: active
+run_id: 2c90509a84674b578309c32ea206cd15
+run_name: Random Forest Regressor
+run_uuid: 2c90509a84674b578309c32ea206cd15
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1695711973543
+status: 3
+tags: []
+user_id: hannahzhang

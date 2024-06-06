@@ -1,0 +1,15 @@
+artifact_uri: file:///Applications/DermaML/notebooks/mlruns/193395122151960046/5f3fbd927a0f48818980281bd46f2dc2/artifacts
+end_time: 1695421694173
+entry_point_name: ''
+experiment_id: '193395122151960046'
+lifecycle_stage: active
+run_id: 5f3fbd927a0f48818980281bd46f2dc2
+run_name: AdaBoost Regressor
+run_uuid: 5f3fbd927a0f48818980281bd46f2dc2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1695421694027
+status: 3
+tags: []
+user_id: hannahzhang

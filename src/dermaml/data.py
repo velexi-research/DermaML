@@ -235,7 +235,7 @@ def crop_palm(image):
     with mp_hands.Hands(
         static_image_mode=True,
         max_num_hands=1,
-        min_detection_confidence=0.5) as hands:
+        min_detection_confidence=0.01) as hands:
 
         # Read image file
         image = cv2.flip(cv2.imread(image), 1)
@@ -324,4 +324,83 @@ def crop_palm(image):
                         resultant_image[i, j, 3] = 0
 
             return resultant_image
+        
 
+def multi_crop_palm(image_path):
+    mp_drawing = mp.solutions.drawing_utils
+    mp_hands = mp.solutions.hands
+
+    with mp_hands.Hands(
+        static_image_mode=True,
+        max_num_hands=1,
+        min_detection_confidence=0.01) as hands:
+
+        # Get filename from the image path
+        image_filename = os.path.basename(image_path)
+
+        # Read image file
+        image = cv2.flip(cv2.imread(image_path), 1)
+
+        # Convert BGR image to RGB
+        results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+
+        if not results.multi_hand_landmarks:
+            print("No hands detected in the image.")
+            return None
+
+        image_height, image_width, _ = image.shape
+        annotated_image = image.copy()
+
+        # Get first hand
+        hand_landmarks = results.multi_hand_landmarks[0]
+
+        landmark_9 = (
+            int(hand_landmarks.landmark[9].x * image_width),
+            int(hand_landmarks.landmark[9].y * image_height)
+        )
+
+        landmark_10 = (
+            int(hand_landmarks.landmark[10].x * image_width),
+            int(hand_landmarks.landmark[10].y * image_height)
+        )
+
+        # Define rectangle thickness
+        rect_thickness = 2 
+
+        # Draw rectangles around landmarks 9 and 10
+        rect_color = (0, 0, 255) 
+        rect_size = 40  
+
+        cv2.rectangle(annotated_image, 
+                      (landmark_9[0] - rect_size, landmark_9[1] - rect_size),
+                      (landmark_9[0] + rect_size, landmark_9[1] + rect_size),
+                      rect_color, rect_thickness)
+
+        cv2.rectangle(annotated_image, 
+                      (landmark_10[0] - rect_size, landmark_10[1] - rect_size),
+                      (landmark_10[0] + rect_size, landmark_10[1] + rect_size),
+                      rect_color, rect_thickness)
+
+        # Crop images inside landmarks 9 and 10
+        cropped_image_9 = annotated_image[landmark_9[1] - rect_size + rect_thickness : 
+                                          landmark_9[1] + rect_size - rect_thickness,
+                                          landmark_9[0] - rect_size + rect_thickness : 
+                                          landmark_9[0] + rect_size - rect_thickness]
+
+        cropped_image_10 = annotated_image[landmark_10[1] - rect_size + rect_thickness : 
+                                            landmark_10[1] + rect_size - rect_thickness,
+                                            landmark_10[0] - rect_size + rect_thickness : 
+                                            landmark_10[0] + rect_size - rect_thickness]
+
+        # Create a dictionary for the results of this single image
+        cropped_dict = {
+            "Image 9": cropped_image_9,
+            "Image 10": cropped_image_10
+        }
+
+        # Create a dictionary with the image filename as the main key
+        final_dict = {
+            image_filename: cropped_dict
+        }
+
+        return final_dict

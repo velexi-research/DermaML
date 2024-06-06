@@ -8,6 +8,9 @@
 
 # --- Results
 
+# MLFlow
+**/mlruns/**
+
 # Log files
 *.log
 

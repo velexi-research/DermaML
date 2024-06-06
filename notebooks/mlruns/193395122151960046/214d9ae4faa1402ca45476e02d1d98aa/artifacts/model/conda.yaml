@@ -1,8 +1,0 @@
-channels:
-- conda-forge
-dependencies:
-- pip<=23.2.1
-- pip:
-  - mlflow==2.6.0
-  - pycaret==3.0.4
-name: 11khands-automl-lbp-features-env

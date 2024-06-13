@@ -29,13 +29,13 @@ def test_remove_alpha_channel():
     image_path = os.path.join(os.path.dirname(__file__), "data", image_filename)
 
     # Open image and convert it to a NumPy array
-    image = Image.open(image_path)
-    image_np = np.asarray(image)
-    assert image_np.shape[-1] == 4
+    image = np.asarray(Image.open(image_path))
+
+    assert image.shape[-1] == 4
 
     # --- Test
 
-    processed_image = dermaml.image.remove_alpha_channel(image_np)
+    processed_image = dermaml.image.remove_alpha_channel(image)
 
     assert isinstance(processed_image, np.ndarray)
     assert processed_image.shape[-1] == 3

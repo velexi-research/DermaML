@@ -1,20 +1,5 @@
-#
-#   Copyright 2022 Velexi Corporation
-#
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
-#
-#       http://www.apache.org/licenses/LICENSE-2.0
-#
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
-#
 """
-The dermaml.data module supports data pre- and post-processing.
+The dermaml.image module provides image processing functionality.
 """
 
 # --- Imports
@@ -36,6 +21,7 @@ import mediapipe as mp
 
 
 # --- Public functions
+
 
 def remove_alpha_channel(image: np.ndarray) -> np.ndarray:
     """
@@ -67,6 +53,7 @@ def remove_alpha_channel(image: np.ndarray) -> np.ndarray:
 
     return output
 
+
 def remove_background(image: Union[bytes, Image, np.ndarray]) -> np.ndarray:
     """
     Remove background from `image`.
@@ -81,10 +68,10 @@ def remove_background(image: Union[bytes, Image, np.ndarray]) -> np.ndarray:
     """
     # --- Check arguments
 
-    if !isinstance(image, [bytes, Image, np.ndarray]):
+    if not isinstance(image, (bytes, Image, np.ndarray)):
         raise TypeError(
-            "`image` must have type `bytes`, `PIL.Image`, or `np.ndarray`. " +
-            f"(type(image)={type(image)}"
+            "`image` must have type `bytes`, `PIL.Image`, or `np.ndarray`. "
+            + f"(type(image)={type(image)}"
         )
 
     # --- Remove background
@@ -107,10 +94,9 @@ def remove_background(image: Union[bytes, Image, np.ndarray]) -> np.ndarray:
     return output
 
 
-def generate_synthetic_dataset(image_path: Path,
-                               dst_dir: Path,
-                               size: int = 10,
-                               width: int = 256, height: int = 256) -> List:
+def generate_synthetic_dataset(
+    image_path: Path, dst_dir: Path, size: int = 10, width: int = 256, height: int = 256
+) -> List:
     """
     Generate synthetic dataset from the source image.
 
@@ -174,21 +160,21 @@ def generate_synthetic_dataset(image_path: Path,
 
     # Pick random locations for top-left corner of sub-image
     rng = default_rng()
-    rows = ((height // 2) * rng.random((size, 1))).astype('int')
-    cols = ((width // 2) * rng.random((size, 1))).astype('int')
+    rows = ((height // 2) * rng.random((size, 1))).astype("int")
+    cols = ((width // 2) * rng.random((size, 1))).astype("int")
     indices = np.hstack((rows, cols))
 
     for k in range(size):
         # Extract sub-image
         i, j = indices[k, :]
         if is_color:
-            image_out = src_image[i:i + height, j:j + width, :]
+            image_out = src_image[i : i + height, j : j + width, :]
         else:
-            image_out = src_image[i:i + height, j:j + width]
+            image_out = src_image[i : i + height, j : j + width]
 
         # Save sub-image
         basename = os.path.basename(image_path)
-        image_id = str(k+1).zfill(padding_size)
+        image_id = str(k + 1).zfill(padding_size)
         filename = f"{os.path.splitext(basename)[0]}-{image_id}.png"
         output_path = os.path.join(dst_dir, filename)
         skimage.io.imsave(output_path, image_out)
@@ -199,16 +185,14 @@ def generate_synthetic_dataset(image_path: Path,
     return synthetic_images
 
 
-
 def crop_palm(image):
 
     mp_drawing = mp.solutions.drawing_utils
     mp_hands = mp.solutions.hands
 
     with mp_hands.Hands(
-        static_image_mode=True,
-        max_num_hands=1,
-        min_detection_confidence=0.01) as hands:
+        static_image_mode=True, max_num_hands=1, min_detection_confidence=0.01
+    ) as hands:
 
         # Read image file
         image = cv2.flip(cv2.imread(image), 1)
@@ -227,55 +211,75 @@ def crop_palm(image):
 
             landmark_0 = (
                 int(hand_landmarks.landmark[0].x * image_width),
-                int(hand_landmarks.landmark[0].y * image_height)
+                int(hand_landmarks.landmark[0].y * image_height),
             )
 
             landmark_1 = (
                 int(hand_landmarks.landmark[1].x * image_width),
-                int(hand_landmarks.landmark[1].y * image_height)
+                int(hand_landmarks.landmark[1].y * image_height),
             )
 
             landmark_2 = (
                 int(hand_landmarks.landmark[2].x * image_width),
-                int(hand_landmarks.landmark[2].y * image_height)
+                int(hand_landmarks.landmark[2].y * image_height),
             )
 
             landmark_5 = (
                 int(hand_landmarks.landmark[5].x * image_width),
-                int(hand_landmarks.landmark[5].y * image_height)
+                int(hand_landmarks.landmark[5].y * image_height),
             )
 
             landmark_9 = (
                 int(hand_landmarks.landmark[9].x * image_width),
-                int(hand_landmarks.landmark[9].y * image_height)
+                int(hand_landmarks.landmark[9].y * image_height),
             )
 
             landmark_13 = (
                 int(hand_landmarks.landmark[13].x * image_width),
-                int(hand_landmarks.landmark[13].y * image_height)
+                int(hand_landmarks.landmark[13].y * image_height),
             )
 
             landmark_17 = (
                 int(hand_landmarks.landmark[17].x * image_width),
-                int(hand_landmarks.landmark[17].y * image_height)
+                int(hand_landmarks.landmark[17].y * image_height),
             )
 
             # Draw circles for landmarks
-            cv2.circle(annotated_image, landmark_0, 5, (0, 0, 255), -1) 
-            cv2.circle(annotated_image, landmark_1, 5, (0, 0, 255), -1)  
+            cv2.circle(annotated_image, landmark_0, 5, (0, 0, 255), -1)
+            cv2.circle(annotated_image, landmark_1, 5, (0, 0, 255), -1)
             cv2.circle(annotated_image, landmark_2, 5, (0, 0, 255), -1)
-            cv2.circle(annotated_image, landmark_5, 5, (0, 0, 255), -1) 
-            cv2.circle(annotated_image, landmark_9, 5, (0, 0, 255), -1) 
-            cv2.circle(annotated_image, landmark_13, 5, (0, 0, 255), -1)  
-            cv2.circle(annotated_image, landmark_17, 5, (0, 0, 255), -1)  
+            cv2.circle(annotated_image, landmark_5, 5, (0, 0, 255), -1)
+            cv2.circle(annotated_image, landmark_9, 5, (0, 0, 255), -1)
+            cv2.circle(annotated_image, landmark_13, 5, (0, 0, 255), -1)
+            cv2.circle(annotated_image, landmark_17, 5, (0, 0, 255), -1)
 
-            landmark_coordinates = [landmark_0, landmark_1, landmark_2, landmark_5, landmark_9, landmark_13, landmark_17]
+            landmark_coordinates = [
+                landmark_0,
+                landmark_1,
+                landmark_2,
+                landmark_5,
+                landmark_9,
+                landmark_13,
+                landmark_17,
+            ]
 
             for i in range(len(landmark_coordinates) - 1):
-                cv2.line(annotated_image, landmark_coordinates[i], landmark_coordinates[i + 1], (0, 0, 255), 2)
+                cv2.line(
+                    annotated_image,
+                    landmark_coordinates[i],
+                    landmark_coordinates[i + 1],
+                    (0, 0, 255),
+                    2,
+                )
 
             # Connect the last landmark to the first landmark to complete the loop
-            cv2.line(annotated_image, landmark_coordinates[-1], landmark_coordinates[0], (0, 0, 255), 2)
+            cv2.line(
+                annotated_image,
+                landmark_coordinates[-1],
+                landmark_coordinates[0],
+                (0, 0, 255),
+                2,
+            )
 
             # Create a mask of the region within the loop
             mask = np.zeros_like(image)
@@ -284,7 +288,7 @@ def crop_palm(image):
             # Apply the mask to the original image to crop the region
             cropped_image = cv2.bitwise_and(image, mask)
 
-            colored_image = cropped_image[:,:,::-1]
+            colored_image = cropped_image[:, :, ::-1]
 
             if colored_image.shape[2] == 3:  # If the image is RGB
                 resultant_image = cv2.cvtColor(colored_image, cv2.COLOR_RGB2RGBA)
@@ -297,16 +301,15 @@ def crop_palm(image):
                         resultant_image[i, j, 3] = 0
 
             return resultant_image
-        
+
 
 def multi_crop_palm(image_path):
     mp_drawing = mp.solutions.drawing_utils
     mp_hands = mp.solutions.hands
 
     with mp_hands.Hands(
-        static_image_mode=True,
-        max_num_hands=1,
-        min_detection_confidence=0.01) as hands:
+        static_image_mode=True, max_num_hands=1, min_detection_confidence=0.01
+    ) as hands:
 
         # Get filename from the image path
         image_filename = os.path.basename(image_path)
@@ -329,51 +332,68 @@ def multi_crop_palm(image_path):
 
         landmark_9 = (
             int(hand_landmarks.landmark[9].x * image_width),
-            int(hand_landmarks.landmark[9].y * image_height)
+            int(hand_landmarks.landmark[9].y * image_height),
         )
 
         landmark_10 = (
             int(hand_landmarks.landmark[10].x * image_width),
-            int(hand_landmarks.landmark[10].y * image_height)
+            int(hand_landmarks.landmark[10].y * image_height),
         )
 
         # Define rectangle thickness
-        rect_thickness = 2 
+        rect_thickness = 2
 
         # Draw rectangles around landmarks 9 and 10
-        rect_color = (0, 0, 255) 
-        rect_size = 40  
+        rect_color = (0, 0, 255)
+        rect_size = 40
 
-        cv2.rectangle(annotated_image, 
-                      (landmark_9[0] - rect_size, landmark_9[1] - rect_size),
-                      (landmark_9[0] + rect_size, landmark_9[1] + rect_size),
-                      rect_color, rect_thickness)
+        cv2.rectangle(
+            annotated_image,
+            (landmark_9[0] - rect_size, landmark_9[1] - rect_size),
+            (landmark_9[0] + rect_size, landmark_9[1] + rect_size),
+            rect_color,
+            rect_thickness,
+        )
 
-        cv2.rectangle(annotated_image, 
-                      (landmark_10[0] - rect_size, landmark_10[1] - rect_size),
-                      (landmark_10[0] + rect_size, landmark_10[1] + rect_size),
-                      rect_color, rect_thickness)
+        cv2.rectangle(
+            annotated_image,
+            (landmark_10[0] - rect_size, landmark_10[1] - rect_size),
+            (landmark_10[0] + rect_size, landmark_10[1] + rect_size),
+            rect_color,
+            rect_thickness,
+        )
 
         # Crop images inside landmarks 9 and 10
-        cropped_image_9 = annotated_image[landmark_9[1] - rect_size + rect_thickness : 
-                                          landmark_9[1] + rect_size - rect_thickness,
-                                          landmark_9[0] - rect_size + rect_thickness : 
-                                          landmark_9[0] + rect_size - rect_thickness]
+        cropped_image_9 = annotated_image[
+            landmark_9[1]
+            - rect_size
+            + rect_thickness : landmark_9[1]
+            + rect_size
+            - rect_thickness,
+            landmark_9[0]
+            - rect_size
+            + rect_thickness : landmark_9[0]
+            + rect_size
+            - rect_thickness,
+        ]
 
-        cropped_image_10 = annotated_image[landmark_10[1] - rect_size + rect_thickness : 
-                                            landmark_10[1] + rect_size - rect_thickness,
-                                            landmark_10[0] - rect_size + rect_thickness : 
-                                            landmark_10[0] + rect_size - rect_thickness]
+        cropped_image_10 = annotated_image[
+            landmark_10[1]
+            - rect_size
+            + rect_thickness : landmark_10[1]
+            + rect_size
+            - rect_thickness,
+            landmark_10[0]
+            - rect_size
+            + rect_thickness : landmark_10[0]
+            + rect_size
+            - rect_thickness,
+        ]
 
         # Create a dictionary for the results of this single image
-        cropped_dict = {
-            "Image 9": cropped_image_9,
-            "Image 10": cropped_image_10
-        }
+        cropped_dict = {"Image 9": cropped_image_9, "Image 10": cropped_image_10}
 
         # Create a dictionary with the image filename as the main key
-        final_dict = {
-            image_filename: cropped_dict
-        }
+        final_dict = {image_filename: cropped_dict}
 
         return final_dict

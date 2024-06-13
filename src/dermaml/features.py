@@ -29,6 +29,7 @@ import cv2
 
 # --- Public functions
 
+
 def extract_features(image: np.ndarray) -> dict:
     """
     Extract features from image.
@@ -51,10 +52,10 @@ def extract_features(image: np.ndarray) -> dict:
     # --- Check arguments
 
     # Convert color values in the interval [0, 1) with type 'float32'
-    if image.dtype == 'int64':
-        image = (image/255).astype('float32')
-    elif image.dtype == 'float64':
-        image = image.astype('float32')
+    if image.dtype == "int64":
+        image = (image / 255).astype("float32")
+    elif image.dtype == "float64":
+        image = image.astype("float32")
 
     # --- Preparations
 
@@ -65,7 +66,7 @@ def extract_features(image: np.ndarray) -> dict:
 
     # Compute texture histogram
     lbp_hist, _ = compute_lbp(image)
-    features['texture'] = lbp_hist.tolist()
+    features["texture"] = lbp_hist.tolist()
 
     return features
 
@@ -97,9 +98,9 @@ def compute_lbp(image: np.ndarray, radius=3, num_points=None) -> np.ndarray:
         num_points = 3 * radius
 
         # Convert pixel values to the interval [0, 1) with type 'integer'
-    if image.dtype == 'float32':
+    if image.dtype == "float32":
         if np.max(image) > 1:
-            image = (255*image).astype('int')
+            image = (255 * image).astype("int")
 
     # Transform image to grayscale
     if len(image.shape) > 2:
@@ -108,17 +109,19 @@ def compute_lbp(image: np.ndarray, radius=3, num_points=None) -> np.ndarray:
     # --- Compute LBP image
 
     lbp = skimage.feature.local_binary_pattern(
-        image, num_points, radius, method="uniform")
+        image, num_points, radius, method="uniform"
+    )
 
     # --- Compute LBP histogram
 
-    lbp_hist, _ = np.histogram(lbp.ravel(),
-                               bins=np.arange(0, num_points + 3),
-                               range=(0, num_points + 2),
-                               density=True)
+    lbp_hist, _ = np.histogram(
+        lbp.ravel(),
+        bins=np.arange(0, num_points + 3),
+        range=(0, num_points + 2),
+        density=True,
+    )
 
     return lbp_hist, lbp
-
 
 
 def compute_glcm(im):
@@ -131,27 +134,30 @@ def compute_glcm(im):
 
     Return values
     -------------
-    contrast: measures the intensity contrast between a pixel and its neighbor over the whole image
+    contrast: measures the intensity contrast between a pixel and its neighbor over the
+        whole image
 
     correlation: measures how correlated a pixel is to its neighbor over the whole image
 
     energy: returns the sum of squared elements in the GLCM
 
-    homogeneity: measures the closeness of the distribution of elements in the GLCM to the GLCM diagonal
+    homogeneity: measures the closeness of the distribution of elements in the GLCM to the
+        GLCM diagonal
     """
-    #TO DO: Should image processing happen outside of the function?
+    # TODO: Should image processing happen outside of the function?
     arr = np.array(im)
-    #TO DO: move color processing outside of function
+    # TODO: move color processing outside of function
     opencvim = cv2.cvtColor(arr, cv2.COLOR_BGR2GRAY)
 
     # Calculate the co-occurrence matrix for the image
-    co_matrix = skimage.feature.graycomatrix(opencvim, [5], [0], levels=256, symmetric=True, normed=True)
+    co_matrix = skimage.feature.graycomatrix(
+        opencvim, [5], [0], levels=256, symmetric=True, normed=True
+    )
 
     # Calculate texture features from the co-occurrence matrix
-    contrast = skimage.feature.graycoprops(co_matrix, 'contrast')
-    correlation = skimage.feature.graycoprops(co_matrix, 'correlation')
-    energy = skimage.feature.graycoprops(co_matrix, 'energy')
-    homogeneity = skimage.feature.graycoprops(co_matrix, 'homogeneity')
+    contrast = skimage.feature.graycoprops(co_matrix, "contrast")
+    correlation = skimage.feature.graycoprops(co_matrix, "correlation")
+    energy = skimage.feature.graycoprops(co_matrix, "energy")
+    homogeneity = skimage.feature.graycoprops(co_matrix, "homogeneity")
 
     return contrast, correlation, energy, homogeneity
-

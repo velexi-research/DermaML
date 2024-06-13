@@ -104,7 +104,7 @@ def crop_palm(image_path: Path) -> Image:
     ) as hands:
 
         # Read image file
-        image = cv2.flip(cv2.imread(image), 1)
+        image = cv2.flip(cv2.imread(image_path), 1)
 
         # Convert BGR image to RGB
         results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))

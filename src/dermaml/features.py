@@ -124,34 +124,32 @@ def compute_lbp(image: np.ndarray, radius=3, num_points=None) -> np.ndarray:
     return lbp_hist, lbp
 
 
-def compute_glcm(im):
+def compute_glcm(image: np.ndarray) -> (float, float, float, float):
     """
-    Compute gray-level co-occcurence matrix for image.
+    Compute gray-level co-occcurence matrix (GLCM) for image.
 
     Parameters
     ----------
-    im: grayscale image
+    image: image to perform GLCM on
 
     Return values
     -------------
-    contrast: measures the intensity contrast between a pixel and its neighbor over the
+    * contrast: measures the intensity contrast between a pixel and its neighbor over the
         whole image
 
-    correlation: measures how correlated a pixel is to its neighbor over the whole image
+    * correlation: measures how correlated a pixel is to its neighbor over the whole image
 
-    energy: returns the sum of squared elements in the GLCM
+    * energy: returns the sum of squared elements in the GLCM
 
-    homogeneity: measures the closeness of the distribution of elements in the GLCM to the
-        GLCM diagonal
+    * homogeneity: measures the closeness of the distribution of elements in the GLCM to
+        the GLCM diagonal
     """
-    # TODO: Should image processing happen outside of the function?
-    arr = np.array(im)
     # TODO: move color processing outside of function
-    opencvim = cv2.cvtColor(arr, cv2.COLOR_BGR2GRAY)
+    image_cv2 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # Calculate the co-occurrence matrix for the image
     co_matrix = skimage.feature.graycomatrix(
-        opencvim, [5], [0], levels=256, symmetric=True, normed=True
+        image_cv2, [5], [0], levels=256, symmetric=True, normed=True
     )
 
     # Calculate texture features from the co-occurrence matrix

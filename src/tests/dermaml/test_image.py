@@ -55,7 +55,7 @@ def test_remove_alpha_channel():
     assert processed_image.shape[-1] == 3
 
 
-@pytest.skip("TODO")
+@pytest.mark.skip("TODO")
 def test_remove_background():
     """
     Test remove_background().
@@ -76,7 +76,7 @@ def test_remove_background():
     # TODO
 
 
-@pytest.skip("TODO")
+@pytest.mark.skip("TODO")
 def test_crop_palm():
     """
     Test crop_palm().
@@ -94,7 +94,7 @@ def test_crop_palm():
     # TODO
 
 
-@pytest.skip("TODO")
+@pytest.mark.skip("TODO")
 def test_multi_crop_palm():
     """
     Test multi_crop_palm().

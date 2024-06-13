@@ -30,7 +30,7 @@ import pytest
 # --- Tests
 
 
-@pytest.skip("BROKEN")
+@pytest.mark.skip("BROKEN")
 def test_compute_glcm():
     """
     Test compute_glcm().

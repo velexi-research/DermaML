@@ -20,7 +20,7 @@ Unit tests for the `dermaml.data` module
 # Standard library
 
 # Local imports
-import dermaml.data
+# import dermaml.data
 
 
 # --- Tests

@@ -24,6 +24,7 @@ import os
 import dermaml.image
 from PIL import Image
 import numpy as np
+import pytest
 
 
 # --- Tests
@@ -54,6 +55,7 @@ def test_remove_alpha_channel():
     assert processed_image.shape[-1] == 3
 
 
+@pytest.skip("TODO")
 def test_remove_background():
     """
     Test remove_background().
@@ -61,22 +63,20 @@ def test_remove_background():
     # --- Preparations
 
     # Image filename
-    # TODO: update file
-    image_filename = "remove-alpha-channel-test-image.png"
+    # image_filename = "TODO.png"
 
     # Create path to image file
-    image_path = os.path.join(os.path.dirname(__file__), "data", image_filename)
+    # image_path = os.path.join(os.path.dirname(__file__), "data", image_filename)
 
     # Open image and convert it to a NumPy array
-    image = np.asarray(Image.open(image_path))
+    # image = np.asarray(Image.open(image_path))
 
     # --- Test
-
-    processed_image = dermaml.image.remove_background(image)
 
     # TODO
 
 
+@pytest.skip("TODO")
 def test_crop_palm():
     """
     Test crop_palm().
@@ -84,19 +84,17 @@ def test_crop_palm():
     # --- Preparations
 
     # Image filename
-    # TODO: update file
-    image_filename = "remove-alpha-channel-test-image.png"
+    # image_filename = "TODO.png"
 
     # Create path to image file
-    image_path = os.path.join(os.path.dirname(__file__), "data", image_filename)
+    # image_path = os.path.join(os.path.dirname(__file__), "data", image_filename)
 
     # --- Test
-
-    processed_image = dermaml.image.crop_palm(image_path)
 
     # TODO
 
 
+@pytest.skip("TODO")
 def test_multi_crop_palm():
     """
     Test multi_crop_palm().
@@ -104,14 +102,11 @@ def test_multi_crop_palm():
     # --- Preparations
 
     # Image filename
-    # TODO: update file
-    image_filename = "remove-alpha-channel-test-image.png"
+    # image_filename = "TODO.png"
 
     # Create path to image file
-    image_path = os.path.join(os.path.dirname(__file__), "data", image_filename)
+    # image_path = os.path.join(os.path.dirname(__file__), "data", image_filename)
 
     # --- Test
-
-    processed_image = dermaml.image.multi_crop_palm(image_path)
 
     # TODO

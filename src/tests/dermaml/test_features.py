@@ -24,6 +24,7 @@ import os
 from dermaml import features
 from PIL import Image
 import numpy as np
+import pytest
 
 
 # --- Tests

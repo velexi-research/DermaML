@@ -23,7 +23,7 @@ The dermaml.data module supports data pre- and post-processing.
 import math
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 # External packages
 import cv2
@@ -31,7 +31,7 @@ import numpy as np
 from numpy.random import default_rng
 import skimage
 from PIL import Image
-from rembg import remove
+import rembg
 import mediapipe as mp
 
 
@@ -61,77 +61,50 @@ def remove_alpha_channel(image: np.ndarray) -> np.ndarray:
     """
     # Remove alpha channel (if present)
     if image.shape[-1] == 4:
-        return image[:, :, 0:-1]
+        output = image[:, :, 0:-1]
+    else:
+        output = image
 
-    return image
+    return output
 
-def remove_bg(image):
+def remove_background(image: Union[bytes, Image, np.ndarray]) -> np.ndarray:
     """
-    Remove green background from images
+    Remove background from `image`.
 
     Paramerers
     ___________
-    image: Opened image file
+    image: image data
 
     Return value
     ____________
     output: Numpy array containing image with background removed
     """
-    
-    #Remove green screen background
-    output = remove(image)
+    # --- Check arguments
 
-    #Return numpy array of image cutout
-    return np.array(output)
+    if !isinstance(image, [bytes, Image, np.ndarray]):
+        raise TypeError(
+            "`image` must have type `bytes`, `PIL.Image`, or `np.ndarray`. " +
+            f"(type(image)={type(image)}"
+        )
 
+    # --- Remove background
+    #
+    # Note: the return type of rembg.remove() is the same as the type of `image`
+    cutout = rembg.remove(image)
 
-# def remove_background(image: np.ndarray,
-#                       lower_threshold: List = (25, 75, 85),
-#                       upper_threshold: List = (130, 255, 190)) -> np.ndarray:
-#     """
-#     Remove green background from image.
+    # Return numpy array representation of image with background removed
+    if isinstance(cutout, np.ndarray):
+        output = cutout
 
-#     Parameters
-#     ----------
-#     image: NumPy array containing image. The array is expected to be arranged
-#         such that the right-most dimension specifies the color channel in the
-#         following order: R, G, B, A (if present)
+    elif isinstance(cutout, Image):
+        output = np.asarray(cutout)
 
-#     lower_threshold: (R, G, B) value to use as lower threshold for identifying
-#         green pixels
+    else:  # isinstance(cutout, bytes):
+        output = io.BytesIO()
+        cutout.save(output, "PNG")
+        output.seek(0)
 
-#     upper_threshold: (R, G, B) value to use as upper threshold for identifying
-#         green pixels
-
-#     Return value
-#     ------------
-#     image_out: NumPy array containing image with background removed. The
-#         array is arranged such that the right-most dimension specifies the
-#         color channel:
-
-#         * image_out[:,:,0] contains the red channel
-
-#         * image_out[:,:,1] contains the green channel
-
-#         * image_out[:,:,2] contains the blue channel
-#     """
-#     # --- Check arguments
-
-#     # Convert color values in the interval [0, 255) with type 'int64'
-#     if image.dtype in ['float32', 'float64']:
-#         if np.max(image) >= 1:
-#             image = (255*image).astype('int64')
-
-#     # Remove alpha channel
-#     image = remove_alpha_channel(image)
-
-#     # --- Remove background
-
-#     image_out = image.copy()
-#     mask = cv2.inRange(image_out, lower_threshold, upper_threshold)
-#     image_out[mask != 0] = [0, 0, 0]
-
-#     return image_out
+    return output
 
 
 def generate_synthetic_dataset(image_path: Path,

@@ -11,10 +11,10 @@ authors = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.12"
+python = "^3.10,<3.12"
 
 # data management
-dvc = {extras = ["s3"], version = "^3.0"}
+dvc = {extras = ["s3"], version = "^3"}
 fds = {git = "https://github.com/velexi-research/fds.git"}  # Fork of FastDS
 
 # research infrastructure
@@ -33,16 +33,14 @@ typer = "^0,>=0.12"
 
 # software testing
 coverage = "^7"
-pylint = "^3"
 pytest = "^8"
 pytest-cov = "^5"
-pytest-flake8 = "^1.1.1"
-pytest-pylint = "^0,>=0.21"
+pytest-flake8 = "^1.1"
 pytest-xdist = "^3"
 
 # code quality
 black = {extras = ["jupyter"], version = "^24"}
-flake8 = "^7"
+flake8 = "<5.0.0"  # Unpin after compatibility with pytest-flake8 is fixed
 pre-commit = "^3"
 
 # security vulnerability fixes
@@ -60,6 +58,26 @@ scikit-image = "^0.23"
 rembg = "^2"
 torch = "^2"
 torchvision = "^0.18"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra --doctest-modules --flake8 --cov --cov-report="
+testpaths = [
+    "src",
+]
+doctest_optionflags = [
+    "NORMALIZE_WHITESPACE",
+    "IGNORE_EXCEPTION_DETAIL",
+    "ALLOW_UNICODE",
+    "ALLOW_BYTES",
+]
+norecursedirs = ["data", "docs", "extras", "notebooks", "reports", "spikes"]
+
+[tool.coverage.run]
+source = ["src/"]
+
+[tool.coverage.report]
+omit = ["*/tests/*"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

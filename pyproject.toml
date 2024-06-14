@@ -14,7 +14,7 @@ authors = [
 python = "^3.10,<3.12"
 
 # data management
-dvc = {extras = ["s3"], version = "^3.0"}
+dvc = {extras = ["s3"], version = "^3"}
 fds = {git = "https://github.com/velexi-research/fds.git"}  # Fork of FastDS
 
 # research infrastructure

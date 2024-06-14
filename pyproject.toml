@@ -58,8 +58,8 @@ pycaret = "^3"
 scikit-image = "^0.23"
 scikit-learn = "^1.4,<1.5"
 rembg = "^2"
-torch = "^2"
-torchvision = "^0.18"
+torch = "^2, <2.3"
+torchvision = "^0.17"
 
 [tool.pytest.ini_options]
 minversion = "6.0"

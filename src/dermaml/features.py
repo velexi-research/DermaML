@@ -64,9 +64,19 @@ def extract_features(image: np.ndarray) -> dict:
 
     # Compute texture histogram
     lbp_hist, _ = compute_lbp(image)
-    features["texture"] = lbp_hist.tolist()
+    enum_lbp = dict(enumerate(lbp_hist))
+    lbp_dict = {'lbp_'+str(k):v for k,v in enum_lbp.items()}
 
-    return features
+    contrast, correlation, energy, homogeneity = compute_glcm(image)
+    glcm_dict = {
+                    'contrast':contrast[0][0], 
+                     'correlation':correlation[0][0], 
+                     'energy':energy[0][0], 
+                     'homogeneity':homogeneity[0][0]
+                     }
+
+    
+    return lbp_dict | glcm_dict
 
 
 def compute_lbp(image: np.ndarray, radius=3, num_points=None) -> np.ndarray:
@@ -122,7 +132,7 @@ def compute_lbp(image: np.ndarray, radius=3, num_points=None) -> np.ndarray:
     return lbp_hist, lbp
 
 
-def compute_glcm(image: np.ndarray) -> (float, float, float, float):
+def compute_glcm(image: np.ndarray) -> tuple[float, float, float, float]:
     """
     Compute gray-level co-occcurence matrix (GLCM) for image.
 

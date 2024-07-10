@@ -65,7 +65,7 @@ def remove_alpha_channel(image: np.ndarray) -> np.ndarray:
     return output
 
 
-def remove_background(image: Union[bytes, Image, np.ndarray]) -> np.ndarray:
+def remove_background(image: np.ndarray) -> np.ndarray:
     """
     Remove background from `image`.
 
@@ -79,9 +79,9 @@ def remove_background(image: Union[bytes, Image, np.ndarray]) -> np.ndarray:
     """
     # --- Check arguments
 
-    if not isinstance(image, (bytes, Image, np.ndarray)):
+    if not isinstance(image, (np.ndarray)):
         raise TypeError(
-            "`image` must have type `bytes`, `PIL.Image`, or `np.ndarray`. "
+            "`image` must be of type `np.ndarray`. "
             + f"(type(image)={type(image)}"
         )
 
@@ -94,13 +94,8 @@ def remove_background(image: Union[bytes, Image, np.ndarray]) -> np.ndarray:
     if isinstance(cutout, np.ndarray):
         output = cutout
 
-    elif isinstance(cutout, Image):
-        output = np.asarray(cutout)
-
-    else:  # isinstance(cutout, bytes):
-        output = io.BytesIO()
-        cutout.save(output, "PNG")
-        output.seek(0)
+    else:
+        print('Not sure how you got here')
 
     return output
 

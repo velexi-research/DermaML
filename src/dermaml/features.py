@@ -156,7 +156,7 @@ def compute_glcm(image: np.ndarray) -> tuple[float, float, float, float]:
     image_cv2 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # Calculate the co-occurrence matrix for the image
-    co_matrix = skimage.feature.graycomatrix(
+    co_matrix = skimage.feature.graycomatrix( #FIXME : choice of kernel size
         image_cv2, [5], [0], levels=256, symmetric=True, normed=True
     )
 

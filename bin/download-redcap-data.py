@@ -206,7 +206,7 @@ CONFIG_FILE_ARG = typer.Argument(
     callback=_validate_file_exists,
 )
 
-DEFAULT_OUTPUT_DIR = "hawkeye-hands-dataset"
+DEFAULT_OUTPUT_DIR = "hawkeye-hands"
 OUTPUT_DIR_ARG = typer.Option(
     "--output-dir",
     "-o",

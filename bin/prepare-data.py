@@ -82,7 +82,7 @@ def main(src_dir: Path,
 
         # Remove background
         if len(image.shape) > 2:
-            image = dermaml.data.remove_background(image)
+            image = dermaml.image.remove_background(image)
 
         # Save image
         filename = os.path.basename(image_path)

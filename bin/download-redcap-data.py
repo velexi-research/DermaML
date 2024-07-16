@@ -28,6 +28,7 @@ from typing import Annotated
 import uuid
 
 # External packages
+import numpy as np
 import pandas as pd
 from pandas import DataFrame
 import requests
@@ -340,13 +341,13 @@ def _clean_metadata(raw_data_: DataFrame) -> (DataFrame, DataFrame):
     """
     # Initialize valid records and invalid records DataFrames
     valid_records = raw_data_.copy()
-    invalid_data = DataFrame(columns=[*raw_data_.columns, "error"])
+    invalid_data = DataFrame(columns=[*raw_data_.columns, "reason"])
 
     # Remove incomplete records
     incomplete_records = valid_records[
         valid_records["form_1_complete"] != FORM_COMPLETED_VALUE
     ]
-    incomplete_records["error"] = "incomplete record"
+    incomplete_records["reason"] = "incomplete record"
     invalid_data = pd.concat([invalid_data, incomplete_records]).reset_index(drop=True)
     valid_records.drop(index=incomplete_records.index, inplace=True)
 
@@ -354,22 +355,20 @@ def _clean_metadata(raw_data_: DataFrame) -> (DataFrame, DataFrame):
     invalid_birth_year = valid_records[
         valid_records["birth_year"].str.isnumeric() == False  # noqa
     ]
-    invalid_birth_year["error"] = "invalid birth year"
+    invalid_birth_year["reason"] = "invalid birth year"
     invalid_data = pd.concat([invalid_data, invalid_birth_year]).reset_index(drop=True)
     valid_records.drop(index=invalid_birth_year.index, inplace=True)
 
     # Remove records with missing image data
     invalid_images = valid_records[
-        valid_records[REDCAP_LEFT_HAND_IMAGE_FIELD_NAME].map(lambda x: x.strip()) == ""
+        np.logical_or(
+            valid_records[REDCAP_LEFT_HAND_IMAGE_FIELD_NAME].map(lambda x: x.strip())
+            == "",  # noqa
+            valid_records[REDCAP_RIGHT_HAND_IMAGE_FIELD_NAME].map(lambda x: x.strip())
+            == "",  # noqa
+        )
     ]
-    invalid_images["error"] = "missing left hand image"
-    invalid_data = pd.concat([invalid_data, invalid_images]).reset_index(drop=True)
-    valid_records.drop(index=invalid_images.index, inplace=True)
-
-    invalid_images = valid_records[
-        valid_records[REDCAP_RIGHT_HAND_IMAGE_FIELD_NAME].map(lambda x: x.strip()) == ""
-    ]
-    invalid_images["error"] = "missing right hand image"
+    invalid_images["reason"] = "missing images"
     invalid_data = pd.concat([invalid_data, invalid_images]).reset_index(drop=True)
     valid_records.drop(index=invalid_images.index, inplace=True)
 

@@ -25,6 +25,7 @@ from pathlib import Path
 import os
 import time
 from typing import Annotated
+import uuid
 
 # External packages
 import pandas as pd
@@ -323,6 +324,232 @@ def _process_race_ethnicity(record) -> str:
     return race_ethnicity.strip(",")
 
 
+def _clean_metadata(raw_data_: DataFrame) -> (DataFrame, DataFrame):
+    """
+    Clean metadata.
+
+    Parameters
+    ----------
+    `raw_data`: raw data
+
+    Return Value
+    ------------
+    `clean_data`: DataFrame containing cleaned records
+
+    `invalid_data`: DataFrame containing invalid records
+    """
+    # Initialize valid records and invalid records DataFrames
+    valid_records = raw_data_.copy()
+    invalid_data = DataFrame(columns=[*raw_data_.columns, "error"])
+
+    # Remove incomplete records
+    incomplete_records = valid_records[
+        valid_records["form_1_complete"] != FORM_COMPLETED_VALUE
+    ]
+    incomplete_records["error"] = "incomplete record"
+    invalid_data = pd.concat([invalid_data, incomplete_records]).reset_index(drop=True)
+    valid_records.drop(index=incomplete_records.index, inplace=True)
+
+    # Remove records with invalid birth year
+    invalid_birth_year = valid_records[
+        valid_records["birth_year"].str.isnumeric() == False  # noqa
+    ]
+    invalid_birth_year["error"] = "invalid birth year"
+    invalid_data = pd.concat([invalid_data, invalid_birth_year]).reset_index(drop=True)
+    valid_records.drop(index=invalid_birth_year.index, inplace=True)
+
+    # Remove dashes from race/ethnicity "Please Specify" column
+    valid_records["please_specify"] = valid_records["please_specify"].map(
+        lambda x: "" if x == "-" else x
+    )
+
+    # Fix column dtypes
+    for column, dtype in REDCAP_RECORD_DTYPES.items():
+        valid_records[column] = valid_records[column].astype(dtype)
+
+    # Construct clean_data DataFrame
+    clean_data = DataFrame()
+
+    clean_data["record_id"] = valid_records["record_id"]
+
+    clean_data["gender"] = valid_records["gender"].map(lambda x: GENDER_MAP[int(x)])
+
+    clean_data["gender_specify"] = valid_records["please_specificy"].map(
+        lambda x: x.strip()
+    )
+
+    clean_data["birth_year"] = valid_records["birth_year"]
+
+    clean_data["sex_assigned_at_birth"] = valid_records["sex_assigned_at_birth"].map(
+        lambda x: SEX_ASSIGNED_AT_BIRTH_MAP[int(x)]
+    )
+
+    clean_data["sex_assigned_at_birth_specify"] = valid_records["please_specify2"].map(
+        lambda x: x.strip()
+    )
+
+    clean_data["race_ethnicity"] = valid_records.apply(_process_race_ethnicity, axis=1)
+
+    clean_data["race_ethnicity_specify"] = valid_records["please_specify"].map(
+        lambda x: x.strip()
+    )
+
+    clean_data["ethnicity"] = valid_records["ethnicity"].map(
+        lambda x: ETHNICITY_MAP[int(x)]
+    )
+
+    clean_data["handedness"] = valid_records["handedness"].map(
+        lambda x: HANDEDNESS_MAP[int(x)]
+    )
+
+    clean_data["occupation"] = valid_records["occupation"].map(
+        lambda x: OCCUPATION_MAP[int(x)]
+    )
+
+    clean_data["driving_time"] = valid_records["driving_time"].map(
+        lambda x: AVERAGE_DRIVING_TIME_MAP[int(x)]
+    )
+
+    clean_data["sun_exposure"] = valid_records["sun_exposure"].map(
+        lambda x: SUN_EXPOSURE_MAP[int(x)]
+    )
+
+    clean_data["sunscreen_use"] = valid_records["sunscreen_use"].map(
+        lambda x: SUNSCREEN_USE_MAP[int(x)]
+    )
+
+    clean_data["region"] = valid_records["state"].map(lambda x: STATE_MAP[int(x)])
+
+    clean_data["region_specify"] = valid_records["please_specify4"].map(
+        lambda x: x.strip()
+    )
+
+    clean_data["left_hand_image_file"] = valid_records[
+        REDCAP_LEFT_HAND_IMAGE_FIELD_NAME
+    ]
+    clean_data["right_hand_image_file"] = valid_records[
+        REDCAP_RIGHT_HAND_IMAGE_FIELD_NAME
+    ]
+
+    clean_data["form_complete"] = valid_records["form_1_complete"].map(
+        lambda x: FORM_COMPLETE_MAP[int(x)]
+    )
+
+    return clean_data, invalid_data
+
+
+def _download_images(config: dict, image_dir: Path, metadata: DataFrame) -> None:
+    """
+    Download image data.
+
+    Parameters
+    ----------
+    `config`: dictionary containing configuration parameters
+
+    `image_dir`: path to directory where images should be saved
+
+    `metadata`: DataFrame containing records to retrieve images for
+
+    Return Value
+    ------------
+    None
+    """
+    # Initialize list of image UUIDs
+    image_uuids = []
+
+    for idx in track(range(len(metadata)), description="Retrieving images..."):
+
+        # --- Preparations
+
+        # Get record
+        record = metadata.iloc[idx, :]
+
+        # --- Retrieve left hand image
+
+        # Send request
+        data = {
+            "token": config["api_token"],
+            "content": "file",
+            "action": "export",
+            "record": record["record_id"],
+            "field": REDCAP_LEFT_HAND_IMAGE_FIELD_NAME,
+        }
+        response = post_request_with_delay(REDCAP_API_URL, data)
+
+        # Check status code
+        if not response.ok:
+            record_id = record["record_id"]
+            _raise_runtime_error(
+                f"Error retrieving from left hand image for record '{record_id}'. "
+                f"Received HTTP status code {response.status_code}."
+            )
+
+        # Check if file name is a valid UUID
+        image_uuid_str = os.path.splitext(record["left_hand_image_file"])[0]
+        image_uuid_invalid = False
+        try:
+            image_uuid = uuid.UUID(image_uuid_str)
+        except ValueError:
+            image_uuid_invalid = True
+
+        # Generate UUID
+        if image_uuid_invalid:
+            while image_uuid in image_uuids:
+                image_uuid = uuid.uuid4()
+        image_uuids.append(image_uuid)
+
+        # Save image
+        image_path = image_dir / f"{image_uuid}.jpeg"
+        if not os.path.isfile(image_path):
+            with open(image_path, "wb") as file:
+                file.write(response.content)
+                file.close()
+        else:
+            _raise_runtime_error(f"Image file '{image_path}' already exists.")
+
+        # --- Retrieve right hand image
+
+        # Send request
+        data = {
+            "token": config["api_token"],
+            "content": "file",
+            "action": "export",
+            "record": record["record_id"],
+            "field": REDCAP_RIGHT_HAND_IMAGE_FIELD_NAME,
+        }
+        response = post_request_with_delay(REDCAP_API_URL, data)
+
+        # Check status code
+        if not response.ok:
+            _raise_runtime_error(
+                f"Error retrieving from right hand image for record '{record_id}'. "
+                f"Received HTTP status code {response.status_code}."
+            )
+
+        # Check if file name is a valid UUID
+        image_uuid_str = os.path.splitext(record["right_hand_image_file"])[0]
+        image_uuid_invalid = False
+        try:
+            image_uuid = uuid.UUID(image_uuid_str)
+        except ValueError:
+            image_uuid_invalid = True
+
+        # Generate UUID
+        if image_uuid_invalid:
+            while image_uuid in image_uuids:
+                image_uuid = uuid.uuid4()
+        image_uuids.append(image_uuid)
+
+        # Save image
+        image_path = image_dir / f"{image_uuid}.jpeg"
+        if not os.path.isfile(image_path):
+            with open(image_path, "wb") as file:
+                file.write(response.content)
+                file.close()
+        else:
+            _raise_runtime_error(f"Image file '{image_path}' already exists.")
+
+
 # --- CLI arguments and options
 
 
@@ -453,116 +680,22 @@ def main(
 
     # Start timer
     t_start = time.time()
+
     # Load response data into a DataFrame
     records = json.loads(response.text)
     raw_data = DataFrame(records)
 
-    # Initialize cleaned data and invalid records DataFrames
-    cleaned_data = raw_data.copy()
-    invalid_records = DataFrame(columns=[*raw_data.columns, "error"])
-
-    # Remove incomplete records
-    incomplete_records = cleaned_data[
-        cleaned_data["form_1_complete"] != FORM_COMPLETED_VALUE
-    ]
-    incomplete_records["error"] = "incomplete record"
-    invalid_records = pd.concat([invalid_records, incomplete_records]).reset_index(
-        drop=True
-    )
-    cleaned_data.drop(index=incomplete_records.index, inplace=True)
-
-    # Remove records with invalid birth year
-    invalid_birth_year = cleaned_data[
-        cleaned_data["birth_year"].str.isnumeric() == False
-    ]
-    invalid_birth_year["error"] = "invalid birth year"
-    invalid_records = pd.concat([invalid_records, invalid_birth_year]).reset_index(
-        drop=True
-    )
-    cleaned_data.drop(index=invalid_birth_year.index, inplace=True)
-
-    # Remove dashes from race/ethnicity "Please Specify" column
-    cleaned_data["please_specify"] = cleaned_data["please_specify"].map(
-        lambda x: "" if x == "-" else x
-    )
-
-    # Fix column dtypes
-    for column, dtype in REDCAP_RECORD_DTYPES.items():
-        cleaned_data[column] = cleaned_data[column].astype(dtype)
-
-    # Construct metadata DataFrame
-    metadata = DataFrame()
-
-    metadata["record_id"] = cleaned_data["record_id"]
-
-    metadata["gender"] = cleaned_data["gender"].map(lambda x: GENDER_MAP[int(x)])
-
-    metadata["gender_specify"] = cleaned_data["please_specificy"].map(
-        lambda x: x.strip()
-    )
-
-    metadata["birth_year"] = cleaned_data["birth_year"]
-
-    metadata["sex_assigned_at_birth"] = cleaned_data["sex_assigned_at_birth"].map(
-        lambda x: SEX_ASSIGNED_AT_BIRTH_MAP[int(x)]
-    )
-
-    metadata["sex_assigned_at_birth_specify"] = cleaned_data["please_specify2"].map(
-        lambda x: x.strip()
-    )
-
-    metadata["race_ethnicity"] = cleaned_data.apply(_process_race_ethnicity, axis=1)
-
-    metadata["race_ethnicity_specify"] = cleaned_data["please_specify"].map(
-        lambda x: x.strip()
-    )
-
-    metadata["ethnicity"] = cleaned_data["ethnicity"].map(
-        lambda x: ETHNICITY_MAP[int(x)]
-    )
-
-    metadata["handedness"] = cleaned_data["handedness"].map(
-        lambda x: HANDEDNESS_MAP[int(x)]
-    )
-
-    metadata["occupation"] = cleaned_data["occupation"].map(
-        lambda x: OCCUPATION_MAP[int(x)]
-    )
-
-    metadata["driving_time"] = cleaned_data["driving_time"].map(
-        lambda x: AVERAGE_DRIVING_TIME_MAP[int(x)]
-    )
-
-    metadata["sun_exposure"] = cleaned_data["sun_exposure"].map(
-        lambda x: SUN_EXPOSURE_MAP[int(x)]
-    )
-
-    metadata["sunscreen_use"] = cleaned_data["sunscreen_use"].map(
-        lambda x: SUNSCREEN_USE_MAP[int(x)]
-    )
-
-    metadata["region"] = cleaned_data["state"].map(lambda x: STATE_MAP[int(x)])
-
-    metadata["region_specify"] = cleaned_data["please_specify4"].map(
-        lambda x: x.strip()
-    )
-
-    metadata["left_hand_image_file"] = cleaned_data[REDCAP_LEFT_HAND_IMAGE_FIELD_NAME]
-    metadata["right_hand_image_file"] = cleaned_data[REDCAP_RIGHT_HAND_IMAGE_FIELD_NAME]
-
-    metadata["form_complete"] = cleaned_data["form_1_complete"].map(
-        lambda x: FORM_COMPLETE_MAP[int(x)]
-    )
+    metadata, invalid_data = _clean_metadata(raw_data)
 
     # Save metadata to file
     raw_data.to_csv(output_dir / "raw_data.csv", index=False)
     metadata.to_csv(output_dir / "metadata.csv", index=False)
-    invalid_records.to_csv(output_dir / "invalid_records.csv", index=False)
+    invalid_data.to_csv(output_dir / "invalid_data.csv", index=False)
 
     # Emit info message
     typer.echo(
         f"{len(raw_data)} records processed. "
-        f"(valid: {len(metadata)}, invalid: {len(invalid_records)})"
+        f"(valid: {len(metadata)}, invalid: {len(invalid_data)})"
     )
     typer.echo(f"Finished cleaning metadata in {time.time() - t_start:0.2f}s\n")
 
@@ -571,70 +704,8 @@ def main(
     # Start timer
     t_start = time.time()
 
-    for idx in track(range(len(metadata)), description="Retrieving images..."):
-
-        # --- Preparations
-
-        # Get record
-        record = metadata.iloc[idx, :]
-
-        # --- Retrieve left hand image
-
-        # Send request
-        data = {
-            "token": config["api_token"],
-            "content": "file",
-            "action": "export",
-            "record": record["record_id"],
-            "field": REDCAP_LEFT_HAND_IMAGE_FIELD_NAME,
-        }
-        response = post_request_with_delay(REDCAP_API_URL, data)
-
-        # Check status code
-        if not response.ok:
-            _raise_runtime_error(
-                f"Error retrieving from left hand image for record '{record[record_id]}'. "
-                f"Received HTTP status code {response.status_code}."
-            )
-
-        # Save image
-        image_path = image_dir / record["right_hand_image_file"]
-        if not os.path.isfile(image_path):
-            with open(image_path, "wb") as file:
-                file.write(response.content)
-                file.close()
-        else:
-            # TODO: raise exception
-            pass
-
-        # --- Retrieve right hand image
-
-        # Send request
-        data = {
-            "token": config["api_token"],
-            "content": "file",
-            "action": "export",
-            "record": record["record_id"],
-            "field": REDCAP_RIGHT_HAND_IMAGE_FIELD_NAME,
-        }
-        response = post_request_with_delay(REDCAP_API_URL, data)
-
-        # Check status code
-        if not response.ok:
-            _raise_runtime_error(
-                f"Error retrieving from right hand image for record '{record[record_id]}'. "
-                f"Received HTTP status code {response.status_code}."
-            )
-
-        # Save image
-        image_path = image_dir / record["right_hand_image_file"]
-        if not os.path.isfile(image_path):
-            with open(image_path, "wb") as file:
-                file.write(response.content)
-                file.close()
-        else:
-            # TODO: raise exception
-            pass
+    # Download images
+    _download_images(config, image_dir, metadata)
 
     # Emit info message
     typer.echo(f"Successfully retrieved images in {time.time() - t_start:0.2f}s\n")

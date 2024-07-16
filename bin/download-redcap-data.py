@@ -358,6 +358,21 @@ def _clean_metadata(raw_data_: DataFrame) -> (DataFrame, DataFrame):
     invalid_data = pd.concat([invalid_data, invalid_birth_year]).reset_index(drop=True)
     valid_records.drop(index=invalid_birth_year.index, inplace=True)
 
+    # Remove records with missing image data
+    invalid_images = valid_records[
+        valid_records[REDCAP_LEFT_HAND_IMAGE_FIELD_NAME].map(lambda x: x.strip()) == ""
+    ]
+    invalid_images["error"] = "missing left hand image"
+    invalid_data = pd.concat([invalid_data, invalid_images]).reset_index(drop=True)
+    valid_records.drop(index=invalid_images.index, inplace=True)
+
+    invalid_images = valid_records[
+        valid_records[REDCAP_RIGHT_HAND_IMAGE_FIELD_NAME].map(lambda x: x.strip()) == ""
+    ]
+    invalid_images["error"] = "missing right hand image"
+    invalid_data = pd.concat([invalid_data, invalid_images]).reset_index(drop=True)
+    valid_records.drop(index=invalid_images.index, inplace=True)
+
     # Remove dashes from race/ethnicity "Please Specify" column
     valid_records["please_specify"] = valid_records["please_specify"].map(
         lambda x: "" if x == "-" else x

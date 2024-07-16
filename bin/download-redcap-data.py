@@ -28,7 +28,6 @@ from typing import Annotated
 import uuid
 
 # External packages
-import numpy as np
 import pandas as pd
 from pandas import DataFrame
 import requests
@@ -361,11 +360,13 @@ def _clean_metadata(raw_data_: DataFrame) -> (DataFrame, DataFrame):
 
     # Remove records with missing image data
     invalid_images = valid_records[
-        np.logical_or(
+        (
             valid_records[REDCAP_LEFT_HAND_IMAGE_FIELD_NAME].map(lambda x: x.strip())
-            == "",  # noqa
+            == ""
+        )
+        | (
             valid_records[REDCAP_RIGHT_HAND_IMAGE_FIELD_NAME].map(lambda x: x.strip())
-            == "",  # noqa
+            == ""
         )
     ]
     invalid_images["reason"] = "missing images"

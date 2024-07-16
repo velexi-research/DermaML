@@ -60,8 +60,10 @@ DEFAULT_REQUESTS_DELAY = 0.2  # seconds. The REDCap request limit is 600 request
 REDCAP_RECORD_FIELD_NAMES = [
     "record_id",
     "gender",
+    "please_specificy",
     "birth_year",
     "sex_assigned_at_birth",
+    "please_specify2",
     "race_ethnicity",
     "please_specify",
     "ethnicity",
@@ -98,30 +100,6 @@ REDCAP_RECORD_DTYPES = {
     "form_1_complete": int,
 }
 
-
-ADJUSTED_RECORD_FIELD_NAMES = {
-    "record_id": "record_id",
-    "gender": "gender",
-    "birth_year": "birth_year",
-    "sex_assigned_at_birth": "sex_assigned_at_birth",
-    "race_ethnicity___1": "race_ethnicity___1",
-    "race_ethnicity___2": "race_ethnicity___2",
-    "race_ethnicity___3": "race_ethnicity___3",
-    "race_ethnicity___4": "race_ethnicity___4",
-    "race_ethnicity___5": "race_ethnicity___5",
-    "race_ethnicity___6": "race_ethnicity___6",
-    "ethnicity": "ethnicity",
-    "handedness": "handedness",
-    "occupation": "occupation",
-    "driving_time": "driving_time",
-    "sun_exposure": "sun_exposure",
-    "sunscreen_use": "sunscreen_use",
-    "state": "state",
-    "photo": "left_hand_image_file",
-    "right_hand_dorsal_surface": "right_hand_image_file",
-    "form_1_complete": "form_complete",
-}
-
 REDCAP_LEFT_HAND_IMAGE_FIELD_NAME = "photo"
 REDCAP_RIGHT_HAND_IMAGE_FIELD_NAME = "right_hand_dorsal_surface"
 
@@ -133,11 +111,16 @@ GENDER_MAP = {
     2: "Woman",
     3: "Gender queer or gender fluid",
     4: "Non-binary or not exclusively man or woman",
+    5: "Questioning or exploring",
+    6: "None of these describe me",
+    7: "Prefer not to answer",
 }
 
 SEX_ASSIGNED_AT_BIRTH_MAP = {
     1: "Male",
     2: "Female",
+    3: "Intersex or variation of sex characteristics",
+    4: "None of these describe me",
     5: "Prefer not to say",
 }
 
@@ -165,7 +148,7 @@ OCCUPATION_MAP = {
     10: "Installation/Maintenance/Repair",
     11: "Legal",
     12: "Office and Administrative Support",
-    13: "TBD",
+    13: "Protective Services",
     14: "Sales/Marketing",
     15: "Transportation",
     16: "Caretaking/Stay at Home Parent",
@@ -173,7 +156,7 @@ OCCUPATION_MAP = {
     18: "Unemployed",
 }
 
-DRIVING_TIME_MAP = {
+AVERAGE_DRIVING_TIME_MAP = {
     1: "30 minutes or less",
     2: "30-60 minutes",
     3: "60+ minutes",
@@ -182,9 +165,6 @@ DRIVING_TIME_MAP = {
 SUN_EXPOSURE_MAP = {
     1: "less than 30 minutes",
     2: "1 hour",
-    3: "TBD",
-    4: "TBD",
-    5: "TBD",
     6: "2 hours",
     7: "3 hours",
     8: "4 hours",
@@ -211,6 +191,7 @@ STATE_MAP = {
 
 FORM_COMPLETE_MAP = {
     0: "Incomplete",
+    1: "Unverified",
     2: "Completed",
 }
 
@@ -305,6 +286,41 @@ def _validate_path_does_not_exist(path: str) -> str:
         _raise_cli_argument_error(message)
 
     return path
+
+
+# ------ data processing functions
+
+
+def _process_race_ethnicity(record) -> str:
+    """
+    Construct comma-separated list of race/ethnicity for record.
+
+    Parameters
+    ----------
+    `record`: row of DataFrame
+
+    Return Value
+    ------------
+    comma-separated list of races/ethnicities for individual
+    """
+    race_ethnicity = ""
+
+    if record["race_ethnicity___1"] == 1:
+        race_ethnicity = ",".join([race_ethnicity, "Caucasian/White"])
+
+    if record["race_ethnicity___2"] == 1:
+        race_ethnicity = ",".join([race_ethnicity, "African-American/Black"])
+
+    if record["race_ethnicity___3"] == 1:
+        race_ethnicity = ",".join([race_ethnicity, "Asian"])
+
+    if record["race_ethnicity___4"] == 1:
+        race_ethnicity = ",".join([race_ethnicity, "Native Hawaiian/Pacific Islander"])
+
+    if record["race_ethnicity___5"] == 1:
+        race_ethnicity = ",".join([race_ethnicity, "American Indian/Alaska National"])
+
+    return race_ethnicity.strip(",")
 
 
 # --- CLI arguments and options
@@ -465,6 +481,11 @@ def main(
     )
     cleaned_data.drop(index=invalid_birth_year.index, inplace=True)
 
+    # Remove dashes from race/ethnicity "Please Specify" column
+    cleaned_data["please_specify"] = cleaned_data["please_specify"].map(
+        lambda x: "" if x == "-" else x
+    )
+
     # Fix column dtypes
     for column, dtype in REDCAP_RECORD_DTYPES.items():
         cleaned_data[column] = cleaned_data[column].astype(dtype)
@@ -476,13 +497,25 @@ def main(
 
     metadata["gender"] = cleaned_data["gender"].map(lambda x: GENDER_MAP[int(x)])
 
+    metadata["gender_specify"] = cleaned_data["please_specificy"].map(
+        lambda x: x.strip()
+    )
+
     metadata["birth_year"] = cleaned_data["birth_year"]
 
     metadata["sex_assigned_at_birth"] = cleaned_data["sex_assigned_at_birth"].map(
         lambda x: SEX_ASSIGNED_AT_BIRTH_MAP[int(x)]
     )
 
-    metadata["race_ethnicity"] = cleaned_data["race_ethnicity___1"]  # TODO
+    metadata["sex_assigned_at_birth_specify"] = cleaned_data["please_specify2"].map(
+        lambda x: x.strip()
+    )
+
+    metadata["race_ethnicity"] = cleaned_data.apply(_process_race_ethnicity, axis=1)
+
+    metadata["race_ethnicity_specify"] = cleaned_data["please_specify"].map(
+        lambda x: x.strip()
+    )
 
     metadata["ethnicity"] = cleaned_data["ethnicity"].map(
         lambda x: ETHNICITY_MAP[int(x)]
@@ -497,7 +530,7 @@ def main(
     )
 
     metadata["driving_time"] = cleaned_data["driving_time"].map(
-        lambda x: DRIVING_TIME_MAP[int(x)]
+        lambda x: AVERAGE_DRIVING_TIME_MAP[int(x)]
     )
 
     metadata["sun_exposure"] = cleaned_data["sun_exposure"].map(
@@ -508,7 +541,11 @@ def main(
         lambda x: SUNSCREEN_USE_MAP[int(x)]
     )
 
-    metadata["state"] = cleaned_data["state"].map(lambda x: STATE_MAP[int(x)])
+    metadata["region"] = cleaned_data["state"].map(lambda x: STATE_MAP[int(x)])
+
+    metadata["region_specify"] = cleaned_data["please_specify4"].map(
+        lambda x: x.strip()
+    )
 
     metadata["left_hand_image_file"] = cleaned_data[REDCAP_LEFT_HAND_IMAGE_FIELD_NAME]
     metadata["right_hand_image_file"] = cleaned_data[REDCAP_RIGHT_HAND_IMAGE_FIELD_NAME]

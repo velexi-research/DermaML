@@ -582,9 +582,6 @@ OUTPUT_DIR_ARG = typer.Option(
     callback=_validate_path_does_not_exist,
 )
 
-DEFAULT_QUIET_OPTION = False
-QUIET_OPTION = typer.Option("--quiet", "-q", help="Display fewer status messages.")
-
 
 # --- Helper functions
 
@@ -641,7 +638,6 @@ def load_config(config_file: str) -> dict:
 def main(
     config_file: Annotated[Path, CONFIG_FILE_ARG],
     output_dir: Annotated[Path, OUTPUT_DIR_ARG] = DEFAULT_OUTPUT_DIR,
-    quiet: Annotated[bool, QUIET_OPTION] = DEFAULT_QUIET_OPTION,
 ) -> None:
     """
     Download data from REDCap

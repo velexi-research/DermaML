@@ -149,7 +149,7 @@ def _validate_path_does_not_exist(path: str) -> str:
 METADATA_INFILE_ARG = typer.Argument(
     ...,
     help=(
-        "Original metadata file. Image are assumed to be in a directory named 'images'"
+        "Original metadata file. Image are assumed to be in a directory named 'images' "
         "in the same directory that the metadata file resides in."
     ),
     callback=_validate_file_exists,

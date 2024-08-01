@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """
-Script for filtering out records with non-standard image files.
+Script for filtering out records with unsupported image files.
 """
 # --- Imports
 
@@ -184,7 +184,7 @@ def main(
     errors_outfile: Annotated[Path, ERRORS_OUTFILE_OPTION] = DEFAULT_ERRORS_OUTFILE,
 ) -> None:
     """
-    Filter out records with non-standard image files.
+    Filter out records with unsupported image files.
     """
     # --- Preparations
 
@@ -226,7 +226,7 @@ def main(
         # Get record
         record = metadata.iloc[idx, :]
 
-        # --- Check if image files for the record are in the standard format
+        # --- Check if image files for the record are in a format supported by skimage
 
         # Check left hand image
         image_path = images_dir / record["left_hand_image_file"]

@@ -26,12 +26,14 @@ from pathlib import Path
 import shutil
 
 # External packages
-import skimage
+import pandas as pd
+import numpy as np
+import skimage.io
 import typer
 
 # Local packages
 import dermaml
-import dermaml.data
+import dermaml.image
 
 
 # --- Main program
@@ -56,29 +58,40 @@ def main(src_dir: Path,
             err=True)
         raise typer.Abort()
 
-    if image_type is None or image_type.lower() == "all":
-        image_ext_list = ["gif", "jpeg", "jpg", "png", "tiff"]
-    else:
-        if image_type.lower() in ["jpeg", "jpg"]:
-            image_ext_list = ["jpeg", "jpg"]
-        else:
-            image_ext_list = [image_type]
+    # if image_type is None or image_type.lower() == "all":
+    #     image_ext_list = ["gif", "jpeg", "jpg", "png", "tiff"]
+    # else:
+    #     if image_type.lower() in ["jpeg", "jpg"]:
+    #         image_ext_list = ["jpeg", "jpg"]
+    #     else:
+    #         image_ext_list = [image_type]
 
     # --- Preparations
 
     # Prepare destination directory
     os.makedirs(dst_dir, exist_ok=True)
 
+    metadata = pd.read_csv(src_metadata_path)
+    valid_image_files_df = metadata.loc[:,['left_hand_image_file', 'right_hand_image_file']]
+    valid_image_files = valid_image_files_df.to_numpy().flatten()
+    valid_unique_image_files = np.unique(valid_image_files)
+
     # Get list of image files
-    image_paths = []
-    for image_ext in image_ext_list:
-        image_paths.extend(glob.glob(os.path.join(src_dir, f'*.{image_ext}')))
+    # image_paths = []
+    # for image_ext in image_ext_list:
+    #     image_paths.extend(glob.glob(os.path.join(src_dir, f'*.{image_ext}')))
+    src = str(src_dir)+'/'
+    image_paths = [src + path for path in valid_unique_image_files]
 
     # --- Prepare image files for feature extraction.
 
     for image_path in image_paths:
         # Load image
-        image = skimage.io.imread(image_path)
+        try:
+            image = skimage.io.imread(image_path)
+        except OSError:
+            print(image_path)
+            continue;
 
         # Remove background
         if len(image.shape) > 2:
@@ -88,6 +101,7 @@ def main(src_dir: Path,
         filename = os.path.basename(image_path)
         output_path = os.path.join(dst_dir,
                                    f"{os.path.splitext(filename)[0]}.png")
+                                #    f"{os.path.splitext(filename)[0]}.jpeg")
         skimage.io.imsave(output_path, image)
 
     # --- Copy metadata file to dst_dir
@@ -98,4 +112,4 @@ def main(src_dir: Path,
 # --- Run app
 
 if __name__ == "__main__":
-    typer.run(main)
+    typer.run(main) 

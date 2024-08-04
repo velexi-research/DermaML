@@ -2793,8 +2793,8 @@ files = [
 [package.dependencies]
 ml-dtypes = ">=0.4.0"
 numpy = [
-    {version = ">=1.22", markers = "python_version < \"3.11\""},
     {version = ">=1.23.2", markers = "python_version >= \"3.11\""},
+    {version = ">=1.22", markers = "python_version < \"3.11\""},
 ]
 opt-einsum = "*"
 scipy = ">=1.9"
@@ -3446,6 +3446,63 @@ files = [
 ]
 
 [[package]]
+name = "mahotas"
+version = "1.4.18"
+description = "Mahotas: Computer Vision Library"
+optional = false
+python-versions = "*"
+files = [
+    {file = "mahotas-1.4.18-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:0238a4665d55f936c6dfb26293e7348482cf9c71bd1caec3a896bfb988b6623b"},
+    {file = "mahotas-1.4.18-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:a33ef7e8bd0ff08990d08274a7d7aaaf1143540983de3e036295d6668ce12cb6"},
+    {file = "mahotas-1.4.18-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9f890b79891184a4a6dcc274da847fbf54fe4b8fa8839705af677cdb63536f22"},
+    {file = "mahotas-1.4.18-cp310-cp310-win32.whl", hash = "sha256:e1804359325ebd5a08998c7d3837ea10883a66678007662e4c849013f7d084ea"},
+    {file = "mahotas-1.4.18-cp310-cp310-win_amd64.whl", hash = "sha256:43a605408b2e9fd77f4adb0ff301bc5c096979cab06da32788fc18c3b06378db"},
+    {file = "mahotas-1.4.18-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:974050ee67913ac2396b4889247577f7202038dc328b50a07f83887c56ca9774"},
+    {file = "mahotas-1.4.18-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:28c93bdfefd4cf271bf2b30b69c130ab3cac5d840dcd3b5ae6e7f6d3648533aa"},
+    {file = "mahotas-1.4.18-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8f4a41dd3b49bc2e5240b265b9ab35a6793c20ddcb3b392f3ba27a0940086de6"},
+    {file = "mahotas-1.4.18-cp311-cp311-win32.whl", hash = "sha256:a4e70ead2a2bf6e8ad9a70f9c33fe0e752edeeea1fc5e8e934efcf29d90d69f2"},
+    {file = "mahotas-1.4.18-cp311-cp311-win_amd64.whl", hash = "sha256:7a9a7b2a9e3e9d9818a901232fc68a2f7bef31483150ac39acb7d56f86e0754c"},
+    {file = "mahotas-1.4.18-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:5314778e8154fb69ddb299e07c48d1998eb3e9567724e93d5018940854975204"},
+    {file = "mahotas-1.4.18-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:fe05bf5ee3498cd9411adf7c9fb8e6278194a04a1491c1a6d807658d4af36bb4"},
+    {file = "mahotas-1.4.18-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:17b6a5420fd71227cd3e875e42a01818b3d94cacb075f93afed36fab63390b75"},
+    {file = "mahotas-1.4.18-cp312-cp312-win32.whl", hash = "sha256:839787784f916c4f03a43e92bb22184920213e5ece0fa0c826f5bdf92eaaff4b"},
+    {file = "mahotas-1.4.18-cp312-cp312-win_amd64.whl", hash = "sha256:579e6f48549b06eb32cfa9501e320194a9d8a97fe35a7832b6b1f3fa104cfb16"},
+    {file = "mahotas-1.4.18-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:a5a268e7cf950acb95949a5351c7c9c7752866611acc1e8ddad232ef659d4934"},
+    {file = "mahotas-1.4.18-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:85f327e13e9445cf65000429b7ae82c2f1700a3d3031686e17a3f392eb0dfac7"},
+    {file = "mahotas-1.4.18-cp36-cp36m-win32.whl", hash = "sha256:0df6d5d63039764dd32d3e5e172ec7e9490ac81af9a5b8965ad58752451061aa"},
+    {file = "mahotas-1.4.18-cp36-cp36m-win_amd64.whl", hash = "sha256:a419b07e56e4a33a56880e68bddfdd7f1c8b87721b8f2e20058e771cfc9be65e"},
+    {file = "mahotas-1.4.18-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:682eb0d3df01f0b18e5287f3a6b9c3787ee0e3d0fdad3d4952e6d865ffb13684"},
+    {file = "mahotas-1.4.18-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:12762f32fb2bf34f072ee410e533c60d0301ca9a507eec5fe039cac6d1ff3273"},
+    {file = "mahotas-1.4.18-cp37-cp37m-win32.whl", hash = "sha256:20e3398eae2af20b6e64ee48865b2811e670346091fc2e8080f40ed190222c3a"},
+    {file = "mahotas-1.4.18-cp37-cp37m-win_amd64.whl", hash = "sha256:1b7dc6d5f435fdff39b6baafdbb2a953907c6c5c1137ceb60f7fe1032f32e012"},
+    {file = "mahotas-1.4.18-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:f6b20d22bb2a30e2ffc599e8f1009c060045e0acf0642378528fc65c908ac730"},
+    {file = "mahotas-1.4.18-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:8b3963b320bf7b771f4ac18473be2791ff2f4a249c3aac774f0ae8fe87beb260"},
+    {file = "mahotas-1.4.18-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2c47def3e69ea667a40ba1ad9352b5c0ac8ac8b12d9996d8e8c34d6ed2f98555"},
+    {file = "mahotas-1.4.18-cp38-cp38-win32.whl", hash = "sha256:35a33c165ad6afabddd839eee252ab8fe6f6e5e276c70449048034c218c91e01"},
+    {file = "mahotas-1.4.18-cp38-cp38-win_amd64.whl", hash = "sha256:b5325a1774cf9d1d45d0492339ca8df34ee61d42d41ee12b988b6de41ef48338"},
+    {file = "mahotas-1.4.18-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:94efd28e96cb47891b168f06513b329140deca175f3dee6a68b60af239b02d64"},
+    {file = "mahotas-1.4.18-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:c3ab43c6ee731ed71c2a0defd3f5bc619ad151fa72792cd1d0af4258e59b3f55"},
+    {file = "mahotas-1.4.18-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6a7fcce88073fc540495bb9db71af675da227562a6cb485e31c5c1ecf2cab8c6"},
+    {file = "mahotas-1.4.18-cp39-cp39-win32.whl", hash = "sha256:31a3bb0d899b611aeed101ff3718ac55df764f6562528d457bd3c18f765bbb04"},
+    {file = "mahotas-1.4.18-cp39-cp39-win_amd64.whl", hash = "sha256:bd35f2e7f70da27e27c995821203c1fadccf4d0a2600383aad7a97ba014559a5"},
+    {file = "mahotas-1.4.18-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:29880589cf567468af5b186581736609f8916656d37806dc03f5a1be57766d08"},
+    {file = "mahotas-1.4.18-pp38-pypy38_pp73-macosx_11_0_arm64.whl", hash = "sha256:e341bad751bf21ceb6366b54bcdd8c2e011359d4176429f91dc9c3ed4ad3e71e"},
+    {file = "mahotas-1.4.18-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8b5ab55982dcbe6664c090ca1b58ac8820735d6e166ee81b380f2eec2307ce08"},
+    {file = "mahotas-1.4.18-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:c260450a28eed8abfcf861dd8752151ab7a9bfaeedd93be50f5a1b79ba82a1f0"},
+    {file = "mahotas-1.4.18-pp39-pypy39_pp73-macosx_10_15_x86_64.whl", hash = "sha256:16aaa64cfb09782212ecb1072c5367f5d8d4c8494dd9bae1d4af7243ebebd07e"},
+    {file = "mahotas-1.4.18-pp39-pypy39_pp73-macosx_11_0_arm64.whl", hash = "sha256:72a98e4b22238e3cc5598b07ee8f4955f4d8cd4c3cb40388cfef96968079f813"},
+    {file = "mahotas-1.4.18-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ccd7d857ad59ee33f2359c8dab56b5d93d8476b7228f3cc00465f6d804c14015"},
+    {file = "mahotas-1.4.18-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:bb9e75ee04420dacd06129039d6618dfec19604ba8bef6aba596f54a19f9a91e"},
+    {file = "mahotas-1.4.18.tar.gz", hash = "sha256:e6bd2eea4143a24f381b30c64078503cd8ffa20ca493e39ffa29f9d024d9cf8b"},
+]
+
+[package.dependencies]
+numpy = "*"
+
+[package.extras]
+tests = ["coveralls", "matplotlib", "pillow", "pip", "pytest (<=8.1.1)", "scipy"]
+
+[[package]]
 name = "mako"
 version = "1.3.5"
 description = "A super-fast templating language that borrows the best ideas from the existing templating languages."
@@ -3755,8 +3812,8 @@ files = [
 
 [package.dependencies]
 numpy = [
-    {version = ">=1.21.2", markers = "python_version >= \"3.10\" and python_version < \"3.11\""},
     {version = ">=1.23.3", markers = "python_version >= \"3.11\""},
+    {version = ">=1.21.2", markers = "python_version >= \"3.10\" and python_version < \"3.11\""},
 ]
 
 [package.extras]
@@ -4237,9 +4294,9 @@ files = [
 
 [package.dependencies]
 numpy = [
+    {version = ">=1.23.5", markers = "python_version >= \"3.11\""},
     {version = ">=1.21.4", markers = "python_version >= \"3.10\" and platform_system == \"Darwin\" and python_version < \"3.11\""},
     {version = ">=1.21.2", markers = "platform_system != \"Darwin\" and python_version >= \"3.10\" and python_version < \"3.11\""},
-    {version = ">=1.23.5", markers = "python_version >= \"3.11\""},
 ]
 
 [[package]]
@@ -4260,9 +4317,9 @@ files = [
 
 [package.dependencies]
 numpy = [
+    {version = ">=1.23.5", markers = "python_version >= \"3.11\""},
     {version = ">=1.21.4", markers = "python_version >= \"3.10\" and platform_system == \"Darwin\" and python_version < \"3.11\""},
     {version = ">=1.21.2", markers = "platform_system != \"Darwin\" and python_version >= \"3.10\" and python_version < \"3.11\""},
-    {version = ">=1.23.5", markers = "python_version >= \"3.11\""},
 ]
 
 [[package]]
@@ -4283,9 +4340,9 @@ files = [
 
 [package.dependencies]
 numpy = [
+    {version = ">=1.23.5", markers = "python_version >= \"3.11\""},
     {version = ">=1.21.4", markers = "python_version >= \"3.10\" and platform_system == \"Darwin\" and python_version < \"3.11\""},
     {version = ">=1.21.2", markers = "platform_system != \"Darwin\" and python_version >= \"3.10\" and python_version < \"3.11\""},
-    {version = ">=1.23.5", markers = "python_version >= \"3.11\""},
 ]
 
 [[package]]
@@ -4464,8 +4521,8 @@ files = [
 
 [package.dependencies]
 numpy = [
-    {version = ">=1.22.4,<2", markers = "python_version < \"3.11\""},
     {version = ">=1.23.2,<2", markers = "python_version == \"3.11\""},
+    {version = ">=1.22.4,<2", markers = "python_version < \"3.11\""},
 ]
 python-dateutil = ">=2.8.2"
 pytz = ">=2020.1"
@@ -4713,8 +4770,8 @@ files = [
 [package.dependencies]
 dash = ">=2.9.0"
 numpy = [
-    {version = ">=1.14", markers = "python_version < \"3.11\""},
     {version = ">=1.24", markers = "python_version >= \"3.11\""},
+    {version = ">=1.14", markers = "python_version < \"3.11\""},
 ]
 orjson = ">=3.8.0,<4.0.0"
 pandas = ">=1"
@@ -5195,6 +5252,25 @@ release = ["zest.releaser[recommended]"]
 tests = ["black", "chardet", "tox"]
 
 [[package]]
+name = "pyfeats"
+version = "1.0.1"
+description = "Open-source software for image feature extraction"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyfeats-1.0.1.tar.gz", hash = "sha256:bcaad4b5eaa1eabfe1c13445a6722c45b840cdc292005db5e27c082507d2572d"},
+]
+
+[package.dependencies]
+mahotas = "*"
+matplotlib = "*"
+numpy = "*"
+opencv-python = "*"
+PyWavelets = "*"
+scikit-image = "*"
+scipy = "*"
+
+[[package]]
 name = "pyflakes"
 version = "2.4.0"
 description = "passive checker of Python programs"
@@ -5460,6 +5536,51 @@ files = [
 ]
 
 [[package]]
+name = "pywavelets"
+version = "1.6.0"
+description = "PyWavelets, wavelet transform module"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "pywavelets-1.6.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:ddc1ff5ad706313d930f857f9656f565dfb81b85bbe58a9db16ad8fa7d1537c5"},
+    {file = "pywavelets-1.6.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:78feab4e0c25fa32034b6b64cb854c6ce15663b4f0ffb25d8f0ee58915300f9b"},
+    {file = "pywavelets-1.6.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:be36f08efe9bc3abf40cf40cd2ee0aa0db26e4894e13ce5ac178442864161e8c"},
+    {file = "pywavelets-1.6.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0595c51472c9c5724fe087cb73e2797053fd25c788d6553fdad6ff61abc60e91"},
+    {file = "pywavelets-1.6.0-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:058a750477dde633ac53b8806f835af3559d52db6532fb2b93c1f4b5441365b8"},
+    {file = "pywavelets-1.6.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:538795d9c4181152b414285b5a7f72ac52581ecdcdce74b6cca3fa0b8a5ab0aa"},
+    {file = "pywavelets-1.6.0-cp310-cp310-win32.whl", hash = "sha256:47de024ba4f9df97e98b5f540340e1a9edd82d2c477450bef8c9b5381487128e"},
+    {file = "pywavelets-1.6.0-cp310-cp310-win_amd64.whl", hash = "sha256:e2c44760c0906ddf2176920a2613287f6eea947f166ce7eee9546081b06a6835"},
+    {file = "pywavelets-1.6.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:d91aaaf6de53b758bcdc96c81cdb5a8607758602be49f691188c0e108cf1e738"},
+    {file = "pywavelets-1.6.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:3b5302edb6d1d1ff6636d37c9ff29c4892f2a3648d736cc1df01f3f36e25c8cf"},
+    {file = "pywavelets-1.6.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c5e655446e37a3c87213d5c6386b86f65c4d61736b4432d720171e7dd6523d6a"},
+    {file = "pywavelets-1.6.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9ec7d69b746a0eaa327b829a3252a63619f2345e263177be5dd9bf30d7933c8d"},
+    {file = "pywavelets-1.6.0-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:97ea9613bd6b7108ebb44b709060adc7e2d5fac73be7152342bdd5513d75f84e"},
+    {file = "pywavelets-1.6.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:48b3813c6d1a7a8194f37dbb5dbbdf2fe1112152c91445ea2e54f64ff6350c36"},
+    {file = "pywavelets-1.6.0-cp311-cp311-win32.whl", hash = "sha256:4ffb484d096a5eb10af7121e0203546a03e1369328df321a33ef91f67bac40cf"},
+    {file = "pywavelets-1.6.0-cp311-cp311-win_amd64.whl", hash = "sha256:274bc47b289585383aa65519b3fcae5b4dee5e31db3d4198d4fad701a70e59f7"},
+    {file = "pywavelets-1.6.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:d6ec113386a432e04103f95e351d2657b42145bd1e1ed26513423391bcb5f011"},
+    {file = "pywavelets-1.6.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:ab652112d3932d21f020e281e06926a751354c2b5629fb716f5eb9d0104b84e5"},
+    {file = "pywavelets-1.6.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:47b0314a22616c5f3f08760f0e00b4a15b7c7dadca5e39bb701cf7869a4207c5"},
+    {file = "pywavelets-1.6.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:138471513bc0a4cd2ddc4e50c7ec04e3468c268e101a0d02f698f6aedd1d5e79"},
+    {file = "pywavelets-1.6.0-cp312-cp312-musllinux_1_1_aarch64.whl", hash = "sha256:67936491ae3e5f957c428e34fdaed21f131535b8d60c7c729a1b539ce8864837"},
+    {file = "pywavelets-1.6.0-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:dd798cee3d28fb3d32a26a00d9831a20bf316c36d685e4ced01b4e4a8f36f5ce"},
+    {file = "pywavelets-1.6.0-cp312-cp312-win32.whl", hash = "sha256:e772f7f0c16bfc3be8ac3cd10d29a9920bb7a39781358856223c491b899e6e79"},
+    {file = "pywavelets-1.6.0-cp312-cp312-win_amd64.whl", hash = "sha256:4ef15a63a72afa67ae9f4f3b06c95c5382730fb3075e668d49a880e65f2f089c"},
+    {file = "pywavelets-1.6.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:627df378e63e9c789b6f2e7060cb4264ebae6f6b0efc1da287a2c060de454a1f"},
+    {file = "pywavelets-1.6.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:a413b51dc19e05243fe0b0864a8e8a16b5ca9bf2e4713da00a95b1b5747a5367"},
+    {file = "pywavelets-1.6.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:be615c6c1873e189c265d4a76d1751ec49b17e29725e6dd2e9c74f1868f590b7"},
+    {file = "pywavelets-1.6.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4021ef69ec9f3862f66580fc4417be728bd78722914394594b48212fd1fcaf21"},
+    {file = "pywavelets-1.6.0-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:8fbf7b61b28b5457693c034e58a01622756d1fd60a80ae13ac5888b1d3e57e80"},
+    {file = "pywavelets-1.6.0-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:f58ddbb0a6cd243928876edfc463b990763a24fb94498607d6fea690e32cca4c"},
+    {file = "pywavelets-1.6.0-cp39-cp39-win32.whl", hash = "sha256:42a22e68e345b6de7d387ef752111ab4530c98048d2b4bdac8ceefb078b4ead6"},
+    {file = "pywavelets-1.6.0-cp39-cp39-win_amd64.whl", hash = "sha256:32198de321892743c1a3d1957fe1cd8a8ecc078bfbba6b8f3982518e897271d7"},
+    {file = "pywavelets-1.6.0.tar.gz", hash = "sha256:ea027c70977122c5fc27b2510f0a0d9528f9c3df6ea3e4c577ca55fd00325a5b"},
+]
+
+[package.dependencies]
+numpy = ">=1.22.4,<3"
+
+[[package]]
 name = "pywin32"
 version = "306"
 description = "Python for Window Extensions"
@@ -5509,6 +5630,7 @@ files = [
     {file = "PyYAML-6.0.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:69b023b2b4daa7548bcfbd4aa3da05b3a74b772db9e23b982788168117739938"},
     {file = "PyYAML-6.0.1-cp310-cp310-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:81e0b275a9ecc9c0c0c07b4b90ba548307583c125f54d5b6946cfee6360c733d"},
     {file = "PyYAML-6.0.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ba336e390cd8e4d1739f42dfe9bb83a3cc2e80f567d8805e11b46f4a943f5515"},
+    {file = "PyYAML-6.0.1-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:326c013efe8048858a6d312ddd31d56e468118ad4cdeda36c719bf5bb6192290"},
     {file = "PyYAML-6.0.1-cp310-cp310-win32.whl", hash = "sha256:bd4af7373a854424dabd882decdc5579653d7868b8fb26dc7d0e99f823aa5924"},
     {file = "PyYAML-6.0.1-cp310-cp310-win_amd64.whl", hash = "sha256:fd1592b3fdf65fff2ad0004b5e363300ef59ced41c2e6b3a99d4089fa8c5435d"},
     {file = "PyYAML-6.0.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:6965a7bc3cf88e5a1c3bd2e0b5c22f8d677dc88a455344035f03399034eb3007"},
@@ -5516,8 +5638,16 @@ files = [
     {file = "PyYAML-6.0.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:42f8152b8dbc4fe7d96729ec2b99c7097d656dc1213a3229ca5383f973a5ed6d"},
     {file = "PyYAML-6.0.1-cp311-cp311-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:062582fca9fabdd2c8b54a3ef1c978d786e0f6b3a1510e0ac93ef59e0ddae2bc"},
     {file = "PyYAML-6.0.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d2b04aac4d386b172d5b9692e2d2da8de7bfb6c387fa4f801fbf6fb2e6ba4673"},
+    {file = "PyYAML-6.0.1-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:e7d73685e87afe9f3b36c799222440d6cf362062f78be1013661b00c5c6f678b"},
     {file = "PyYAML-6.0.1-cp311-cp311-win32.whl", hash = "sha256:1635fd110e8d85d55237ab316b5b011de701ea0f29d07611174a1b42f1444741"},
     {file = "PyYAML-6.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:bf07ee2fef7014951eeb99f56f39c9bb4af143d8aa3c21b1677805985307da34"},
+    {file = "PyYAML-6.0.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:855fb52b0dc35af121542a76b9a84f8d1cd886ea97c84703eaa6d88e37a2ad28"},
+    {file = "PyYAML-6.0.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:40df9b996c2b73138957fe23a16a4f0ba614f4c0efce1e9406a184b6d07fa3a9"},
+    {file = "PyYAML-6.0.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a08c6f0fe150303c1c6b71ebcd7213c2858041a7e01975da3a99aed1e7a378ef"},
+    {file = "PyYAML-6.0.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6c22bec3fbe2524cde73d7ada88f6566758a8f7227bfbf93a408a9d86bcc12a0"},
+    {file = "PyYAML-6.0.1-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:8d4e9c88387b0f5c7d5f281e55304de64cf7f9c0021a3525bd3b1c542da3b0e4"},
+    {file = "PyYAML-6.0.1-cp312-cp312-win32.whl", hash = "sha256:d483d2cdf104e7c9fa60c544d92981f12ad66a457afae824d146093b8c294c54"},
+    {file = "PyYAML-6.0.1-cp312-cp312-win_amd64.whl", hash = "sha256:0d3304d8c0adc42be59c5f8a4d9e3d7379e6955ad754aa9d6ab7a398b59dd1df"},
     {file = "PyYAML-6.0.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:50550eb667afee136e9a77d6dc71ae76a44df8b3e51e41b77f6de2932bfe0f47"},
     {file = "PyYAML-6.0.1-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1fe35611261b29bd1de0070f0b2f47cb6ff71fa6595c077e42bd0c419fa27b98"},
     {file = "PyYAML-6.0.1-cp36-cp36m-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:704219a11b772aea0d8ecd7058d0082713c3562b4e271b849ad7dc4a5c90c13c"},
@@ -5534,6 +5664,7 @@ files = [
     {file = "PyYAML-6.0.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a0cd17c15d3bb3fa06978b4e8958dcdc6e0174ccea823003a106c7d4d7899ac5"},
     {file = "PyYAML-6.0.1-cp38-cp38-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:28c119d996beec18c05208a8bd78cbe4007878c6dd15091efb73a30e90539696"},
     {file = "PyYAML-6.0.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7e07cbde391ba96ab58e532ff4803f79c4129397514e1413a7dc761ccd755735"},
+    {file = "PyYAML-6.0.1-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:49a183be227561de579b4a36efbb21b3eab9651dd81b1858589f796549873dd6"},
     {file = "PyYAML-6.0.1-cp38-cp38-win32.whl", hash = "sha256:184c5108a2aca3c5b3d3bf9395d50893a7ab82a38004c8f61c258d4428e80206"},
     {file = "PyYAML-6.0.1-cp38-cp38-win_amd64.whl", hash = "sha256:1e2722cc9fbb45d9b87631ac70924c11d3a401b2d7f410cc0e3bbf249f2dca62"},
     {file = "PyYAML-6.0.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:9eb6caa9a297fc2c2fb8862bc5370d0303ddba53ba97e71f08023b6cd73d16a8"},
@@ -5541,6 +5672,7 @@ files = [
     {file = "PyYAML-6.0.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5773183b6446b2c99bb77e77595dd486303b4faab2b086e7b17bc6bef28865f6"},
     {file = "PyYAML-6.0.1-cp39-cp39-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:b786eecbdf8499b9ca1d697215862083bd6d2a99965554781d0d8d1ad31e13a0"},
     {file = "PyYAML-6.0.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bc1bf2925a1ecd43da378f4db9e4f799775d6367bdb94671027b73b393a7c42c"},
+    {file = "PyYAML-6.0.1-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:04ac92ad1925b2cff1db0cfebffb6ffc43457495c9b3c39d3fcae417d7125dc5"},
     {file = "PyYAML-6.0.1-cp39-cp39-win32.whl", hash = "sha256:faca3bdcf85b2fc05d06ff3fbc1f83e1391b3e724afa3feba7d13eeab355484c"},
     {file = "PyYAML-6.0.1-cp39-cp39-win_amd64.whl", hash = "sha256:510c9deebc5c0225e8c96813043e62b680ba2f9c50a08d3724c7f28a747d1486"},
     {file = "PyYAML-6.0.1.tar.gz", hash = "sha256:bfdf460b1736c775f2ba9f6a92bca30bc2095067b8a9d77876d1fad6cc3b4a43"},
@@ -5916,37 +6048,51 @@ python-versions = ">=3.6"
 files = [
     {file = "ruamel.yaml.clib-0.2.8-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:b42169467c42b692c19cf539c38d4602069d8c1505e97b86387fcf7afb766e1d"},
     {file = "ruamel.yaml.clib-0.2.8-cp310-cp310-macosx_13_0_arm64.whl", hash = "sha256:07238db9cbdf8fc1e9de2489a4f68474e70dffcb32232db7c08fa61ca0c7c462"},
-    {file = "ruamel.yaml.clib-0.2.8-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:d92f81886165cb14d7b067ef37e142256f1c6a90a65cd156b063a43da1708cfd"},
     {file = "ruamel.yaml.clib-0.2.8-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:fff3573c2db359f091e1589c3d7c5fc2f86f5bdb6f24252c2d8e539d4e45f412"},
+    {file = "ruamel.yaml.clib-0.2.8-cp310-cp310-manylinux_2_24_aarch64.whl", hash = "sha256:aa2267c6a303eb483de8d02db2871afb5c5fc15618d894300b88958f729ad74f"},
+    {file = "ruamel.yaml.clib-0.2.8-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:840f0c7f194986a63d2c2465ca63af8ccbbc90ab1c6001b1978f05119b5e7334"},
+    {file = "ruamel.yaml.clib-0.2.8-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:024cfe1fc7c7f4e1aff4a81e718109e13409767e4f871443cbff3dba3578203d"},
     {file = "ruamel.yaml.clib-0.2.8-cp310-cp310-win32.whl", hash = "sha256:c69212f63169ec1cfc9bb44723bf2917cbbd8f6191a00ef3410f5a7fe300722d"},
     {file = "ruamel.yaml.clib-0.2.8-cp310-cp310-win_amd64.whl", hash = "sha256:cabddb8d8ead485e255fe80429f833172b4cadf99274db39abc080e068cbcc31"},
     {file = "ruamel.yaml.clib-0.2.8-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:bef08cd86169d9eafb3ccb0a39edb11d8e25f3dae2b28f5c52fd997521133069"},
     {file = "ruamel.yaml.clib-0.2.8-cp311-cp311-macosx_13_0_arm64.whl", hash = "sha256:b16420e621d26fdfa949a8b4b47ade8810c56002f5389970db4ddda51dbff248"},
-    {file = "ruamel.yaml.clib-0.2.8-cp311-cp311-manylinux2014_aarch64.whl", hash = "sha256:b5edda50e5e9e15e54a6a8a0070302b00c518a9d32accc2346ad6c984aacd279"},
     {file = "ruamel.yaml.clib-0.2.8-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_24_x86_64.whl", hash = "sha256:25c515e350e5b739842fc3228d662413ef28f295791af5e5110b543cf0b57d9b"},
+    {file = "ruamel.yaml.clib-0.2.8-cp311-cp311-manylinux_2_24_aarch64.whl", hash = "sha256:1707814f0d9791df063f8c19bb51b0d1278b8e9a2353abbb676c2f685dee6afe"},
+    {file = "ruamel.yaml.clib-0.2.8-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:46d378daaac94f454b3a0e3d8d78cafd78a026b1d71443f4966c696b48a6d899"},
+    {file = "ruamel.yaml.clib-0.2.8-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:09b055c05697b38ecacb7ac50bdab2240bfca1a0c4872b0fd309bb07dc9aa3a9"},
     {file = "ruamel.yaml.clib-0.2.8-cp311-cp311-win32.whl", hash = "sha256:53a300ed9cea38cf5a2a9b069058137c2ca1ce658a874b79baceb8f892f915a7"},
     {file = "ruamel.yaml.clib-0.2.8-cp311-cp311-win_amd64.whl", hash = "sha256:c2a72e9109ea74e511e29032f3b670835f8a59bbdc9ce692c5b4ed91ccf1eedb"},
     {file = "ruamel.yaml.clib-0.2.8-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:ebc06178e8821efc9692ea7544aa5644217358490145629914d8020042c24aa1"},
     {file = "ruamel.yaml.clib-0.2.8-cp312-cp312-macosx_13_0_arm64.whl", hash = "sha256:edaef1c1200c4b4cb914583150dcaa3bc30e592e907c01117c08b13a07255ec2"},
-    {file = "ruamel.yaml.clib-0.2.8-cp312-cp312-manylinux2014_aarch64.whl", hash = "sha256:7048c338b6c86627afb27faecf418768acb6331fc24cfa56c93e8c9780f815fa"},
     {file = "ruamel.yaml.clib-0.2.8-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:d176b57452ab5b7028ac47e7b3cf644bcfdc8cacfecf7e71759f7f51a59e5c92"},
+    {file = "ruamel.yaml.clib-0.2.8-cp312-cp312-manylinux_2_24_aarch64.whl", hash = "sha256:1dc67314e7e1086c9fdf2680b7b6c2be1c0d8e3a8279f2e993ca2a7545fecf62"},
+    {file = "ruamel.yaml.clib-0.2.8-cp312-cp312-musllinux_1_1_i686.whl", hash = "sha256:3213ece08ea033eb159ac52ae052a4899b56ecc124bb80020d9bbceeb50258e9"},
+    {file = "ruamel.yaml.clib-0.2.8-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:aab7fd643f71d7946f2ee58cc88c9b7bfc97debd71dcc93e03e2d174628e7e2d"},
+    {file = "ruamel.yaml.clib-0.2.8-cp312-cp312-win32.whl", hash = "sha256:5c365d91c88390c8d0a8545df0b5857172824b1c604e867161e6b3d59a827eaa"},
+    {file = "ruamel.yaml.clib-0.2.8-cp312-cp312-win_amd64.whl", hash = "sha256:1758ce7d8e1a29d23de54a16ae867abd370f01b5a69e1a3ba75223eaa3ca1a1b"},
     {file = "ruamel.yaml.clib-0.2.8-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:a5aa27bad2bb83670b71683aae140a1f52b0857a2deff56ad3f6c13a017a26ed"},
     {file = "ruamel.yaml.clib-0.2.8-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:c58ecd827313af6864893e7af0a3bb85fd529f862b6adbefe14643947cfe2942"},
     {file = "ruamel.yaml.clib-0.2.8-cp37-cp37m-macosx_12_0_arm64.whl", hash = "sha256:f481f16baec5290e45aebdc2a5168ebc6d35189ae6fea7a58787613a25f6e875"},
-    {file = "ruamel.yaml.clib-0.2.8-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:3fcc54cb0c8b811ff66082de1680b4b14cf8a81dce0d4fbf665c2265a81e07a1"},
+    {file = "ruamel.yaml.clib-0.2.8-cp37-cp37m-manylinux_2_24_aarch64.whl", hash = "sha256:77159f5d5b5c14f7c34073862a6b7d34944075d9f93e681638f6d753606c6ce6"},
     {file = "ruamel.yaml.clib-0.2.8-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:7f67a1ee819dc4562d444bbafb135832b0b909f81cc90f7aa00260968c9ca1b3"},
+    {file = "ruamel.yaml.clib-0.2.8-cp37-cp37m-musllinux_1_1_i686.whl", hash = "sha256:4ecbf9c3e19f9562c7fdd462e8d18dd902a47ca046a2e64dba80699f0b6c09b7"},
+    {file = "ruamel.yaml.clib-0.2.8-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:87ea5ff66d8064301a154b3933ae406b0863402a799b16e4a1d24d9fbbcbe0d3"},
     {file = "ruamel.yaml.clib-0.2.8-cp37-cp37m-win32.whl", hash = "sha256:75e1ed13e1f9de23c5607fe6bd1aeaae21e523b32d83bb33918245361e9cc51b"},
     {file = "ruamel.yaml.clib-0.2.8-cp37-cp37m-win_amd64.whl", hash = "sha256:3f215c5daf6a9d7bbed4a0a4f760f3113b10e82ff4c5c44bec20a68c8014f675"},
     {file = "ruamel.yaml.clib-0.2.8-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:1b617618914cb00bf5c34d4357c37aa15183fa229b24767259657746c9077615"},
     {file = "ruamel.yaml.clib-0.2.8-cp38-cp38-macosx_12_0_arm64.whl", hash = "sha256:a6a9ffd280b71ad062eae53ac1659ad86a17f59a0fdc7699fd9be40525153337"},
-    {file = "ruamel.yaml.clib-0.2.8-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:665f58bfd29b167039f714c6998178d27ccd83984084c286110ef26b230f259f"},
+    {file = "ruamel.yaml.clib-0.2.8-cp38-cp38-manylinux_2_24_aarch64.whl", hash = "sha256:305889baa4043a09e5b76f8e2a51d4ffba44259f6b4c72dec8ca56207d9c6fe1"},
     {file = "ruamel.yaml.clib-0.2.8-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:700e4ebb569e59e16a976857c8798aee258dceac7c7d6b50cab63e080058df91"},
+    {file = "ruamel.yaml.clib-0.2.8-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:e2b4c44b60eadec492926a7270abb100ef9f72798e18743939bdbf037aab8c28"},
+    {file = "ruamel.yaml.clib-0.2.8-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:e79e5db08739731b0ce4850bed599235d601701d5694c36570a99a0c5ca41a9d"},
     {file = "ruamel.yaml.clib-0.2.8-cp38-cp38-win32.whl", hash = "sha256:955eae71ac26c1ab35924203fda6220f84dce57d6d7884f189743e2abe3a9fbe"},
     {file = "ruamel.yaml.clib-0.2.8-cp38-cp38-win_amd64.whl", hash = "sha256:56f4252222c067b4ce51ae12cbac231bce32aee1d33fbfc9d17e5b8d6966c312"},
     {file = "ruamel.yaml.clib-0.2.8-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:03d1162b6d1df1caa3a4bd27aa51ce17c9afc2046c31b0ad60a0a96ec22f8001"},
     {file = "ruamel.yaml.clib-0.2.8-cp39-cp39-macosx_12_0_arm64.whl", hash = "sha256:bba64af9fa9cebe325a62fa398760f5c7206b215201b0ec825005f1b18b9bccf"},
-    {file = "ruamel.yaml.clib-0.2.8-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:9eb5dee2772b0f704ca2e45b1713e4e5198c18f515b52743576d196348f374d3"},
+    {file = "ruamel.yaml.clib-0.2.8-cp39-cp39-manylinux_2_24_aarch64.whl", hash = "sha256:a1a45e0bb052edf6a1d3a93baef85319733a888363938e1fc9924cb00c8df24c"},
     {file = "ruamel.yaml.clib-0.2.8-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:da09ad1c359a728e112d60116f626cc9f29730ff3e0e7db72b9a2dbc2e4beed5"},
+    {file = "ruamel.yaml.clib-0.2.8-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:184565012b60405d93838167f425713180b949e9d8dd0bbc7b49f074407c5a8b"},
+    {file = "ruamel.yaml.clib-0.2.8-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:a75879bacf2c987c003368cf14bed0ffe99e8e85acfa6c0bfffc21a090f16880"},
     {file = "ruamel.yaml.clib-0.2.8-cp39-cp39-win32.whl", hash = "sha256:84b554931e932c46f94ab306913ad7e11bba988104c5cff26d90d03f68258cd5"},
     {file = "ruamel.yaml.clib-0.2.8-cp39-cp39-win_amd64.whl", hash = "sha256:25ac8c08322002b06fa1d49d1646181f0b2c72f5cbc15a85e80b4c30a544bb15"},
     {file = "ruamel.yaml.clib-0.2.8.tar.gz", hash = "sha256:beb2e0404003de9a4cab9753a8805a8fe9320ee6673136ed7f04255fe60bb512"},
@@ -6240,6 +6386,59 @@ docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments
 testing = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "importlib-metadata", "ini2toml[lite] (>=0.14)", "jaraco.develop (>=7.21)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "mypy (==1.9)", "packaging (>=23.2)", "pip (>=19.1)", "pyproject-hooks (!=1.1)", "pytest (>=6,!=8.1.1)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-home (>=0.5)", "pytest-mypy", "pytest-perf", "pytest-ruff (>=0.2.1)", "pytest-subprocess", "pytest-timeout", "pytest-xdist (>=3)", "tomli", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
 
 [[package]]
+name = "shap"
+version = "0.46.0"
+description = "A unified approach to explain the output of any machine learning model."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "shap-0.46.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:905b2d7a0262ef820785a7c0e3c7f24c9d281e6f934edb65cbe811fe0e971187"},
+    {file = "shap-0.46.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:bccbb30ffbf8b9ed53e476d0c1319fdfcbeac455fe9df277fb0d570d92790e80"},
+    {file = "shap-0.46.0-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9633d3d7174acc01455538169ca6e6344f570530384548631aeadcf7bfdaaaea"},
+    {file = "shap-0.46.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c6097eb2ab7e8c194254bac3e462266490fbdd43bfe35a1014e9ee21c4ef10ee"},
+    {file = "shap-0.46.0-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:0cf7c6e3f056cf3bfd16bcfd5744d0cc25b851555b1e750a3ab889b3077d2d05"},
+    {file = "shap-0.46.0-cp310-cp310-win_amd64.whl", hash = "sha256:949bd7fa40371c3f1885a30ae0611dd481bf4ac90066ff726c73cb5bb393032b"},
+    {file = "shap-0.46.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:f18217c98f39fd485d541f6aab0b860b3be74b69b21d4faf11959e3fcba765c5"},
+    {file = "shap-0.46.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:5bbdae4489577c6fce1cfe2d9d8f3d5b96d69284d29645fe651f78f6e965aeb4"},
+    {file = "shap-0.46.0-cp311-cp311-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:13d36dc58d1e8c010feb4e7da71c77d23626a52d12d16b02869e793b11be4695"},
+    {file = "shap-0.46.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:70e06fdfdf53d5fb932c82f4529397552b262e0ccce734f5226fb1e1eab2bc3e"},
+    {file = "shap-0.46.0-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:943f0806fa00b4fafb174f172a73d88de2d8600e6d69c2e2bff833f00e6c4c21"},
+    {file = "shap-0.46.0-cp311-cp311-win_amd64.whl", hash = "sha256:c972a2efdc9fc00d543efaa55805eca947b8c418d065962d967824c2d5d295d0"},
+    {file = "shap-0.46.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:a9cc9be191562bea1a782baff912854d267c6f4831bbf454d8d7bb7df7ddb214"},
+    {file = "shap-0.46.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:ab1fecfb43604605be17e26ae12bde4406c451c46b54b980d9570cec03fbc239"},
+    {file = "shap-0.46.0-cp312-cp312-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b216adf2a17b0e0694f17965ac29354ca8c4f27ac3c66f68bf6fc4cb2aa28207"},
+    {file = "shap-0.46.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b6e5dc5257b747a784f7a9b3acb64216a9011f01734f3c96b27fe5e15ae5f99f"},
+    {file = "shap-0.46.0-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:1230bf973463041dfa15734f290fbf3ab9c6e4e8222339c76f68fc355b940d80"},
+    {file = "shap-0.46.0-cp312-cp312-win_amd64.whl", hash = "sha256:0cbbf996537b2a42d3bc7f2a13492988822ee1bfd7220700989408dfb9e1c5ad"},
+    {file = "shap-0.46.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:3c7d0c53a8cbefb2260ce28a98fa866c1a287770981f95c40a54f9d1082cbb31"},
+    {file = "shap-0.46.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:0726f8c63f09dde586c9859ad315641f5a080e9aecf123a0cabc336b61703d66"},
+    {file = "shap-0.46.0-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:99edc28daac4cbb98cd9f02febf4e9fbc6b9e3d24519c22ed59a98c68c47336c"},
+    {file = "shap-0.46.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:85a6ff9c9e15abd9a332360cff8d105165a600466167d6274dab468a050d005a"},
+    {file = "shap-0.46.0-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:9f9f9727839e2459dfa4b4fbc190224e87f7b4b2a29f0e2a438500215921192b"},
+    {file = "shap-0.46.0-cp39-cp39-win_amd64.whl", hash = "sha256:b169b485a69f7d32e32fa64ad77be00129436c4455b9d0997b21b553f0becc8c"},
+    {file = "shap-0.46.0.tar.gz", hash = "sha256:bdaa5b098be5a958348015e940f6fd264339b5db1e651f9898a3117be95b05a0"},
+]
+
+[package.dependencies]
+cloudpickle = "*"
+numba = "*"
+numpy = "*"
+packaging = ">20.9"
+pandas = "*"
+scikit-learn = "*"
+scipy = "*"
+slicer = "0.0.8"
+tqdm = ">=4.27.0"
+
+[package.extras]
+docs = ["ipython", "matplotlib", "myst-parser (==2.0.0)", "nbsphinx (==0.9.3)", "numpydoc", "requests", "sphinx (==7.2.6)", "sphinx-github-changelog (==1.2.1)", "sphinx-rtd-theme (==2.0.0)"]
+others = ["lime"]
+plots = ["ipython", "matplotlib"]
+test = ["catboost", "gpboost", "lightgbm", "ngboost", "opencv-python", "protobuf (==3.20.3)", "pyod", "pyspark", "pytest", "pytest-cov", "pytest-mpl", "sentencepiece", "tensorflow", "tf-keras", "torch", "torch (==2.2.0)", "torchvision", "transformers", "xgboost"]
+test-core = ["pytest", "pytest-cov", "pytest-mpl"]
+test-notebooks = ["datasets", "jupyter", "keras", "nbconvert", "nbformat", "nlp", "transformers"]
+
+[[package]]
 name = "shellingham"
 version = "1.5.4"
 description = "Tool to Detect Surrounding Shell"
@@ -6326,6 +6525,17 @@ param-est = ["seasonal (>=0.3.1,<0.4)", "statsmodels (>=0.12.1,<0.15)"]
 regression = ["numba (>=0.53,<0.59)", "tensorflow (>=2,<=2.14)"]
 tests = ["pytest (>=7.4,<7.5)", "pytest-cov (>=4.1,<4.2)", "pytest-randomly (>=3.15,<3.16)", "pytest-timeout (>=2.1,<2.3)", "pytest-xdist (>=3.3,<3.6)"]
 transformations = ["esig (>=0.9.7,<0.10)", "filterpy (>=1.4.5,<1.5)", "holidays (>=0.29,<0.42)", "mne (>=1.5,<1.7)", "numba (>=0.53,<0.59)", "pycatch22 (>=0.4,<0.4.4)", "pykalman-bardo (>=0.9.7,<0.10)", "statsmodels (>=0.12.1,<0.15)", "stumpy (>=1.5.1,<1.13)", "tsfresh (>=0.17,<0.21)"]
+
+[[package]]
+name = "slicer"
+version = "0.0.8"
+description = "A small package for big slicing."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "slicer-0.0.8-py3-none-any.whl", hash = "sha256:6c206258543aecd010d497dc2eca9d2805860a0b3758673903456b7df7934dc3"},
+    {file = "slicer-0.0.8.tar.gz", hash = "sha256:2e7553af73f0c0c2d355f4afcc3ecf97c6f2156fcf4593955c3f56cf6c4d6eb7"},
+]
 
 [[package]]
 name = "smmap"
@@ -7473,4 +7683,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10,<3.12"
-content-hash = "ea856d2aa2b2a1f45880b06abd92352085ef8306c93bf253ad019420bc12c613"
+content-hash = "7f89ecb2cadf646dc10728faee3dfb1c46f2783f25d8b14ca85d1ebddd1a45e5"

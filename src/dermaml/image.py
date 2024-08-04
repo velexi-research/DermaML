@@ -100,6 +100,21 @@ def remove_background(image: np.ndarray) -> np.ndarray:
     return output
 
 
+def remove_brightness(image):
+    '''
+    Converts an RGB-channeled image to HSV/HSB and removes the 'value' or 'brightness' channel.
+
+    Arguments
+    ---------
+    `image`: an RGB numpy array
+    '''
+    assert len(image.shape) == 3
+    hsv_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+    hsv_image[:, :, 2] = 0
+    return hsv_image
+
+
+
 def crop_palm(image_path: Path) -> Image:
     """
     TODO

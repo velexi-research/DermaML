@@ -58,13 +58,6 @@ def main(src_dir: Path,
             err=True)
         raise typer.Abort()
 
-    # if image_type is None or image_type.lower() == "all":
-    #     image_ext_list = ["gif", "jpeg", "jpg", "png", "tiff"]
-    # else:
-    #     if image_type.lower() in ["jpeg", "jpg"]:
-    #         image_ext_list = ["jpeg", "jpg"]
-    #     else:
-    #         image_ext_list = [image_type]
 
     # --- Preparations
 
@@ -77,9 +70,7 @@ def main(src_dir: Path,
     valid_unique_image_files = np.unique(valid_image_files)
 
     # Get list of image files
-    # image_paths = []
-    # for image_ext in image_ext_list:
-    #     image_paths.extend(glob.glob(os.path.join(src_dir, f'*.{image_ext}')))
+
     src = str(src_dir)+'/'
     image_paths = [src + path for path in valid_unique_image_files]
 

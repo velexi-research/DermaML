@@ -76,7 +76,6 @@ def test_remove_background():
     # TODO
 
 
-@pytest.mark.skip("TODO")
 def test_crop_palm():
     """
     Test crop_palm().
@@ -84,14 +83,34 @@ def test_crop_palm():
     # --- Preparations
 
     # Image filename
-    # image_filename = "TODO.png"
+    image_filename = "5A7E3A5F-334A-4C8D-9E0D-BD435389C81E.jpeg"
+    image_filename = "crop-palm-test-image.jpeg"
 
     # Create path to image file
-    # image_path = os.path.join(os.path.dirname(__file__), "data", image_filename)
+    image_path = os.path.join(os.path.dirname(__file__), "data", image_filename)
 
     # --- Test
 
-    # TODO
+    import cv2
+
+    image = cv2.imread(image_path)
+    print(type(image))
+    print(image.shape)
+
+    output = dermaml.image.crop_palm(image_path)
+    print(type(output))
+    print(output.shape)
+
+    output = Image.fromarray(output.astype("uint8"), "RGB")
+    #    import cv2
+    #    cv2.imwrite("test.png", output)
+
+    import matplotlib.pyplot as plt
+
+    plt.figure(figsize=(4, 4))
+    plt.imshow(output, cmap="gray")
+    plt.axis("off")
+    plt.show()
 
 
 @pytest.mark.skip("TODO")

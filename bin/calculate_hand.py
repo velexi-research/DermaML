@@ -9,7 +9,7 @@ import typer
 from datetime import datetime
 
 # Local packages
-import bin.hand_features as hand_features
+import bin.feature_functions as feature_functions
 
 # --- Run app ---
 
@@ -22,7 +22,7 @@ def main(input_feature: str,
         typer.echo(f"src_dir '{src_dir}' not found", err=True)
         raise typer.Abort()
     
-    if input_feature not in hand_features.find_function:
+    if input_feature not in feature_functions.find_function:
         typer.echo(f"Could not identify input feature '{input_feature}'", err=True)
         raise typer.Abort()
 
@@ -40,7 +40,7 @@ def main(input_feature: str,
     X = []
 
     for hand in tqdm(hawkeye_hands_images):
-        computed_features = hand_features.feature_delegation(input_feature,hand)
+        computed_features = feature_functions.feature_delegation(input_feature,hand)
         X += [computed_features]
     
     computed_features = pd.DataFrame(X)

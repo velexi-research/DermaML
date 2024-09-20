@@ -31,14 +31,19 @@ import skimage.io
 import typer
 from PIL import Image
 import pillow_heif
+import logging
+
+logging.basicConfig()
+log = logging.getLogger()
+log.setLevel(logging.INFO)
 
 
 # --- Main program
 
-def main(src_dir: Path ,
-         dst_dir: Path ,
-         image_type: str = "all",
+def main(src_dir: Path = r"C:\Users\sofia\dermaML\DermaML\data\source\hawkeye-hands-2024-07-29\images",
+         dst_dir: Path = r"C:\Users\sofia\dermaML\DermaML\data\processed\test2",
          src_metadata_file: Path = "metadata.csv") -> None:
+
     """
     Transform image data to JPEG if any images are in HEIC format
     """
@@ -62,12 +67,9 @@ def main(src_dir: Path ,
     metadata = pd.read_csv(src_metadata_path)
     valid_image_files_df = metadata.loc[:,['left_hand_image_file', 'right_hand_image_file']]
     valid_image_files = valid_image_files_df.to_numpy().flatten()
-    valid_unique_image_files = np.unique(valid_image_files)
-
-    # Get list of image files
 
     src = str(src_dir)+'/'
-    image_paths = [src + path for path in valid_unique_image_files]
+    image_paths = [src + path for path in valid_image_files]
 
     for image_path in image_paths:
         # Load images
@@ -82,7 +84,8 @@ def main(src_dir: Path ,
 
         except OSError:
             #HEIC load and convert to JPEG
-            print(image_path)
+            log.info("HEIC image found and convered to JPEG")
+            
             heif_file = pillow_heif.read_heif(image_path)
             image = Image.frombytes(
                 heif_file.mode,
@@ -91,7 +94,7 @@ def main(src_dir: Path ,
                 "raw",
 )
             image.save(output_path, format("jpeg"))
-            continue;
+            
     # --- copy meta data 
     shutil.copy(src_metadata_path, dst_dir)
 

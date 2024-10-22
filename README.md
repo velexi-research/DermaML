@@ -270,7 +270,15 @@ package dependencies.
 
 ------------------------------------------------------------------------------
 
-## 4. Documentation
+## 4. Additional Notes
+
+### REDCap Server Limits
+
+* 600 requests per minute
+
+------------------------------------------------------------------------------
+
+## 5. Documentation
 
 * [Automated Testing][automated-testing]
 

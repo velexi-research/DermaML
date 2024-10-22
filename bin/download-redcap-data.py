@@ -453,7 +453,7 @@ def _clean_metadata(raw_data_: DataFrame) -> (DataFrame, DataFrame):
     return clean_data, invalid_data
 
 
-def _download_images(config: dict, image_dir: Path, metadata: DataFrame) -> None:
+def _download_images(config: dict, images_dir: Path, metadata: DataFrame) -> None:
     """
     Download image data.
 
@@ -461,16 +461,23 @@ def _download_images(config: dict, image_dir: Path, metadata: DataFrame) -> None
     ----------
     `config`: dictionary containing configuration parameters
 
-    `image_dir`: path to directory where images should be saved
+    `images_dir`: path to directory where images should be saved
 
     `metadata`: DataFrame containing records to retrieve images for
 
     Return Value
     ------------
-    None
+    `metadata_updated`: DataFrame containing records with standardized image file names
     """
+    # --- Preparations
+
+    # Initialize updated metadata records
+    records_updated = []
+
     # Initialize list of image UUIDs
     image_uuids = []
+
+    # --- Retrieve image data
 
     for idx in track(range(len(metadata)), description="Retrieving images..."):
 
@@ -500,21 +507,30 @@ def _download_images(config: dict, image_dir: Path, metadata: DataFrame) -> None
             )
 
         # Check if file name is a valid UUID
-        image_uuid_str = os.path.splitext(record["left_hand_image_file"])[0]
+        image_file = record["left_hand_image_file"]
+        image_uuid_str = os.path.splitext(image_file)[0]
         image_uuid_invalid = False
         try:
             image_uuid = uuid.UUID(image_uuid_str)
         except ValueError:
             image_uuid_invalid = True
 
-        # Generate UUID
+        # If needed, generate UUID
         if image_uuid_invalid:
             while image_uuid in image_uuids:
                 image_uuid = uuid.uuid4()
+
+        # Save image UUID
         image_uuids.append(image_uuid)
 
+        # Standardize image file name
+        image_file = f"{image_uuid}.jpeg"
+
+        # Update record
+        record["left_hand_image_file"] = image_file
+
         # Save image
-        image_path = image_dir / f"{image_uuid}.jpeg"
+        image_path = images_dir / image_file
         if not os.path.isfile(image_path):
             with open(image_path, "wb") as file:
                 file.write(response.content)
@@ -542,21 +558,30 @@ def _download_images(config: dict, image_dir: Path, metadata: DataFrame) -> None
             )
 
         # Check if file name is a valid UUID
-        image_uuid_str = os.path.splitext(record["right_hand_image_file"])[0]
+        image_file = record["right_hand_image_file"]
+        image_uuid_str = os.path.splitext(image_file)[0]
         image_uuid_invalid = False
         try:
             image_uuid = uuid.UUID(image_uuid_str)
         except ValueError:
             image_uuid_invalid = True
 
-        # Generate UUID
+        # If needed, generate UUID
         if image_uuid_invalid:
             while image_uuid in image_uuids:
                 image_uuid = uuid.uuid4()
+
+        # Save image UUID
         image_uuids.append(image_uuid)
 
+        # Standardize image file name
+        image_file = f"{image_uuid}.jpeg"
+
+        # Update record
+        record["right_hand_image_file"] = image_file
+
         # Save image
-        image_path = image_dir / f"{image_uuid}.jpeg"
+        image_path = images_dir / image_file
         if not os.path.isfile(image_path):
             with open(image_path, "wb") as file:
                 file.write(response.content)
@@ -564,6 +589,11 @@ def _download_images(config: dict, image_dir: Path, metadata: DataFrame) -> None
         else:
             _raise_runtime_error(f"Image file '{image_path}' already exists.")
 
+        # Save updated metadata record
+        records_updated.append(record)
+
+    # Return DataFrame containing updated records
+    return DataFrame(records_updated)
 
 # --- CLI arguments and options
 
@@ -653,8 +683,8 @@ def main(
     # Prepare output directory
     os.makedirs(output_dir, exist_ok=True)
 
-    image_dir = output_dir / "images"
-    os.makedirs(image_dir, exist_ok=True)
+    images_dir = output_dir / "images"
+    os.makedirs(images_dir, exist_ok=True)
 
     # --- Retrieve raw metadata
 
@@ -698,11 +728,6 @@ def main(
 
     metadata, invalid_data = _clean_metadata(raw_data)
 
-    # Save metadata to file
-    raw_data.to_csv(output_dir / "raw_data.csv", index=False)
-    metadata.to_csv(output_dir / "metadata.csv", index=False)
-    invalid_data.to_csv(output_dir / "invalid_data.csv", index=False)
-
     # Emit info message
     typer.echo(
         f"{len(raw_data)} records processed. "
@@ -716,10 +741,19 @@ def main(
     t_start = time.time()
 
     # Download images
-    _download_images(config, image_dir, metadata)
+    metadata = _download_images(config, images_dir, metadata)
 
     # Emit info message
     typer.echo(f"Successfully retrieved images in {time.time() - t_start:0.2f}s\n")
+
+    # --- Save metadata files
+    #
+    # Note: we save these files _after_ retrieving images in case image file names were
+    #       changed to avoid collisions.
+
+    raw_data.to_csv(output_dir / "raw_data.csv", index=False)
+    metadata.to_csv(output_dir / "metadata.csv", index=False)
+    invalid_data.to_csv(output_dir / "invalid_data.csv", index=False)
 
 
 # --- Run app

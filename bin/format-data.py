@@ -14,13 +14,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """
-Script for preparing raw image data for feature extraction.
+Script for transforming data into JPEG
 """
 
 # --- Imports
 
 # Standard library
-import glob
 import os
 from pathlib import Path
 import shutil
@@ -30,23 +29,24 @@ import pandas as pd
 import numpy as np
 import skimage.io
 import typer
+from PIL import Image
+import pillow_heif
+import logging
 
-# Local packages
-import dermaml
-import dermaml.image
+logging.basicConfig()
+log = logging.getLogger()
+log.setLevel(logging.INFO)
 
 
 # --- Main program
 
-def main(src_dir: Path,
-         dst_dir: Path,
-         image_type: str = "all",
+def main(src_dir: Path = r"C:\Users\sofia\dermaML\DermaML\data\source\hawkeye-hands-2024-07-29\images",
+         dst_dir: Path = r"C:\Users\sofia\dermaML\DermaML\data\processed\test2",
          src_metadata_file: Path = "metadata.csv") -> None:
-    """
-    Prepare raw image data for feature extraction.
-    """
-    # --- Check arguments
 
+    """
+    Transform image data to JPEG if any images are in HEIC format
+    """
     if not os.path.isdir(src_dir):
         typer.echo(f"src_dir '{src_dir}' not found", err=True)
         raise typer.Abort()
@@ -67,38 +67,36 @@ def main(src_dir: Path,
     metadata = pd.read_csv(src_metadata_path)
     valid_image_files_df = metadata.loc[:,['left_hand_image_file', 'right_hand_image_file']]
     valid_image_files = valid_image_files_df.to_numpy().flatten()
-    valid_unique_image_files = np.unique(valid_image_files)
-
-    # Get list of image files
 
     src = str(src_dir)+'/'
-    image_paths = [src + path for path in valid_unique_image_files]
-
-    # --- Prepare image files for feature extraction.
+    image_paths = [src + path for path in valid_image_files]
 
     for image_path in image_paths:
-        # Load image
-        try:
-            image = skimage.io.imread(image_path)
-        except OSError:
-            print(image_path)
-            continue;
-
-        # Remove background
-        if len(image.shape) > 2:
-            image = dermaml.image.remove_background(image)
-
-        # Save image
+        # Load images
         filename = os.path.basename(image_path)
         output_path = os.path.join(dst_dir,
-                                   f"{os.path.splitext(filename)[0]}.png")
-                                #    f"{os.path.splitext(filename)[0]}.jpeg")
-        skimage.io.imsave(output_path, image)
+                                   f"{os.path.splitext(filename)[0]}.jpeg")
+                            
+        try:
+            #JPEG load if possible
+            image = skimage.io.imread(image_path)
+            skimage.io.imsave(output_path, image)
 
-    # --- Copy metadata file to dst_dir
-
+        except OSError:
+            #HEIC load and convert to JPEG
+            log.info("HEIC image found and convered to JPEG")
+            
+            heif_file = pillow_heif.read_heif(image_path)
+            image = Image.frombytes(
+                heif_file.mode,
+                heif_file.size,
+                heif_file.data,
+                "raw",
+)
+            image.save(output_path, format("jpeg"))
+            
+    # --- copy meta data 
     shutil.copy(src_metadata_path, dst_dir)
-
 
 # --- Run app
 

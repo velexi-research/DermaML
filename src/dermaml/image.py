@@ -29,7 +29,7 @@ import numpy as np
 from PIL import Image
 import rembg
 import mediapipe as mp
-
+from tqdm import tqdm
 
 # --- Public functions
 

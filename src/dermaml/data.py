@@ -27,9 +27,35 @@ from typing import List
 import numpy as np
 from numpy.random import default_rng
 import skimage
-
+from tqdm import tqdm
+import cv2 as cv
 
 # --- Public functions
+
+def read_local(image_dir, image_fnames=[]):
+    '''
+    Read in images from hawkeye hands using PIL Image
+    '''
+    if not image_fnames:
+        image_fnames = os.listdir(image_dir)
+
+    images = []
+    filenames = []
+    for filename in tqdm(image_fnames):
+    
+        try:
+            img = cv.imread(os.path.join(image_dir, filename))
+            filenames += [filename]
+
+        except:
+            print(filename)
+            continue
+
+        if (img is not None):
+            images.append(img)
+            
+    return filenames, images
+
 
 
 def generate_synthetic_dataset(

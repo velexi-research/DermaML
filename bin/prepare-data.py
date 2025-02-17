@@ -29,24 +29,24 @@ import shutil
 import pandas as pd
 import numpy as np
 import skimage.io
+import rembg
 import typer
 
 # Local packages
 import dermaml
-import dermaml.image
+# import dermaml.image
 
 
 # --- Main program
 
 def main(src_dir: Path,
          dst_dir: Path,
-         image_type: str = "all",
+        #  image_type: str = "all",
          src_metadata_file: Path = "metadata.csv") -> None:
     """
     Prepare raw image data for feature extraction.
     """
     # --- Check arguments
-
     if not os.path.isdir(src_dir):
         typer.echo(f"src_dir '{src_dir}' not found", err=True)
         raise typer.Abort()
@@ -86,7 +86,7 @@ def main(src_dir: Path,
 
         # Remove background
         if len(image.shape) > 2:
-            image = dermaml.image.remove_background(image)
+            image = remove_background(image)
 
         # Save image
         filename = os.path.basename(image_path)
@@ -100,7 +100,46 @@ def main(src_dir: Path,
     shutil.copy(src_metadata_path, dst_dir)
 
 
+def remove_background(image: np.ndarray) -> np.ndarray:
+    """
+    Remove background from `image`.
+
+    Paramerers
+    ___________
+    image: image data
+
+    Return value
+    ____________
+    output: Numpy array containing image with background removed
+    """
+    # --- Check arguments
+
+    if not isinstance(image, (np.ndarray)):
+        raise TypeError(
+            "`image` must be of type `np.ndarray`. "
+            + f"(type(image)={type(image)}"
+        )
+
+    # --- Remove background
+    #
+    # Note: the return type of rembg.remove() is the same as the type of `image`
+    cutout = rembg.remove(image)
+
+    # Return numpy array representation of image with background removed
+    if isinstance(cutout, np.ndarray):
+        output = cutout
+
+    else:
+        print('Not sure how you got here')
+
+    return output
+
+
 # --- Run app
 
 if __name__ == "__main__":
+    print(0)
     typer.run(main) 
+
+
+# /Users/ntin/Documents/DermaML_local/hawkeye-hands-2024-07-29/images

@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 # External packages
+import numpy as np
 import pandas as pd
 from PIL import Image
 from tqdm import tqdm
@@ -9,7 +10,46 @@ import typer
 from datetime import datetime
 
 # Local packages
-import bin.feature_functions as feature_functions
+import feature_functions as feature_functions
+
+
+# --- Read images off local ---
+
+def read_local(image_dir, image_fnames=[]):
+    '''
+    Read in images from hawkeye hands using PIL Image
+    '''
+    if not image_fnames:
+        image_fnames = os.listdir(image_dir)
+
+    images = []
+    filenames = []
+    for filename in tqdm(image_fnames):
+        
+        try:
+            img = Image.open(os.path.join(image_dir, filename))
+            filenames += [filename]
+
+        except Image.UnidentifiedImageError:
+            print(filename)
+            continue
+
+        if (img is not None) & (img.mode == 'RGB'):
+                images.append(img)
+            
+    return filenames, images
+
+
+def read_segmentations():
+    import pickle
+    p_path = '/Users/ntin/Models/sam2/notebooks/'
+    corrected_segmentations = '2025-02-23_Hand_Segmentations-Corrected-3.pkl'
+
+    with open(p_path+corrected_segmentations, 'rb') as file:
+        segmentations = pickle.load(file)
+
+    return segmentations
+
 
 # --- Run app ---
 
@@ -35,12 +75,19 @@ def main(input_feature: str,
 
     #  --- Load in images
     hawkeye_filenames, hawkeye_hands_images = read_local(src_dir)
-    # N_images = len(hawkeye_hands_images)
+    N_images = len(hawkeye_hands_images)
+    assert N_images > 0 
+
+    #  --- Load in segmentations
+    segmentations = read_segmentations()
 
     X = []
 
-    for hand in tqdm(hawkeye_hands_images):
-        computed_features = feature_functions.feature_delegation(input_feature,hand)
+    for fname, hand in tqdm(zip(hawkeye_filenames, hawkeye_hands_images)):
+        key = fname.split('.')[0]
+        mask = segmentations[key]
+        masked_hand = np.where(mask[..., None], hand, 0)
+        computed_features = feature_functions.feature_delegation(input_feature,masked_hand)
         X += [computed_features]
     
     computed_features = pd.DataFrame(X)
@@ -54,29 +101,4 @@ def main(input_feature: str,
 if __name__ == "__main__":
     typer.run(main) 
 
-
-# --- Read images off local ---
-
-def read_local(image_dir, image_fnames=[]):
-    '''
-    Read in images from hawkeye hands using PIL Image
-    '''
-    if not image_fnames:
-        image_fnames = os.listdir(image_dir)
-
-    images = []
-    filenames = []
-    for filename in tqdm(image_fnames):
-    
-        try:
-            img = Image.open(os.path.join(image_dir, filename))
-            filenames += [filename]
-
-        except Image.UnidentifiedImageError:
-            print(filename)
-            continue
-
-        if (img is not None) & (img.mode == 'RGBA'):
-                images.append(img)
-            
-    return filenames, images
+# poetry run python3 bin/calculate_hand.py lbp_glcm /Users/ntin/Documents/DermaML_local/hawkeye-hands-2024-07-29/images_processed /Users/ntin/Documents/DermaML_local/hawkeye-hands-2024-07-29/features-2025-02-24

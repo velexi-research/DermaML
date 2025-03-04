@@ -32,6 +32,7 @@ predicting a person's age from an image of her/his hand.
 ## References
 
 * TODO: List of key project references
+* TODO: References for engineered features
 
 ------------------------------------------------------------------------------
 

@@ -30,6 +30,32 @@ from skimage.feature import hessian_matrix, hessian_matrix_eigvals
 
 # --- Public functions
 
+def remove_brightness(image: np.ndarray) -> np.ndarray:
+    """
+    Extract features from image.
+
+    Parameters
+    ----------
+    image: NumPy array containing image. The array is expected to be arranged
+        such that
+
+        * image[:,:,0] contains the red channel
+
+        * image[:,:,1] contains the green channel
+
+        * image[:,:,2] contains the blue channel
+
+    Return value
+    ------------
+    features: features extracted from image
+    """
+    # --- Check arguments
+    assert len(image.shape) == 3
+    hsv_image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+    hsv_image[:, :, 2] = 0
+    return hsv_image
+
+
 
 def extract_features(image: np.ndarray) -> dict:
     """

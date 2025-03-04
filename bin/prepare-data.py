@@ -84,9 +84,9 @@ def main(src_dir: Path,
             print(image_path)
             continue;
 
-        # Remove background
-        if len(image.shape) > 2:
-            image = remove_background(image)
+        # # Remove background
+        # if len(image.shape) > 2:
+        #     image = remove_background(image)
 
         # Save image
         filename = os.path.basename(image_path)

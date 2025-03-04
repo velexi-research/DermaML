@@ -28,33 +28,45 @@ import numpy as np
 from numpy.random import default_rng
 import skimage
 from tqdm import tqdm
-import cv2 as cv
-
+import matplotlib.pyplot as plt
 # --- Public functions
 
 def read_local(image_dir, image_fnames=[]):
     '''
     Read in images from hawkeye hands using PIL Image
     '''
+
+    # samples = {}
+    # for f in os.listdir(image_dir):
+
+    #     if f == '.DS_Store':
+    #         continue
+
+    #     # print(f)
+
+    #     path = image_dir + f
+    #     samples[f] = plt.imread(path)
+
+    # return samples
+
+    
     if not image_fnames:
         image_fnames = os.listdir(image_dir)
 
-    images = []
-    filenames = []
+    samples = dict()
+    fnames = []
     for filename in tqdm(image_fnames):
     
         try:
-            img = cv.imread(os.path.join(image_dir, filename))
-            filenames += [filename]
+            img = plt.imread(os.path.join(image_dir, filename))
+            samples[filename] = img
+            fnames += [filename]
 
         except:
             print(filename)
             continue
-
-        if (img is not None):
-            images.append(img)
             
-    return filenames, images
+    return samples, fnames
 
 
 

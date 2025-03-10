@@ -32,6 +32,8 @@ import yaml
 
 
 # --- Main program
+#FIXME write results to file with date
+#FIXME read in filenames from yaml
 
 def main(feature_file: Path = "texture_features.csv",
          metadata_file: Path = "metadata.csv",

@@ -15,104 +15,148 @@
 #   limitations under the License.
 
 """
-Script for running AutoML evaluation.
+Script for running CNN training and inference.
 """
 
 # --- Imports
 
 # Standard library
-import csv
+from collections.abc import Callable
 from pathlib import Path
 import numpy as np
-import pickle
-import os
+import math
 
 # External packages
 import model_setup
-import cv2 as cv
+from tensorflow.keras import layers, models
 import typer
 import yaml
 
-# --- Read Segmentation File
-def read_segmentation_file(segmentation_file:str):
+#FIXME write results to file with date
+#FIXME read in filenames from yaml
+
+
+# --- Define CNN model
+def simple_cnn_model():
     '''
-    Read stored segmentations from SAM2 pipeline
+    Last updated: 2025 March 9
+    Write a generic, simple CNN regression with 3 convolution steps
     _______
     
-    Returns: dictionary[filename] = arr
+    Returns: (np.array, np.array, np.array, np.array) dtype=np.float32
     '''
+    model = models.Sequential()
+
+    k = 5
+    # First Convolutional Layer
+    model.add(layers.Conv2D(32, (k, k), activation='relu', input_shape=(512, 512, 3)))
+    model.add(layers.MaxPooling2D((2, 2)))
+
+    # Second Convolutional Layer
+    model.add(layers.Conv2D(64, (k, k), activation='relu'))
+    model.add(layers.MaxPooling2D((2, 2)))
+
+    # Third Convolutional Layer
+    model.add(layers.Conv2D(64, (k, k), activation='relu'))
+
+    # Flatten the output and add Dense layers
+    model.add(layers.Flatten())
+    model.add(layers.Dense(64, activation='relu'))
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(1, activation='linear'))
+
+    model.compile(
+        optimizer='adam',
+        loss='mae',
+        metrics=['mae']
+    )
+    return model
+
+# --- Randomly split entire dataset
+def random_split_Xy(
+        X:np.array,
+        y:np.array,
+        percent_split=0.7,
+    ):
+    '''
+    Randomly split entire X, y dataset
+    _______
+    
+    Returns: (np.array, np.array, np.array, np.array) dtype=np.float32
+    '''
+    image_count = len(X)
     # Check arguments
-    if not os.path.exists(segmentation_file):
-        typer.echo(f"segmentation_file '{segmentation_file}' not found", err=True)
-        raise typer.Abort()
-    
-    # Read file
-    with open(segmentation_file, 'rb') as file:
-        segmentations = pickle.load(file)
-    return segmentations
+    train_size = math.floor(image_count * percent_split)
+
+    x_train = np.array(X[:train_size])
+    x_test = np.array(X[train_size:])
+
+    # round labels to neearest fifth
+    y_train = np.around(y[:train_size]/5, decimals=0)*5
+    y_test = np.around(y[train_size:]/5, decimals=0)*5
+
+    y_train = y_train.astype(np.float32)
+    y_test = y_test.astype(np.float32)
+
+    print('==== Dataset Split')
+    print(x_train.shape, y_train.shape)
+    print(x_test.shape, y_test.shape)
+
+    return x_train, y_train, x_test, y_test
 
 
-# --- Image Input Standardization
+# === Main program
 
-def square_resize(im, mask=None):
-    '''
-    Fit an image to a (512, 512) square by first padding the image
-    _______
-    
-    Returns: Image of shape(512, 512, 3)
-    '''
-
-    if mask is not None:
-        im = np.where(mask[..., None], im, 0)
-
-    # calculate padding distance
-    h, w, c = im.shape
-    side = max(w, h)
-    delta_w = side-w
-    delta_h = side-h
-    top, bottom = delta_h//2, delta_h-(delta_h//2)
-    left, right = delta_w//2, delta_w-(delta_w//2)
-
-    # add 0 border
-    square = cv.copyMakeBorder(im, top, bottom, left, right, cv.BORDER_CONSTANT,value=0)
-
-    # reshape to size (512, 512)
-    norm_square = cv.resize(square, (512, 512))
-
-    return norm_square
-
-
-# --- Main program
-
-def main(segmentation_file: Path = '/Users/ntin/Models/sam2/notebooks/2025-02-23_Hand_Segmentations-Corrected-3.pkl',
-         metadata_file: Path = "metadata.csv",
-         num_best: int = 5,
-         experiment_name: str = "cnn",
-         ) -> None:
+def main(
+        image_dir: Path = '/Users/ntin/Documents/DermaML_local/hawkeye-hands-2024-07-29/images_processed/',
+        segmentation_file: Path = '/Users/ntin/Models/sam2/notebooks/2025-02-23_Hand_Segmentations-Corrected-3.pkl',
+        metadata_file: Path = "metadata.csv",
+        output_dir: Path='',
+        split_method: Callable = random_split_Xy,
+        experiment_name: str = "cnn",
+        ) -> None:
     """
-    Run AutoML evaluation.
+    Run CNN training and inference.
 
-    Results are output two files: 'model-scores.csv'
+    Results are stored ...
     """
-    # --- Check arguments
+    import os
+    from datetime import datetime
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+    today = datetime.today('%Y-$M-%D-%H:%M')
 
-    if num_best <= 0:
-        typer.echo(
-            "num-best must be strictly positive",
-            err=True)
-        raise typer.Abort()
+    # --- Check inputs and prepare images
+    X, y = model_setup.prepare_image_datasets(
+        image_dir=image_dir,
+        segmentation_file=segmentation_file,
+        metadata_file=metadata_file,
+    )
 
-    # --- Preparations
+    # --- Split dataset
+    x_train, y_train, x_test, y_test = split_method(X, y)
 
-    masks = read_segmentation_file(segmentation_file)
+    # --- Initalize Model
+    model = simple_cnn_model()
 
-    
+    # --- Perform CNN training
+    history = model.fit(
+        x_train, y_train, 
+        epochs=10, batch_size=32,
+        validation_data=(x_test, y_test)
+    )
 
+    test_loss, test_mae = model.evaluate(x_test, y_test, verbose=2)
+    print(f'\nTest MAE: {test_mae}')
 
-    # --- Perform AutoML evaluation
-
-    # Set up the dataset for CNN
-    ...
+    import matplotlib.pyplot as plt
+    plt.plot(history.history['mae'], label='MAE')
+    plt.plot(history.history['val_mae'], label = 'val_MAE')
+    plt.xlabel('Epoch')
+    plt.ylabel('MAE')
+    plt.legend(loc='lower right')
+    plt.savefig(f'{today}_{experiment_name}_loss.png')
+    plt.show()
 
 
 # --- Run app

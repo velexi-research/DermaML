@@ -24,33 +24,28 @@ from pathlib import Path
 from typing import List
 
 # External packages
+import typer
 import numpy as np
-from numpy.random import default_rng
+from PIL import Image
 import skimage
-from tqdm import tqdm
 import matplotlib.pyplot as plt
-
+from numpy.random import default_rng
+from tqdm import tqdm
 
 # --- Public functions
 
-def read_local_into_dict(image_dir, image_fnames=[]) -> dict:
+def read_local_into_dict(
+        image_dir, 
+        image_fnames=[]
+        ) -> dict:
     '''
     Read in images from hawkeye hands using PIL Image
     '''
 
-    # samples = {}
-    # for f in os.listdir(image_dir):
-
-    #     if f == '.DS_Store':
-    #         continue
-
-    #     # print(f)
-
-    #     path = image_dir + f
-    #     samples[f] = plt.imread(path)
-
     # return samples
-
+    if not os.path.exists(image_dir):
+        typer.echo(f"image_dir '{image_dir}' not found", err=True)
+        raise typer.Abort()
     
     if not image_fnames:
         image_fnames = os.listdir(image_dir)

@@ -23,13 +23,41 @@ Script for running AutoML evaluation.
 # Standard library
 import os
 from pathlib import Path
+import pandas as pd
+import numpy as np
+import pickle
 
 # External packages
+import cv2 as cv
+import typer
+import yaml
+from dermaml import data
 import pandas as pd
 import typer
 
 
-# --- Main program
+# --- Read parsed extracted tabular features
+
+def join_metadata_and_tabular_features(
+        features_df:pd.DataFrame,
+        metadata_df:pd.DataFrame
+        ) -> pd.DataFrame:
+        
+    # image filename specifiers
+    header_metadata = 'hand_image_file'
+    header_features = 'filename'
+    extension_features = '.png'
+    extension_metadata = '.jpeg'
+
+    # features store filenames as .png
+    features_df.loc[:,header_features] = features_df['filename'].apply(lambda x:x[:-(len(extension_features))])
+    
+    # features store filenames as .jpeg
+    metadata_df.loc[:,header_features] = features_df[header_metadata].apply(lambda x:x[:len(extension_metadata)])
+    
+    # Construct DataFrame for model training and testing
+    X = metadata_df.join(features_df.set_index(header_features), on=header_features, how='inner').drop(columns=[header_features])
+    return X
 
 def tabular_input(
         feature_file: Path = "texture_features.csv",
@@ -68,27 +96,114 @@ def tabular_input(
     # Read metadata
     metadata_df = pd.read_csv(metadata_path)
 
-    def combine_metadata_and_features(
-            features_df:pd.DataFrame,
-            metadata_df:pd.DataFrame
-            ) -> pd.DataFrame:
-            
-        # image filename specifiers
-        header_metadata = 'hand_image_file'
-        header_features = 'filename'
-        extension_features = '.png'
-        extension_metadata = '.jpeg'
-
-        # features store filenames as .png
-        features_df.loc[:,header_features] = features_df['filename'].apply(lambda x:x[:-(len(extension_features))])
-        
-        # features store filenames as .jpeg
-        metadata_df.loc[:,header_features] = features_df[header_metadata].apply(lambda x:x[:len(extension_metadata)])
-        
-        # Construct DataFrame for model training and testing
-        X = metadata_df.join(features_df.set_index(header_features), on=header_features, how='inner').drop(columns=[header_features])
-        return X
+    X = join_metadata_and_tabular_features(
+        features_df=features_df,
+        metadata_df=metadata_df
+    )
     
-    return combine_metadata_and_features(features_df=features_df,
-                                         metadata_df=metadata_df)
+    return X
 
+
+# ====== Read and extract image data ========
+
+# --- Read Segmentation File
+def read_segmentation_file(segmentation_file:str):
+    '''
+    Read stored segmentations from SAM2 pipeline
+    _______
+    
+    Returns: dictionary[filename] = arr
+    '''
+    # Check arguments
+    if not os.path.exists(segmentation_file):
+        typer.echo(f"segmentation_file '{segmentation_file}' not found", err=True)
+        raise typer.Abort()
+    
+    # Read file
+    with open(segmentation_file, 'rb') as file:
+        segmentations = pickle.load(file)
+    return segmentations
+
+
+# --- Image Input Standardization
+
+def square_resize(im, mask=None):
+    '''
+    Fit an image to a (512, 512) square by first padding the image
+    _______
+    
+    Returns: Image of shape(512, 512, 3)
+    '''
+
+    if mask is not None:
+        im = np.where(mask[..., None], im, 0)
+
+    # calculate padding distance
+    h, w, c = im.shape
+    side = max(w, h)
+    delta_w = side-w
+    delta_h = side-h
+    top, bottom = delta_h//2, delta_h-(delta_h//2)
+    left, right = delta_w//2, delta_w-(delta_w//2)
+
+    # add 0 border
+    square = cv.copyMakeBorder(im, top, bottom, left, right, cv.BORDER_CONSTANT,value=0)
+
+    # reshape to size (512, 512)
+    norm_square = cv.resize(square, (512, 512))
+
+    return norm_square
+
+
+# --- Main program
+
+def prepare_image_datasets(
+        image_dir: Path = '/Users/ntin/Documents/DermaML_local/hawkeye-hands-2024-07-29/images_processed/',
+        segmentation_file: Path = '/Users/ntin/Models/sam2/notebooks/2025-02-23_Hand_Segmentations-Corrected-3.pkl',
+        metadata_file: Path = "metadata.csv",
+        ) -> None:
+    """
+    Run AutoML evaluation.
+
+    Results are output two files: 'model-scores.csv'
+    """
+    from dermaml import data
+    import pandas as pd
+    # --- Check arguments
+    metadata_path = os.path.exists(metadata_file)
+    if not os.path.isfile(metadata_path):
+        typer.echo(
+            f"metadata_file '{metadata_file}' not found in data_dir",
+            err=True)
+        raise typer.Abort()
+
+    # === Preparations
+    # Read SAM2 segmentations from file
+    masks = read_segmentation_file(segmentation_file)
+    
+    # Read features
+    samples, filenames = data.read_local_into_dict(image_dir=image_dir)
+    
+    # Read metadata
+    metadata_df = pd.read_csv(metadata_path)
+    header_metadata = 'hand_image_file'
+    extension_metadata = '.jpeg'
+
+    # === Edit and store images 
+    X, y = [], []
+    for i in range(len(filenames)):
+        fname = filenames[i]
+        root = fname.split('.')[0]
+
+        # define X value
+        im = samples[fname]
+        mask = masks[root]
+        norm_square = square_resize(im, mask)
+
+        # define y 
+        instance = metadata_df[metadata_df[header_metadata] == root+extension_metadata]
+
+        X += [norm_square]
+        y += [instance.Age.values]
+        
+    return np.array(X), np.array(y)

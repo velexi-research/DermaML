@@ -13,6 +13,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
+
 """
 Script for running AutoML evaluation.
 """
@@ -21,20 +22,18 @@ Script for running AutoML evaluation.
 
 # Standard library
 import csv
-import json
-import os
 from pathlib import Path
 
 # External packages
-import pandas as pd
-from pycaret import classification
+import model_setup
+from pycaret import regression
 import typer
 import yaml
 
 
 # --- Main program
 
-def main(data_dir: Path,
+def main(feature_file: Path = "texture_features.csv",
          metadata_file: Path = "metadata.csv",
          best_models_file: Path = typer.Option("automl-best.yaml",
                                                "-m", "--models"),
@@ -50,17 +49,6 @@ def main(data_dir: Path,
     """
     # --- Check arguments
 
-    if not os.path.isdir(data_dir):
-        typer.echo(f"data_dir '{data_dir}' not found", err=True)
-        raise typer.Abort()
-
-    metadata_path = os.path.join(data_dir, metadata_file)
-    if not os.path.isfile(metadata_path):
-        typer.echo(
-            f"metadata-file '{metadata_file}' not found in data_dir",
-            err=True)
-        raise typer.Abort()
-
     if num_best <= 0:
         typer.echo(
             "num-best must be strictly positive",
@@ -69,41 +57,20 @@ def main(data_dir: Path,
 
     # --- Preparations
 
-    # Read metadata
-    metadata_df = pd.read_csv(metadata_path)
+    X = model_setup.tabular_input(
+        feature_file=feature_file,
+        metadata_file=metadata_file
+        )
 
-    # Construct columns for features
-    data_file = metadata_df.at[0, "file"]
-    with open(os.path.join(data_dir, data_file), 'r') as data_path:
-        features = json.load(data_path)
-        texture_features = features["texture"]
-        feature_columns = [f"texture-{i}"
-                           for i in range(len(texture_features))]
-
-    # Load features
-    records = []
-    for _, row in metadata_df.iterrows():
-        # Read features from JSON
-        with open(os.path.join(data_dir, row["file"]), 'r') as file_:
-            features = json.load(file_)
-
-        # Extract textures
-        texture_features = features["texture"]
-
-        # Add new record
-        records.append(dict(zip(feature_columns, texture_features)))
-
-    features_df = pd.DataFrame.from_records(records, columns=feature_columns)
-
-    # Construct DataFrame for model training and testing
-    data_df = features_df.merge(metadata_df, left_index=True, right_index=True)
-    del data_df["file"]
+    # target variable:
+    if metadata_target is None:
+        metadata_target = 'age'
 
     # --- Perform AutoML evaluation
 
     # Set up the dataset for AutoML
-    classification.setup(data=data_df,
-                         target="target",
+    regression.setup(data=X,
+                         target=metadata_target,
                          log_experiment=True,
                          experiment_name=experiment_name,
                          html=False,
@@ -111,7 +78,7 @@ def main(data_dir: Path,
                          verbose=False)
 
     # Automatically train, test, and evaluate models
-    best_models = classification.compare_models(n_select=num_best,
+    best_models = regression.compare_models(n_select=num_best,
                                                 verbose=False)
 
     # --- Save results
@@ -123,7 +90,7 @@ def main(data_dir: Path,
         yaml.dump(best_models, file_, width=float("inf"))
 
     # Model scores
-    classification.pull().to_csv(scores_file, index=False,
+    regression.pull().to_csv(scores_file, index=False,
                                  quoting=csv.QUOTE_NONNUMERIC)
 
 

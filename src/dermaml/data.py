@@ -29,9 +29,11 @@ from numpy.random import default_rng
 import skimage
 from tqdm import tqdm
 import matplotlib.pyplot as plt
+
+
 # --- Public functions
 
-def read_local(image_dir, image_fnames=[]):
+def read_local_into_dict(image_dir, image_fnames=[]) -> dict:
     '''
     Read in images from hawkeye hands using PIL Image
     '''
@@ -67,6 +69,32 @@ def read_local(image_dir, image_fnames=[]):
             continue
             
     return samples, fnames
+
+# --- Read images off local ---
+
+def read_local_into_lists(image_dir, image_fnames=[]) -> tuple:
+    '''
+    Read in images from hawkeye hands using PIL Image
+    '''
+    if not image_fnames:
+        image_fnames = os.listdir(image_dir)
+
+    images = []
+    filenames = []
+    for filename in tqdm(image_fnames):
+        
+        try:
+            img = Image.open(os.path.join(image_dir, filename))
+            filenames += [filename]
+
+        except Image.UnidentifiedImageError:
+            print(filename)
+            continue
+
+        if (img is not None) & (img.mode == 'RGB'):
+                images.append(img)
+            
+    return filenames, images
 
 
 

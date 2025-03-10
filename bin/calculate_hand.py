@@ -8,6 +8,7 @@ from PIL import Image
 from tqdm import tqdm
 import typer
 from datetime import datetime
+from dermaml import data as d
 
 # Local packages
 import feature_functions as feature_functions
@@ -74,7 +75,8 @@ def main(input_feature: str,
     os.makedirs(dst_dir, exist_ok=True)
 
     #  --- Load in images
-    hawkeye_filenames, hawkeye_hands_images = read_local(src_dir)
+    # hawkeye_filenames, hawkeye_hands_images = read_local(src_dir)
+    hawkeye_filenames, hawkeye_hands_images = d.read_local_into_lists(src_dir)
     N_images = len(hawkeye_hands_images)
     assert N_images > 0 
 

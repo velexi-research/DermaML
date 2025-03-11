@@ -25,11 +25,14 @@ from collections.abc import Callable
 from pathlib import Path
 import numpy as np
 import math
+import os
+
 
 # External packages
 import model_setup
 from tensorflow.keras import layers, models
 import typer
+from datetime import datetime
 import yaml
 
 #FIXME write results to file with date
@@ -120,8 +123,6 @@ def main(
 
     Results are stored ...
     """
-    import os
-    from datetime import datetime
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
     today = datetime.today('%Y-$M-%D-%H:%M')

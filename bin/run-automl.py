@@ -32,10 +32,11 @@ import yaml
 
 
 # --- Main program
-#FIXME write results to file with date
-#FIXME read in filenames from yaml
+# FIXME write results to file with date
+# FIXME read in filenames from yaml
+# FIXME implement in typer
 
-def main(feature_file: Path = "texture_features.csv",
+def not_main(feature_file: Path = "texture_features.csv",
          metadata_file: Path = "metadata.csv",
          best_models_file: Path = typer.Option("automl-best.yaml",
                                                "-m", "--models"),
@@ -62,7 +63,7 @@ def main(feature_file: Path = "texture_features.csv",
     X = model_setup.tabular_input(
         feature_file=feature_file,
         metadata_file=metadata_file
-        )
+    )
 
     # target variable:
     if metadata_target is None:

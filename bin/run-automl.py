@@ -37,11 +37,13 @@ import yaml
 # FIXME implement in typer
 
 def not_main(
-        configuration_file: Path,
-         best_models_file: Path = typer.Option("automl-best.yaml",
-                                               "-m", "--models"),
-         scores_file: Path = typer.Option("automl-scores.csv",
-                                          "-s", "--scores"),
+        config_file: Path,
+         best_models_file: Path = typer.Option(
+             "automl-best.yaml","-m", "--models"
+        ),
+         scores_file: Path = typer.Option(
+             "automl-scores.csv","-s", "--scores"
+        ),
          num_best: int = 5,
          experiment_name: str = "automl",
          ) -> None:
@@ -58,18 +60,11 @@ def not_main(
         raise typer.Abort()
 
     # --- Preparations
+    
     # read configuration files
-    yaml.SafeLoader.add_constructor('!join', model_setup.join_constructor)
-    with open(configuration_file, 'r') as f:
-        config = yaml.safe_load(f)
-    feature_file = config['tabular_feature_file']
-    metadata_file = config['metadata_file']
+    config = model_setup.read_config_yaml(config_file)
     metadata_target = config['metadata_target']
-
-
-    X = model_setup.tabular_input(
-        config_file=configuration_file,
-    )
+    X = model_setup.tabular_input(config)
 
     # --- Perform AutoML evaluation
 

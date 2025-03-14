@@ -48,7 +48,19 @@ def join_constructor(loader, node):
 # Read and validate YAML file
 def read_config_yaml(config_file):
     '''
-    ...
+    Reads and parses a YAML configuration file, validating the existence of specified paths.
+
+    Args:
+        config_file (str): Path to the YAML configuration file.
+
+    Returns:
+        dict: The parsed YAML configuration.
+
+    Behavior:
+        - Registers a custom YAML constructor for path joining (`!join`).
+        - Loads the YAML configuration.
+        - Checks that all paths specified under the 'paths' section exist.
+        - Aborts execution with an error message if the file or any path is missing.
     '''
     # --- Check arguments
     if not os.path.exists(config_file):
@@ -79,7 +91,17 @@ def tabular_input(
         num_best: int = 5,
         ) -> pd.DataFrame:
     """
-    Prepare tabular dataset for AutoML evaluation.
+    Prepares tabular datasets for AutoML evaluation by extracting features and corresponding metadata.
+
+    Args:
+        config (dict): Configuration dictionary containing the following keys:
+            - 'file_ref_header' (str): Metadata column to match with image names.
+            - 'file_ref_extension' (str): Suffix to append to the image name for metadata lookup.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: 
+            - X: Array of pre-processed image data (normalized square regions).
+            - y: Array of corresponding target values (e.g., age).
     """
     # --- Check arguments
 
@@ -161,9 +183,27 @@ def prepare_image_datasets(
         config: dict,
         ) -> None:
     """
-    Run AutoML evaluation.
+    Prepares image datasets for AutoML evaluation by extracting features and corresponding metadata.
 
-    Results are output two files: 'model-scores.csv'
+    Args:
+        config (dict): Configuration dictionary containing the following keys:
+            - 'image_dir' (str): Path to the directory containing image data.
+            - 'metadata_file' (str): Path to the CSV file with metadata.
+            - 'segmentation_file' (str): Path to the segmentation file.
+            - 'metadata_ref_header' (str): Metadata column to match with image names.
+            - 'metadata_ref_extension' (str): Suffix to append to the image name for metadata lookup.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: 
+            - X: Array of pre-processed image data (normalized square regions).
+            - y: Array of corresponding target values (e.g., age).
+
+    Behavior:
+        - Reads segmentations from the specified file.
+        - Loads image samples from the local directory.
+        - Extracts metadata for each image based on the reference column and extension.
+        - Resizes and normalizes images based on segmentation masks.
+        - Returns feature matrix `X` and target values `y`.
     """
     # --- Load arguments
     image_dir = config['image_dir']

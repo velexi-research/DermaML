@@ -31,13 +31,11 @@ import os
 # External packages
 import model_setup
 from tensorflow.keras import layers, models
+import matplotlib.pyplot as plt
 import typer
 from datetime import datetime
-import yaml
 
 #FIXME write results to file with date
-#FIXME read in filenames from yaml
-
 
 # --- Define CNN model
 def simple_cnn_model():
@@ -111,9 +109,7 @@ def random_split_Xy(
 # === Main program
 
 def main(
-        image_dir: Path = '/Users/ntin/Documents/DermaML_local/hawkeye-hands-2024-07-29/images_processed/',
-        segmentation_file: Path = '/Users/ntin/Models/sam2/notebooks/2025-02-23_Hand_Segmentations-Corrected-3.pkl',
-        metadata_file: Path = "metadata.csv",
+        config_file:Path='',
         output_dir: Path='',
         split_method: Callable = random_split_Xy,
         experiment_name: str = "cnn",
@@ -128,10 +124,9 @@ def main(
     today = datetime.today('%Y-$M-%D-%H:%M')
 
     # --- Check inputs and prepare images
+    config = model_setup.read_config_yaml(config_file)
     X, y = model_setup.prepare_image_datasets(
-        image_dir=image_dir,
-        segmentation_file=segmentation_file,
-        metadata_file=metadata_file,
+        config=config
     )
 
     # --- Split dataset
@@ -150,7 +145,7 @@ def main(
     test_loss, test_mae = model.evaluate(x_test, y_test, verbose=2)
     print(f'\nTest MAE: {test_mae}')
 
-    import matplotlib.pyplot as plt
+    
     plt.plot(history.history['mae'], label='MAE')
     plt.plot(history.history['val_mae'], label = 'val_MAE')
     plt.xlabel('Epoch')

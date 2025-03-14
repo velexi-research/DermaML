@@ -49,7 +49,7 @@ def join_constructor(loader, node):
 def read_config_yaml(config_file):
     '''
     Reads and parses a YAML configuration file, validating the existence of specified paths.
-
+    _______
     Args:
         config_file (str): Path to the YAML configuration file.
 
@@ -92,11 +92,15 @@ def tabular_input(
         ) -> pd.DataFrame:
     """
     Prepares tabular datasets for AutoML evaluation by extracting features and corresponding metadata.
-
+    _______
     Args:
         config (dict): Configuration dictionary containing the following keys:
-            - 'file_ref_header' (str): Metadata column to match with image names.
-            - 'file_ref_extension' (str): Suffix to append to the image name for metadata lookup.
+            - 'tabular_feature_file' (str): Path to the CSV file with feature data.
+            - 'metadata_file' (str): Path to the CSV file with metadata.
+            - 'metadata_ref_header' (str): Column name in the metadata file for matching.
+            - 'tabular_ref_header' (str): Column name in the feature file for matching.
+            - 'tabular_ref_extension' (str): File extension or suffix to remove from feature identifiers.
+            - 'metadata_ref_extension' (str): File extension or suffix to remove from metadata identifiers.
 
     Returns:
         Tuple[np.ndarray, np.ndarray]: 
@@ -184,7 +188,7 @@ def prepare_image_datasets(
         ) -> None:
     """
     Prepares image datasets for AutoML evaluation by extracting features and corresponding metadata.
-
+    _______
     Args:
         config (dict): Configuration dictionary containing the following keys:
             - 'image_dir' (str): Path to the directory containing image data.

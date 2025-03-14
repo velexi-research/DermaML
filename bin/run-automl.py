@@ -33,24 +33,45 @@ import yaml
 
 # --- Main program
 # FIXME write results to file with date
-# FIXME read in filenames from yaml
-# FIXME implement in typer
 
-def not_main(
-        config_file: Path,
-         best_models_file: Path = typer.Option(
-             "automl-best.yaml","-m", "--models"
+def main(
+        config_file: Path = typer.Argument(..., help="Path to the YAML configuration file."),
+        best_models_file: Path = typer.Option(
+            "automl-best.yaml", "-m", "--models", help="Path to save the best models as a YAML file."
         ),
-         scores_file: Path = typer.Option(
-             "automl-scores.csv","-s", "--scores"
+        scores_file: Path = typer.Option(
+            "automl-scores.csv", "-s", "--scores", help="Path to save model performance scores as a CSV file."
         ),
-         num_best: int = 5,
-         experiment_name: str = "automl",
-         ) -> None:
+        num_best: int = typer.Option(
+            5, help="Number of top models to select during AutoML evaluation. Must be strictly positive."
+        ),
+        experiment_name: str = typer.Option(
+            "automl", help="Name for the AutoML experiment (for logging purposes)."
+        ),
+    ) -> None:
     """
-    Run AutoML evaluation.
+    Runs AutoML evaluation on a tabular dataset and outputs the best models and their performance scores.
 
-    Results are output two files: 'model-scores.csv'
+    This function:
+    - Loads a YAML configuration file specifying input data and target metadata.
+    - Sets up an AutoML environment for regression.
+    - Selects the top `num_best` models based on performance.
+    - Saves the best models to a YAML file and performance scores to a CSV file.
+
+    Args:
+        config_file (Path): Path to the YAML configuration file.
+        best_models_file (Path): Path to save the best models (YAML).
+        scores_file (Path): Path to save model performance scores (CSV).
+        num_best (int): Number of top models to select (must be strictly positive).
+        experiment_name (str): Name of the AutoML experiment.
+
+    Raises:
+        typer.Abort: If `num_best` is not strictly positive.
+
+    Output:
+        Results are output two files: 'model-scores.csv' and 'automl-best.yaml'
+
+    Generated with an LLM 2025 March 13.
     """
     # --- Check arguments
     if num_best <= 0:
@@ -97,4 +118,4 @@ def not_main(
 # --- Run app
 
 if __name__ == "__main__":
-    typer.run(not_main)
+    typer.run(main)

@@ -109,15 +109,41 @@ def random_split_Xy(
 # === Main program
 
 def main(
-        config_file:Path='',
-        output_dir: Path='',
-        split_method: Callable = random_split_Xy,
-        experiment_name: str = "cnn",
-        ) -> None:
+        config_file: Path = typer.Argument(..., help="Path to the YAML configuration file."),
+        output_dir: Path = typer.Option(
+            '', "-o", "--output", help="Directory to store output files (e.g., model training results, plots)."
+        ),
+        split_method: Callable = typer.Option(
+            random_split_Xy, help="Function used to split the dataset (default: random_split_Xy)."
+        ),
+        experiment_name: str = typer.Option(
+            "cnn", help="Name of the experiment for logging and output file naming."
+        ),
+    ) -> None:
     """
-    Run CNN training and inference.
+    Runs Convolutional Neural Network (CNN) training and inference on an image dataset.
 
-    Results are stored ...
+    This function:
+    - Reads a YAML configuration file for dataset and preprocessing details.
+    - Prepares image datasets and splits them into training and testing sets.
+    - Initializes a simple CNN model.
+    - Trains the CNN model using the prepared data.
+    - Evaluates the model on the test dataset and outputs the test mean absolute error (MAE).
+    - Plots and saves the training and validation MAE over epochs as a PNG file.
+
+    Args:
+        config_file (Path): Path to the YAML configuration file containing dataset and preprocessing details.
+        output_dir (Path): Directory to save model outputs, plots, and training results.
+        split_method (Callable): Function to split the dataset into training and testing sets. Defaults to `random_split_Xy`.
+        experiment_name (str): Name of the experiment used for logging and in output file names (e.g., 'cnn').
+
+    Raises:
+        FileNotFoundError: If the specified `output_dir` does not exist, it will be created.
+    
+    Returns:
+        None: Results are saved to files.
+
+    Generated with an LLM 2025 March 13.
     """
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)

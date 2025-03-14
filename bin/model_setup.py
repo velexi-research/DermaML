@@ -40,7 +40,7 @@ import typer
 # Custom YAML constructor for joining paths
 def join_constructor(loader, node):
     '''
-    Written by ChatGPT 2025 March 13
+    Written by an LLM 2025 March 13
     '''
     seq = loader.construct_sequence(node)
     return ''.join(map(str, seq))
@@ -61,6 +61,8 @@ def read_config_yaml(config_file):
         - Loads the YAML configuration.
         - Checks that all paths specified under the 'paths' section exist.
         - Aborts execution with an error message if the file or any path is missing.
+    
+    Generated with an LLM 2025 March 13.
     '''
     # --- Check arguments
     if not os.path.exists(config_file):
@@ -106,6 +108,8 @@ def tabular_input(
         Tuple[np.ndarray, np.ndarray]: 
             - X: Array of pre-processed image data (normalized square regions).
             - y: Array of corresponding target values (e.g., age).
+
+    Generated with an LLM 2025 March 13.
     """
     # --- Check arguments
 
@@ -208,6 +212,8 @@ def prepare_image_datasets(
         - Extracts metadata for each image based on the reference column and extension.
         - Resizes and normalizes images based on segmentation masks.
         - Returns feature matrix `X` and target values `y`.
+    
+    Generated with an LLM 2025 March 13.
     """
     # --- Load arguments
     image_dir = config['image_dir']

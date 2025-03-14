@@ -45,18 +45,52 @@ def join_constructor(loader, node):
     seq = loader.construct_sequence(node)
     return ''.join(map(str, seq))
 
-# --- Read parsed extracted tabular features
-
-def join_metadata_and_tabular_features(
-        config_file:str,
-        # features_df:pd.DataFrame,
-        # metadata_df:pd.DataFrame
-        ) -> pd.DataFrame:
-    
+# Read and validate YAML file
+def read_config_yaml(config_file):
+    '''
+    ...
+    '''
+    # --- Check arguments
+    if not os.path.exists(config_file):
+        typer.echo(f"config_file '{config_file}' not found", err=True)
+        raise typer.Abort()
+    # parse reader
     yaml.SafeLoader.add_constructor('!join', join_constructor)
+    
+    # load file
     with open(config_file, 'r') as f:
         config = yaml.safe_load(f)
+    
+    for key, path in config.get('paths', {}):
+        if not os.path.exists(path):
+            typer.echo(
+                f'Error finding {key}: {path}',
+                err=True
+            )
+            raise typer.Abort()
         
+    return config
+        
+
+# --- Read parsed extracted tabular features
+
+def tabular_input(
+        config: dict,
+        num_best: int = 5,
+        ) -> pd.DataFrame:
+    """
+    Prepare tabular dataset for AutoML evaluation.
+    """
+    # --- Check arguments
+
+    if num_best <= 0:
+        typer.echo(
+            "num-best must be strictly positive",
+            err=True)
+        raise typer.Abort()
+    
+    # --- Prepare datasets
+
     # image filename specifiers
     features_df = pd.read_csv(config['tabular_feature_file'])
     metadata_df = pd.read_csv(config['metadata_file'])
@@ -65,65 +99,13 @@ def join_metadata_and_tabular_features(
     extension_features = config['tabular_ref_extension']
     extension_metadata = config['metadata_ref_extension']
 
-    # features store filenames as .png
+    # --- Join datasets
     features_df.loc[:,header_features] = features_df[header_features].apply(lambda x:x[:-(len(extension_features))])
-    
-    # features store filenames as .jpeg
     metadata_df.loc[:,header_features] = features_df[header_metadata].apply(lambda x:x[:len(extension_metadata)])
     
     # Construct DataFrame for model training and testing
     X = metadata_df.join(features_df.set_index(header_features), on=header_features, how='inner').drop(columns=[header_features])
-    return X
 
-def tabular_input(
-        config_file: str,
-        num_best: int = 5,
-        ) -> pd.DataFrame:
-    """
-    Run AutoML evaluation.
-
-    Results are output two files: 'model-scores.csv'
-    """
-    # --- Check arguments
-    if not os.path.exists(config_file):
-        typer.echo(f"config_file '{config_file}' not found", err=True)
-        raise typer.Abort()
-
-    # feature_file = config['tabular_feature_file']
-    # metadata_file = config['metadata_file']
-    # metadata_target = config['metadata_target']
-
-    # if not os.path.exists(feature_file):
-    #     typer.echo(f"feature_file '{feature_file}' not found", err=True)
-    #     raise typer.Abort()
-
-    # metadata_path = os.path.exists(metadata_file)
-    # if not os.path.isfile(metadata_path):
-    #     typer.echo(
-    #         f"metadata_file '{metadata_file}' not found in data_dir",
-    #         err=True)
-    #     raise typer.Abort()
-
-    if num_best <= 0:
-        typer.echo(
-            "num-best must be strictly positive",
-            err=True)
-        raise typer.Abort()
-
-    # --- Preparations
-
-    # # Read features
-    # features_df = pd.read_csv(feature_file)
-
-    # # Read metadata
-    # metadata_df = pd.read_csv(metadata_path)
-
-    X = join_metadata_and_tabular_features(
-        config_file=config_file
-        # features_df=features_df,
-        # metadata_df=metadata_df
-    )
-    
     return X
 
 
@@ -136,12 +118,7 @@ def read_segmentation_file(segmentation_file:str):
     _______
     
     Returns: dictionary[filename] = arr
-    '''
-    # Check arguments
-    if not os.path.exists(segmentation_file):
-        typer.echo(f"segmentation_file '{segmentation_file}' not found", err=True)
-        raise typer.Abort()
-    
+    '''    
     # Read file
     with open(segmentation_file, 'rb') as file:
         segmentations = pickle.load(file)
@@ -178,27 +155,22 @@ def square_resize(im, mask=None):
     return norm_square
 
 
-# --- Main program
+# === Prepare Image Dataset ====
 
 def prepare_image_datasets(
-        image_dir: Path = '/Users/ntin/Documents/DermaML_local/hawkeye-hands-2024-07-29/images_processed/',
-        segmentation_file: Path = '/Users/ntin/Models/sam2/notebooks/2025-02-23_Hand_Segmentations-Corrected-3.pkl',
-        metadata_file: Path = "metadata.csv",
+        config: dict,
         ) -> None:
     """
     Run AutoML evaluation.
 
     Results are output two files: 'model-scores.csv'
     """
-    from dermaml import data
-    import pandas as pd
-    # --- Check arguments
-    metadata_path = os.path.exists(metadata_file)
-    if not os.path.isfile(metadata_path):
-        typer.echo(
-            f"metadata_file '{metadata_file}' not found in data_dir",
-            err=True)
-        raise typer.Abort()
+    # --- Load arguments
+    image_dir = config['image_dir']
+    metadata_file = config['metadata_file']
+    segmentation_file = config['segmentation_file']
+    header_metadata = config['metadata_ref_header']
+    extension_metadata = config['metadata_ref_extension']
 
     # === Preparations
     # Read SAM2 segmentations from file
@@ -208,9 +180,8 @@ def prepare_image_datasets(
     samples, filenames = data.read_local_into_dict(image_dir=image_dir)
     
     # Read metadata
-    metadata_df = pd.read_csv(metadata_path)
-    header_metadata = 'hand_image_file'
-    extension_metadata = '.jpeg'
+    metadata_df = pd.read_csv(metadata_file)
+
 
     # === Edit and store images 
     X, y = [], []

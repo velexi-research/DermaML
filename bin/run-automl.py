@@ -36,8 +36,8 @@ import yaml
 # FIXME read in filenames from yaml
 # FIXME implement in typer
 
-def not_main(feature_file: Path = "texture_features.csv",
-         metadata_file: Path = "metadata.csv",
+def not_main(
+        configuration_file: Path,
          best_models_file: Path = typer.Option("automl-best.yaml",
                                                "-m", "--models"),
          scores_file: Path = typer.Option("automl-scores.csv",
@@ -51,7 +51,6 @@ def not_main(feature_file: Path = "texture_features.csv",
     Results are output two files: 'model-scores.csv'
     """
     # --- Check arguments
-
     if num_best <= 0:
         typer.echo(
             "num-best must be strictly positive",
@@ -59,15 +58,18 @@ def not_main(feature_file: Path = "texture_features.csv",
         raise typer.Abort()
 
     # --- Preparations
+    # read configuration files
+    yaml.SafeLoader.add_constructor('!join', model_setup.join_constructor)
+    with open(configuration_file, 'r') as f:
+        config = yaml.safe_load(f)
+    feature_file = config['tabular_feature_file']
+    metadata_file = config['metadata_file']
+    metadata_target = config['metadata_target']
+
 
     X = model_setup.tabular_input(
-        feature_file=feature_file,
-        metadata_file=metadata_file
+        config_file=configuration_file,
     )
-
-    # target variable:
-    if metadata_target is None:
-        metadata_target = 'age'
 
     # --- Perform AutoML evaluation
 
@@ -100,4 +102,4 @@ def not_main(feature_file: Path = "texture_features.csv",
 # --- Run app
 
 if __name__ == "__main__":
-    typer.run(main)
+    typer.run(not_main)

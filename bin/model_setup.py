@@ -35,22 +35,38 @@ from dermaml import data
 import pandas as pd
 import typer
 
+# === Reading YAML files
+
+# Custom YAML constructor for joining paths
+def join_constructor(loader, node):
+    '''
+    Written by ChatGPT 2025 March 13
+    '''
+    seq = loader.construct_sequence(node)
+    return ''.join(map(str, seq))
 
 # --- Read parsed extracted tabular features
 
 def join_metadata_and_tabular_features(
-        features_df:pd.DataFrame,
-        metadata_df:pd.DataFrame
+        config_file:str,
+        # features_df:pd.DataFrame,
+        # metadata_df:pd.DataFrame
         ) -> pd.DataFrame:
+    
+    yaml.SafeLoader.add_constructor('!join', join_constructor)
+    with open(config_file, 'r') as f:
+        config = yaml.safe_load(f)
         
     # image filename specifiers
-    header_metadata = 'hand_image_file'
-    header_features = 'filename'
-    extension_features = '.png'
-    extension_metadata = '.jpeg'
+    features_df = pd.read_csv(config['tabular_feature_file'])
+    metadata_df = pd.read_csv(config['metadata_file'])
+    header_metadata = config['metadata_ref_header']
+    header_features = config['tabular_ref_header']
+    extension_features = config['tabular_ref_extension']
+    extension_metadata = config['metadata_ref_extension']
 
     # features store filenames as .png
-    features_df.loc[:,header_features] = features_df['filename'].apply(lambda x:x[:-(len(extension_features))])
+    features_df.loc[:,header_features] = features_df[header_features].apply(lambda x:x[:-(len(extension_features))])
     
     # features store filenames as .jpeg
     metadata_df.loc[:,header_features] = features_df[header_metadata].apply(lambda x:x[:len(extension_metadata)])
@@ -60,8 +76,7 @@ def join_metadata_and_tabular_features(
     return X
 
 def tabular_input(
-        feature_file: Path = "texture_features.csv",
-        metadata_file: Path = "metadata.csv",
+        config_file: str,
         num_best: int = 5,
         ) -> pd.DataFrame:
     """
@@ -70,17 +85,24 @@ def tabular_input(
     Results are output two files: 'model-scores.csv'
     """
     # --- Check arguments
-
-    if not os.path.exists(feature_file):
-        typer.echo(f"feature_file '{feature_file}' not found", err=True)
+    if not os.path.exists(config_file):
+        typer.echo(f"config_file '{config_file}' not found", err=True)
         raise typer.Abort()
 
-    metadata_path = os.path.exists(metadata_file)
-    if not os.path.isfile(metadata_path):
-        typer.echo(
-            f"metadata_file '{metadata_file}' not found in data_dir",
-            err=True)
-        raise typer.Abort()
+    # feature_file = config['tabular_feature_file']
+    # metadata_file = config['metadata_file']
+    # metadata_target = config['metadata_target']
+
+    # if not os.path.exists(feature_file):
+    #     typer.echo(f"feature_file '{feature_file}' not found", err=True)
+    #     raise typer.Abort()
+
+    # metadata_path = os.path.exists(metadata_file)
+    # if not os.path.isfile(metadata_path):
+    #     typer.echo(
+    #         f"metadata_file '{metadata_file}' not found in data_dir",
+    #         err=True)
+    #     raise typer.Abort()
 
     if num_best <= 0:
         typer.echo(
@@ -90,15 +112,16 @@ def tabular_input(
 
     # --- Preparations
 
-    # Read features
-    features_df = pd.read_csv(feature_file)
+    # # Read features
+    # features_df = pd.read_csv(feature_file)
 
-    # Read metadata
-    metadata_df = pd.read_csv(metadata_path)
+    # # Read metadata
+    # metadata_df = pd.read_csv(metadata_path)
 
     X = join_metadata_and_tabular_features(
-        features_df=features_df,
-        metadata_df=metadata_df
+        config_file=config_file
+        # features_df=features_df,
+        # metadata_df=metadata_df
     )
     
     return X

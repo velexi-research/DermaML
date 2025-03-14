@@ -3,29 +3,33 @@
 
 
 # === Project root paths
-project_root: &root /Users/ntin/Documents/DermaML_local/hawkeye-hands-2024-07-29
+project_root: &projroot /Users/ntin/DermaML/data/
+img_root: &imgroot /Users/ntin/Documents/DermaML_local/hawkeye-hands-2024-07-29
 
 paths:
     # -- Output
-    output_dir: !join [*root, /results/]
+    output_dir: !join [*imgroot, /results/]
     # -- Processed images
-    image_dir: !join [*root, /images_processed/]
+    image_dir: !join [*imgroot, /images_processed/]
     # -- Metadata
-    metadata_file: !join [*root, /metadata.csv]
+    metadata_file: !join [*projroot, /2025-03-01-metadata_processed.csv]
     # -- Tabular data
     # FIXME index files specifically from here
-    tabular_feature_file: !join [*root, /features-2025-02-24/]
-    # === Image Segmentation
-    segmentation_file: /Users/ntin/Models/sam2/notebooks/2025-02-23_Hand_Segmentations-Corrected-3.pkl
+    tabular_feature_file: !join [*projroot, /2025-02-24-hawkeye_hands-combined_tabular_features.csv]
+    # -- Image Segmentation
+    segmentation_file: !join [*projroot, 2025-02-23_Hand_Segmentations-Corrected-3.pkl]
 
 # === Processed images
 image_extension: .png
 
 # === Metadata
 metadata_ref_header: hand_image_file
+metadata_ref_hand: hand
 metadata_ref_extension: .jpeg
 metadata_target: age
 
 # === Tabular data
 tabular_ref_header: filename
+metadata_ref_hand: handedness
 tabular_ref_extension: .png
+tabular_ref_target: Age

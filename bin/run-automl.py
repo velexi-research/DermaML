@@ -85,12 +85,12 @@ def main(
     # read configuration files
     config = model_setup.read_config_yaml(config_file)
     metadata_target = config['metadata_target']
-    X = model_setup.tabular_input(config)
+    data = model_setup.tabular_input(config)
 
     # --- Perform AutoML evaluation
 
     # Set up the dataset for AutoML
-    regression.setup(data=X,
+    regression.setup(data=data,
                          target=metadata_target,
                          log_experiment=True,
                          experiment_name=experiment_name,

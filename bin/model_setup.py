@@ -74,8 +74,10 @@ def read_config_yaml(config_file):
     with open(config_file, 'r') as f:
         config = yaml.safe_load(f)
     
-    for key, path in config.get('paths', {}):
-        if not os.path.exists(path):
+    for key, path in config['paths'].items():
+        if (key == 'output_dir') & (not os.path.exists(path)):
+            os.mkdir(path)
+        elif not os.path.exists(path):
             typer.echo(
                 f'Error finding {key}: {path}',
                 err=True
@@ -108,10 +110,9 @@ def tabular_input(
             - X: Array of pre-processed image data (normalized square regions).
             - y: Array of corresponding target values (e.g., age).
 
-    Generated with an LLM 2025 March 13.
+    Docstring generated with an LLM 2025 March 13.
     """
     # --- Check arguments
-
     if num_best <= 0:
         typer.echo(
             "num-best must be strictly positive",
@@ -121,20 +122,32 @@ def tabular_input(
     # --- Prepare datasets
 
     # image filename specifiers
-    features_df = pd.read_csv(config['tabular_feature_file'])
-    metadata_df = pd.read_csv(config['metadata_file'])
-    header_metadata = config['metadata_ref_header']
+    features_df = pd.read_csv(config.get('paths',{})['tabular_feature_file'])
+    metadata_df = pd.read_csv(config.get('paths',{})['metadata_file'])
     header_features = config['tabular_ref_header']
+    header_metadata = config['metadata_ref_header']
     extension_features = config['tabular_ref_extension']
     extension_metadata = config['metadata_ref_extension']
 
     # --- Join datasets
-    features_df.loc[:,header_features] = features_df[header_features].apply(lambda x:x[:-(len(extension_features))])
-    metadata_df.loc[:,header_features] = features_df[header_metadata].apply(lambda x:x[:len(extension_metadata)])
-    
-    # Construct DataFrame for model training and testing
-    X = metadata_df.join(features_df.set_index(header_features), on=header_features, how='inner').drop(columns=[header_features])
+    features_df.loc[:,header_features] = features_df[header_features] # .apply(lambda x:x[:-(len(extension_features))])
+    metadata_df.loc[:,header_features] = metadata_df[header_metadata].apply(lambda x:x[:-len(extension_metadata)])
 
+    amend_L, amend_R = '_L', '_R'
+    amended_columns = [
+        header_features+amend_L, 
+        header_features+amend_R,
+        header_metadata+amend_L,
+        header_metadata+amend_R,
+    ]
+    # Construct DataFrame for model training and testing
+    X = metadata_df.join(
+        features_df.set_index(header_features), 
+        on=header_features, 
+        how='inner',
+        lsuffix='_L', rsuffix='_R'
+    )
+    X = X.drop(columns=[col for col in amended_columns if col in X.columns])
     return X
 
 
@@ -215,9 +228,9 @@ def prepare_image_datasets(
     Generated with an LLM 2025 March 13.
     """
     # --- Load arguments
-    image_dir = config['image_dir']
-    metadata_file = config['metadata_file']
-    segmentation_file = config['segmentation_file']
+    image_dir = config.get('paths',{})['image_dir']
+    metadata_file = config.get('paths',{})['metadata_file']
+    segmentation_file = config.get('paths',{})['segmentation_file']
     header_metadata = config['metadata_ref_header']
     extension_metadata = config['metadata_ref_extension']
 

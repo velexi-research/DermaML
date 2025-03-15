@@ -30,12 +30,13 @@ from pycaret import regression
 import typer
 import yaml
 
-
 # --- Main program
 # FIXME write results to file with date
 
 def main(
-        config_file: Path = typer.Argument(..., help="Path to the YAML configuration file."),
+        config_file: Path = typer.Argument(
+            "/Users/ntin/DermaML/bin/config.yaml", help="Path to the YAML configuration file."
+        ),
         best_models_file: Path = typer.Option(
             "automl-best.yaml", "-m", "--models", help="Path to save the best models as a YAML file."
         ),
@@ -92,10 +93,9 @@ def main(
     # Set up the dataset for AutoML
     regression.setup(data=data,
                          target=metadata_target,
-                         log_experiment=True,
+                        #  log_experiment=True,
                          experiment_name=experiment_name,
                          html=False,
-                         silent=True,
                          verbose=False)
 
     # Automatically train, test, and evaluate models

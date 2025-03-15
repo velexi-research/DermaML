@@ -21,13 +21,16 @@ Script for running AutoML evaluation.
 # --- Imports
 
 # Standard library
+import os
+import typer
 import csv
+import logging
+import datetime
 from pathlib import Path
 
 # External packages
-import model_setup
+import dermaml.model_setup as model_setup
 from pycaret import regression
-import typer
 import yaml
 
 # --- Main program
@@ -36,12 +39,6 @@ import yaml
 def main(
         config_file: Path = typer.Argument(
             "/Users/ntin/DermaML/bin/config.yaml", help="Path to the YAML configuration file."
-        ),
-        best_models_file: Path = typer.Option(
-            "automl-best.yaml", "-m", "--models", help="Path to save the best models as a YAML file."
-        ),
-        scores_file: Path = typer.Option(
-            "automl-scores.csv", "-s", "--scores", help="Path to save model performance scores as a CSV file."
         ),
         num_best: int = typer.Option(
             5, help="Number of top models to select during AutoML evaluation. Must be strictly positive."
@@ -82,21 +79,39 @@ def main(
         raise typer.Abort()
 
     # --- Preparations
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    )
+    now = datetime.datetime.today().strftime('%Y-%m-%d %H:%M')
     
     # read configuration files
     config = model_setup.read_config_yaml(config_file)
     metadata_target = config['metadata_target']
     data = model_setup.tabular_input(config)
+    output_loc = config.get('paths', {})['output_dir']
+    output_dir = os.path.join(output_loc, now)
+    os.mkdir(output_dir)
+
+    # prepare saving files
+    save_best_models = os.path.join(output_dir, 'automl-best.yaml')
+    save_results = os.path.join(output_dir, 'automl-scores.csv')
+
+    train, test = model_setup.get_test_split(data)
 
     # --- Perform AutoML evaluation
 
     # Set up the dataset for AutoML
-    regression.setup(data=data,
-                         target=metadata_target,
-                        #  log_experiment=True,
-                         experiment_name=experiment_name,
-                         html=False,
-                         verbose=False)
+    regression.setup(
+        data=train,
+        test_data=test,
+        fold_strategy='stratifiedkfold',
+        target=metadata_target,
+        experiment_name=experiment_name,
+        html=False,
+        # log_experiment=True,
+        # silent=True,
+        verbose=True
+    )
 
     # Automatically train, test, and evaluate models
     best_models = regression.compare_models(n_select=num_best,
@@ -107,12 +122,16 @@ def main(
     # Best models
     best_models = [' '.join(s.strip() for s in str(model).split('\n'))
                    for model in best_models]
-    with open(best_models_file, 'w') as file_:
+    with open(save_best_models, 'w') as file_:
         yaml.dump(best_models, file_, width=float("inf"))
 
     # Model scores
-    regression.pull().to_csv(scores_file, index=False,
-                                 quoting=csv.QUOTE_NONNUMERIC)
+    regression.pull().to_csv(
+        save_results, 
+        index=False,
+        quoting=csv.QUOTE_NONNUMERIC
+    )
+    logging.info(f'Saved to {save_results}')
 
 
 # --- Run app

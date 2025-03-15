@@ -25,9 +25,11 @@ import os
 import pandas as pd
 import numpy as np
 import pickle
+import math
 
 # External packages
 import cv2 as cv
+from sklearn.model_selection import train_test_split
 import typer
 import yaml
 from dermaml import data
@@ -263,3 +265,58 @@ def prepare_image_datasets(
         y += [instance.Age.values]
         
     return np.array(X), np.array(y)
+
+# === TRAIN TEST SPLIT ===
+
+# --- Randomly split entire dataset
+def add_test_split_column(
+        config: dict,
+        percent_split:float =0.7,
+    ) -> pd.DataFrame:
+    metadata = pd.read_csv(config.get('paths', {})['metadata_file'])
+    _, test_indices = train_test_split(
+        metadata.index, 
+        test_size=percent_split, 
+        random_state=42    
+    )
+    metadata.loc[:, 'test_set'] = 0
+    metadata.loc[test_indices, 'test_set'] = 1
+    return metadata
+
+# --- get assigned train/test rows
+def get_test_split(Xy:pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    train = Xy.loc[Xy['test_set'] == 0]
+    test = Xy.loc[Xy['test_set'] == 1]
+    return train, test
+
+# --- Randomly split entire dataset
+def random_split_Xy(
+        X:np.array,
+        y:np.array,
+        percent_split=0.7,
+    ):
+    '''
+    Randomly split entire X, y dataset
+    _______
+    
+    Returns: (np.array, np.array, np.array, np.array) dtype=np.float32
+    '''
+    image_count = len(X)
+    # Check arguments
+    train_size = math.floor(image_count * percent_split)
+
+    x_train = np.array(X[:train_size])
+    x_test = np.array(X[train_size:])
+
+    # round labels to neearest fifth
+    y_train = np.around(y[:train_size]/5, decimals=0)*5
+    y_test = np.around(y[train_size:]/5, decimals=0)*5
+
+    y_train = y_train.astype(np.float32)
+    y_test = y_test.astype(np.float32)
+
+    print('==== Dataset Split')
+    print(x_train.shape, y_train.shape)
+    print(x_test.shape, y_test.shape)
+
+    return x_train, y_train, x_test, y_test

@@ -8,11 +8,11 @@ img_root: &imgroot /Users/ntin/Documents/DermaML_local/hawkeye-hands-2024-07-29
 
 paths:
     # -- Output
-    output_dir: !join [*imgroot, /results/]
+    output_dir: !join [*imgroot, /results]
     # -- Processed images
     image_dir: !join [*imgroot, /images_processed/]
     # -- Metadata
-    metadata_file: !join [*projroot, /2025-03-01-metadata_processed.csv]
+    metadata_file: !join [*projroot, /2025-03-14-metadata_processed_test_split.csv]
     # -- Tabular data
     # FIXME index files specifically from here
     tabular_feature_file: !join [*projroot, /2025-02-24-hawkeye_hands-combined_tabular_features.csv]

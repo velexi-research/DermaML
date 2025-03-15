@@ -29,7 +29,7 @@ import os
 
 
 # External packages
-import model_setup
+import dermaml.model_setup as model_setup
 from tensorflow.keras import layers, models
 import matplotlib.pyplot as plt
 import typer
@@ -73,38 +73,6 @@ def simple_cnn_model():
     )
     return model
 
-# --- Randomly split entire dataset
-def random_split_Xy(
-        X:np.array,
-        y:np.array,
-        percent_split=0.7,
-    ):
-    '''
-    Randomly split entire X, y dataset
-    _______
-    
-    Returns: (np.array, np.array, np.array, np.array) dtype=np.float32
-    '''
-    image_count = len(X)
-    # Check arguments
-    train_size = math.floor(image_count * percent_split)
-
-    x_train = np.array(X[:train_size])
-    x_test = np.array(X[train_size:])
-
-    # round labels to neearest fifth
-    y_train = np.around(y[:train_size]/5, decimals=0)*5
-    y_test = np.around(y[train_size:]/5, decimals=0)*5
-
-    y_train = y_train.astype(np.float32)
-    y_test = y_test.astype(np.float32)
-
-    print('==== Dataset Split')
-    print(x_train.shape, y_train.shape)
-    print(x_test.shape, y_test.shape)
-
-    return x_train, y_train, x_test, y_test
-
 
 # === Main program
 
@@ -114,7 +82,7 @@ def main(
             '', "-o", "--output", help="Directory to store output files (e.g., model training results, plots)."
         ),
         split_method: Callable = typer.Option(
-            random_split_Xy, help="Function used to split the dataset (default: random_split_Xy)."
+            model_setup.random_split_Xy, help="Function used to split the dataset (default: random_split_Xy)."
         ),
         experiment_name: str = typer.Option(
             "cnn", help="Name of the experiment for logging and output file naming."

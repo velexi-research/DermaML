@@ -129,22 +129,17 @@ def tabular_input(
     ))
     # cross reference filenames
     found_in_metadata = features_df[config['tabular_ref_header']].apply(
-        lambda x: x in metadata_df[config['metadata_ref_header']].to_list()
-    )
-    # filter for rows found in metadata
-    features_df = features_df.loc[found_in_metadata]
-
+        lambda x: x in metadata_df[config['metadata_ref_header']].to_list())
     # map ages to filenames
-    # features_df = features_df.drop(columns=config['tabular_ref_target'], inplace=False)
     filename_age_map = dict(
-        zip(
-            metadata_df[config['metadata_ref_header']], 
-            metadata_df[config['metadata_target']]
-        )
-    )
+        zip(metadata_df[config['metadata_ref_header']], 
+            metadata_df[config['metadata_target']]))
     mapped_ages = features_df[config['tabular_ref_header']].apply(
-            lambda x: filename_age_map.get(x)
-        )    
+            lambda x: filename_age_map.get(x))  
+    
+    # filter for rows found in metadata
+    features_df = features_df.loc[found_in_metadata]  
+    # map ages to filenames (assign)
     features_df.loc[:, config['metadata_target']] = mapped_ages
 
     Xy = features_df.copy()
@@ -159,16 +154,12 @@ def tabular_input(
         if col in Xy.columns:
             Xy.drop(columns=[col],inplace=True)
 
-    _, test_indices = train_test_split(
+    # assign train/test split indicator column
+    train, test = train_test_split(
         Xy.index, 
         test_size=0.3, 
         random_state=42    
     )
-    Xy.loc[:, 'test_set'] = 0
-    Xy.loc[test_indices, 'test_set'] = 1
-
-    train = Xy.loc[Xy['test_set'] == 0].drop(columns=['test_set'])
-    test = Xy.loc[Xy['test_set'] == 1].drop(columns=['test_set'])
     return train, test
 
 

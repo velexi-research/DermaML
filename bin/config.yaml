@@ -31,5 +31,5 @@ metadata_target: age
 # === Tabular data
 tabular_ref_header: filename
 tabular_ref_hand: handedness
-tabular_ref_extension: .png # might need to be empty string ''
+tabular_ref_extension: .png # might need to be empty string''
 tabular_ref_target: Age

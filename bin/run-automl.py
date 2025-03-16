@@ -37,7 +37,7 @@ import yaml
 # FIXME write results to file with date
 
 def main(
-        config_file: Path = typer.Argument(
+        config_file: Path=typer.Argument(
             "/Users/ntin/DermaML/bin/config.yaml", help="Path to the YAML configuration file."
         ),
         num_best: int = typer.Option(
@@ -87,7 +87,6 @@ def main(
     # read configuration files
     config = model_setup.read_config_yaml(config_file)
     metadata_target = config['metadata_target']
-    data = model_setup.tabular_input(config)
 
     # set saving location
     output_loc = config.get('paths', {})['output_dir']
@@ -100,7 +99,13 @@ def main(
     save_best_models = os.path.join(output_dir, 'automl-best.yaml')
     save_results = os.path.join(output_dir, 'automl-scores.csv')
 
+    # prepare dataset
+    data = model_setup.tabular_input(config)
     train, test = model_setup.get_test_split(data)
+    logging.info(f'train contents: {train.columns}')
+    logging.info(f'test set indices: {test.index}')
+    logging.info(f'train size: {train.shape}, test size: {test.shape}')
+
 
     # --- Perform AutoML evaluation
 

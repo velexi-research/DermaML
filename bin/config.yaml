@@ -12,7 +12,7 @@ paths:
     # -- Processed images
     image_dir: !join [*imgroot, /images_processed/]
     # -- Metadata
-    metadata_file: !join [*projroot, 2025-03-14-metadata_processed_test_split.csv]
+    metadata_file: !join [*projroot, 2025-03-15-Grouped_Data/2025-03-15-NT-metadata_male_only_splitted.csv]
     # -- Tabular data
     # FIXME index files specifically from here
     tabular_feature_file: !join [*projroot, /2025-02-24-hawkeye_hands-combined_tabular_features.csv]
@@ -31,5 +31,5 @@ metadata_target: age
 # === Tabular data
 tabular_ref_header: filename
 tabular_ref_hand: handedness
-tabular_ref_extension: .png
+tabular_ref_extension: .png # might need to be empty string ''
 tabular_ref_target: Age

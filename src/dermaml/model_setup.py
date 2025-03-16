@@ -41,7 +41,7 @@ import typer
 # Custom YAML constructor for joining paths
 def join_constructor(loader, node):
     '''
-    Written by an LLM 2025 March 13
+    FIXME review construct sequence
     '''
     seq = loader.construct_sequence(node)
     return ''.join(map(str, seq))
@@ -62,8 +62,6 @@ def read_config_yaml(config_file):
         - Loads the YAML configuration.
         - Checks that all paths specified under the 'paths' section exist.
         - Aborts execution with an error message if the file or any path is missing.
-    
-    Generated with an LLM 2025 March 13.
     '''
     # --- Check arguments
     if not os.path.exists(config_file):
@@ -126,30 +124,43 @@ def tabular_input(
     # image filename specifiers
     features_df = pd.read_csv(config.get('paths',{})['tabular_feature_file'])
     metadata_df = pd.read_csv(config.get('paths',{})['metadata_file'])
+
+    # reference data attributes
     header_features = config['tabular_ref_header']
     header_metadata = config['metadata_ref_header']
     extension_features = config['tabular_ref_extension']
     extension_metadata = config['metadata_ref_extension']
 
-    # --- Join datasets
-    features_df.loc[:,header_features] = features_df[header_features] # .apply(lambda x:x[:-(len(extension_features))])
-    metadata_df.loc[:,header_features] = metadata_df[header_metadata].apply(lambda x:x[:-len(extension_metadata)])
-
-    amend_L, amend_R = '_L', '_R'
-    amended_columns = [
-        header_features+amend_L, 
-        header_features+amend_R,
-        header_metadata+amend_L,
-        header_metadata+amend_R,
+    # keep only metadata filename and target column
+    keep_metadata_columns = [
+        config['metadata_ref_header'], 
+        config['metadata_target']
     ]
-    # Construct DataFrame for model training and testing
-    X = metadata_df.join(
-        features_df.set_index(header_features), 
-        on=header_features, 
+    metadata_df = metadata_df[keep_metadata_columns]
+    features_df = features_df.drop(columns=config['tabular_ref_target'], inplace=False)
+
+
+    # --- Prepare join key
+    features_df.loc[:,header_features] = features_df[header_features] # .apply(lambda x:x[:-(len(extension_features))])
+    metadata_df.loc[:,header_metadata] = metadata_df[header_metadata].apply(lambda x:x[:-len(extension_metadata)])
+
+    # -- Construct DataFrame for model training and testing
+    X = pd.merge(
+        left=metadata_df,
+        right=features_df,
+        left_on=header_metadata,
+        right_on=header_features,
         how='inner',
-        lsuffix='_L', rsuffix='_R'
     )
-    X = X.drop(columns=[col for col in amended_columns if col in X.columns])
+
+    # -- Remove join keys
+    X.drop(
+        columns=[
+            config['metadata_ref_header'],
+            config['tabular_ref_header']
+        ],
+        inplace=True
+    )
     return X
 
 
@@ -202,7 +213,7 @@ def square_resize(im, mask=None):
 # === Prepare Image Dataset ====
 
 def prepare_image_datasets(
-        config: dict,
+        config:dict,
         ) -> None:
     """
     Prepares image datasets for AutoML evaluation by extracting features and corresponding metadata.
@@ -270,17 +281,22 @@ def prepare_image_datasets(
 
 # --- Randomly split entire dataset
 def add_test_split_column(
-        df: pd.DataFrame,
+        config:dict,
         percent_split:float =0.7,
-    ) -> pd.DataFrame:
+     ) -> pd.DataFrame:
+    '''
+    Prepare tabular dataset for training
+    '''
+    metadata = pd.read_csv(config.get('paths', {})['metadata_file'])
+    remove_cols = ['Unnamed: 0', 'record_id', 'birth_year']
     _, test_indices = train_test_split(
-        df.index, 
+        metadata.index, 
         test_size=percent_split, 
         random_state=42    
     )
-    df.loc[:, 'test_set'] = 0
-    df.loc[test_indices, 'test_set'] = 1
-    return df
+    metadata.loc[:, 'test_set'] = 0
+    metadata.loc[test_indices, 'test_set'] = 1
+    return metadata
 
 # --- get assigned train/test rows
 def get_test_split(Xy:pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:

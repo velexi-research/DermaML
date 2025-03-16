@@ -119,49 +119,57 @@ def tabular_input(
             err=True)
         raise typer.Abort()
     
-    # --- Prepare datasets
-
-    # image filename specifiers
-    features_df = pd.read_csv(config.get('paths',{})['tabular_feature_file'])
-    metadata_df = pd.read_csv(config.get('paths',{})['metadata_file'])
-
-    # reference data attributes
-    header_features = config['tabular_ref_header']
-    header_metadata = config['metadata_ref_header']
-    extension_features = config['tabular_ref_extension']
-    extension_metadata = config['metadata_ref_extension']
-
-    # keep only metadata filename and target column
-    keep_metadata_columns = [
-        config['metadata_ref_header'], 
-        config['metadata_target']
-    ]
-    metadata_df = metadata_df[keep_metadata_columns]
-    features_df = features_df.drop(columns=config['tabular_ref_target'], inplace=False)
-
+    metadata_df = pd.read_csv(config.get('paths', {})['metadata_file'])
+    features_df = pd.read_csv(config.get('paths', {})['tabular_feature_file'])
 
     # --- Prepare join key
-    features_df.loc[:,header_features] = features_df[header_features] # .apply(lambda x:x[:-(len(extension_features))])
-    metadata_df.loc[:,header_metadata] = metadata_df[header_metadata].apply(lambda x:x[:-len(extension_metadata)])
-
-    # -- Construct DataFrame for model training and testing
-    X = pd.merge(
-        left=metadata_df,
-        right=features_df,
-        left_on=header_metadata,
-        right_on=header_features,
-        how='inner',
+    metadata_df.loc[:,config['metadata_ref_header']] = (
+        metadata_df[config['metadata_ref_header']].apply(
+            lambda x:x[:-len(config['metadata_ref_extension'])]
+    ))
+    # cross reference filenames
+    found_in_metadata = features_df[config['tabular_ref_header']].apply(
+        lambda x: x in metadata_df[config['metadata_ref_header']].to_list()
     )
+    # filter for rows found in metadata
+    features_df = features_df.loc[found_in_metadata]
 
+    # map ages to filenames
+    # features_df = features_df.drop(columns=config['tabular_ref_target'], inplace=False)
+    filename_age_map = dict(
+        zip(
+            metadata_df[config['metadata_ref_header']], 
+            metadata_df[config['metadata_target']]
+        )
+    )
+    mapped_ages = features_df[config['tabular_ref_header']].apply(
+            lambda x: filename_age_map.get(x)
+        )    
+    features_df.loc[:, config['metadata_target']] = mapped_ages
+
+    Xy = features_df.copy()
     # -- Remove join keys
-    X.drop(
-        columns=[
+    exclude_from_X = ['Unnamed: 0',
             config['metadata_ref_header'],
-            config['tabular_ref_header']
-        ],
-        inplace=True
+            config['tabular_ref_header'],
+            config['tabular_ref_hand'],
+            config['tabular_ref_target']
+            ]
+    for col in exclude_from_X:
+        if col in Xy.columns:
+            Xy.drop(columns=[col],inplace=True)
+
+    _, test_indices = train_test_split(
+        Xy.index, 
+        test_size=0.3, 
+        random_state=42    
     )
-    return X
+    Xy.loc[:, 'test_set'] = 0
+    Xy.loc[test_indices, 'test_set'] = 1
+
+    train = Xy.loc[Xy['test_set'] == 0].drop(columns=['test_set'])
+    test = Xy.loc[Xy['test_set'] == 1].drop(columns=['test_set'])
+    return train, test
 
 
 # ====== Read and extract image data ========
@@ -276,33 +284,6 @@ def prepare_image_datasets(
         y += [instance.Age.values]
         
     return np.array(X), np.array(y)
-
-# === TRAIN TEST SPLIT ===
-
-# --- Randomly split entire dataset
-def add_test_split_column(
-        config:dict,
-        percent_split:float =0.7,
-     ) -> pd.DataFrame:
-    '''
-    Prepare tabular dataset for training
-    '''
-    metadata = pd.read_csv(config.get('paths', {})['metadata_file'])
-    remove_cols = ['Unnamed: 0', 'record_id', 'birth_year']
-    _, test_indices = train_test_split(
-        metadata.index, 
-        test_size=percent_split, 
-        random_state=42    
-    )
-    metadata.loc[:, 'test_set'] = 0
-    metadata.loc[test_indices, 'test_set'] = 1
-    return metadata
-
-# --- get assigned train/test rows
-def get_test_split(Xy:pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
-    train = Xy.loc[Xy['test_set'] == 0]
-    test = Xy.loc[Xy['test_set'] == 1]
-    return train, test
 
 # --- Randomly split entire dataset
 def random_split_Xy(

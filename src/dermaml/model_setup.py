@@ -270,18 +270,17 @@ def prepare_image_datasets(
 
 # --- Randomly split entire dataset
 def add_test_split_column(
-        config: dict,
+        df: pd.DataFrame,
         percent_split:float =0.7,
     ) -> pd.DataFrame:
-    metadata = pd.read_csv(config.get('paths', {})['metadata_file'])
     _, test_indices = train_test_split(
-        metadata.index, 
+        df.index, 
         test_size=percent_split, 
         random_state=42    
     )
-    metadata.loc[:, 'test_set'] = 0
-    metadata.loc[test_indices, 'test_set'] = 1
-    return metadata
+    df.loc[:, 'test_set'] = 0
+    df.loc[test_indices, 'test_set'] = 1
+    return df
 
 # --- get assigned train/test rows
 def get_test_split(Xy:pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:

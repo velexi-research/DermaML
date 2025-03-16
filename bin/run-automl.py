@@ -82,14 +82,18 @@ def main(
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
     )
-    now = datetime.datetime.today().strftime('%Y-%m-%d %H:%M')
+    now = datetime.datetime.today().strftime('%Y-%m-%d %H-%M')
     
     # read configuration files
     config = model_setup.read_config_yaml(config_file)
     metadata_target = config['metadata_target']
     data = model_setup.tabular_input(config)
+
+    # set saving location
     output_loc = config.get('paths', {})['output_dir']
-    output_dir = os.path.join(output_loc, now)
+    metadata_used = config.get('paths', {})['metadata_file'].split('/')[-1]
+    folder_name = '{}_simple_cnn_{}'.format(now, metadata_used)
+    output_dir = os.path.join(output_loc, folder_name)
     os.mkdir(output_dir)
 
     # prepare saving files

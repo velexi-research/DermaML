@@ -115,7 +115,14 @@ def main(
     """
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
-    today = datetime.today('%Y-$M-%D-%H:%M')
+    now = datetime.today('%Y-$M-%D %H-%M')
+
+    # set saving location
+    output_loc = config.get('paths', {})['output_dir']
+    metadata_used = config.get('paths', {})['metadata_file'].split('/')[-1]
+    folder_name = '{}_simple_cnn_{}'.format(now, metadata_used)
+    output_dir = os.path.join(output_loc, folder_name)
+    os.mkdir(output_dir)
 
     # --- Check inputs and prepare images
     config = model_setup.read_config_yaml(config_file)

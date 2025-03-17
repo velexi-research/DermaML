@@ -156,7 +156,7 @@ def tabular_input(
 
     # assign train/test split indicator column
     train, test = train_test_split(
-        Xy.index, 
+        Xy, 
         test_size=0.3, 
         random_state=42    
     )

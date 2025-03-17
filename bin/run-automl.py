@@ -91,7 +91,7 @@ def main(
     # set saving location
     output_loc = config.get('paths', {})['output_dir']
     metadata_used = config.get('paths', {})['metadata_file'].split('/')[-1]
-    folder_name = '{}_simple_cnn_{}'.format(now, metadata_used)
+    folder_name = '{}_automl_{}'.format(now, metadata_used)
     output_dir = os.path.join(output_loc, folder_name)
     os.mkdir(output_dir)
 
@@ -100,10 +100,10 @@ def main(
     save_results = os.path.join(output_dir, 'automl-scores.csv')
 
     # prepare dataset
-    data = model_setup.tabular_input(config)
-    train, test = model_setup.get_test_split(data)
-    logging.info(f'train contents: {train.columns}')
-    logging.info(f'test set indices: {test.index}')
+    train, test = model_setup.tabular_input(config)
+    logging.info(f'using metadata: {metadata_used}')
+    # logging.info(f'train contents: {train.columns}')
+    # logging.info(f'test set indices: {test.index}')
     logging.info(f'train size: {train.shape}, test size: {test.shape}')
 
 
@@ -113,7 +113,7 @@ def main(
     regression.setup(
         data=train,
         test_data=test,
-        fold_strategy='stratifiedkfold',
+        fold_strategy='kfold',
         target=metadata_target,
         experiment_name=experiment_name,
         html=False,
@@ -123,16 +123,18 @@ def main(
     )
 
     # Automatically train, test, and evaluate models
-    best_models = regression.compare_models(n_select=num_best,
-                                                verbose=False)
+    best_models = regression.compare_models(
+        n_select=num_best,
+        verbose=False
+    )
 
     # --- Save results
 
     # Best models
     best_models = [' '.join(s.strip() for s in str(model).split('\n'))
                    for model in best_models]
-    with open(save_best_models, 'w') as file_:
-        yaml.dump(best_models, file_, width=float("inf"))
+    with open(save_best_models, 'w') as file:
+        yaml.dump(best_models, file, width=float("inf"))
 
     # Model scores
     regression.pull().to_csv(

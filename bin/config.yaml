@@ -12,7 +12,7 @@ paths:
     # -- Processed images
     image_dir: !join [*imgroot, /images_processed/]
     # -- Metadata
-    metadata_file: !join [*projroot, 2025-03-15-Grouped_Data/2025-03-15-NT-metadata_male_only_splitted.csv]
+    metadata_file: !join [*projroot, 2025-03-15-Grouped_Data/2025-03-15-NT-metadata_over_40_only_splitted.csv]
     # -- Tabular data
     # FIXME index files specifically from here
     tabular_feature_file: !join [*projroot, /2025-02-24-hawkeye_hands-combined_tabular_features.csv]

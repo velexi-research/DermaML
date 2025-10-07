@@ -67,7 +67,7 @@ def _normalized_redness(img:np.array, mask:np.array):
 
     lab_img = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
     L, A, B = cv2.split(lab_img)
-    L_mask, A_mask = L[mask],A[mask]
+    L_mask, A_mask = L[mask], A[mask]
     normalized_redness = np.mean(A_mask)/np.mean(L_mask)
     relative_red_std = np.std(A_mask)
 
@@ -76,15 +76,6 @@ def _normalized_redness(img:np.array, mask:np.array):
     red_features = {k:v for k,v in zip(red_labels, red_values)}
 
     return red_features
-
-# def _redness(red_channel):
-#     # relative redness
-#     relative_red_mean, relative_red_std = np.mean(red_channel), np.std(red_channel)
-#     red_labels = ['relative_redness_mean', 'relative_redness_std']
-#     red_values = [relative_red_mean, relative_red_std]
-#     red_features = {k:v for k,v in zip(red_labels, red_values)}
-
-#     return red_features
 
 
 

@@ -36,7 +36,8 @@ from tqdm import tqdm
 
 def read_local_into_dict(
         image_dir, 
-        image_fnames=[]
+        fnames_only =True,
+        image_fnames=[], 
         ) -> dict:
     '''
     Read in images from hawkeye hands using PIL Image
@@ -51,6 +52,10 @@ def read_local_into_dict(
         image_fnames = os.listdir(image_dir)
 
     samples = dict()
+    
+    if fnames_only:
+        return image_fnames
+
     fnames = []
     for filename in tqdm(image_fnames):
     
@@ -67,7 +72,7 @@ def read_local_into_dict(
 
 # --- Read images off local ---
 
-def read_local_into_lists(image_dir, image_fnames=[]) -> tuple:
+def read_local_into_lists(image_dir, image_fnames=[], arr=False) -> tuple:
     '''
     Read in images from hawkeye hands using PIL Image
     '''
@@ -87,6 +92,8 @@ def read_local_into_lists(image_dir, image_fnames=[]) -> tuple:
             continue
 
         if (img is not None) & (img.mode == 'RGB'):
+                if arr:
+                    img = np.array(img)
                 images.append(img)
             
     return filenames, images

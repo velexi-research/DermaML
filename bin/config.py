@@ -17,11 +17,11 @@ metadata_ref_header = 'hand_image_file'
 metadata_ref_extension = '.jpeg'
 
 # === Image Segmentation
-segmentation_file = os.join(
-    '/Users/ntin/',
-    'Models/sam2/notebooks/',
-    '2025-02-23_Hand_Segmentations-Corrected-3.pkl'
-)
+# segmentation_file = os.join(
+#     '/Users/ntin/',
+#     'Models/sam2/notebooks/',
+#     '2025-02-23_Hand_Segmentations-Corrected-3.pkl'
+# )
 
 # === Tabular data
 tabular_feature_file = project_root+'/features-2025-02-24/' 

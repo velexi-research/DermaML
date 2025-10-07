@@ -31,6 +31,8 @@ import os
 # External packages
 import dermaml.model_setup as model_setup
 from tensorflow.keras import layers, models
+from tensorflow.keras.utils import plot_model
+from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import typer
 from datetime import datetime
@@ -73,17 +75,50 @@ def simple_cnn_model():
     )
     return model
 
+def deeper_cnn_model_1():
+    '''
+    Last updated: 2025 March 24
+    Write a deeper simple CNN regression with 4 convolution steps
+    _______
+    
+    Returns: (np.array, np.array, np.array, np.array) dtype=np.float32
+    '''
+    model = models.Sequential()
+
+    k = 5
+    # First Convolutional Layer
+    model.add(layers.Conv2D(32, (k, k), activation='relu', input_shape=(512, 512, 3)))
+    model.add(layers.MaxPooling2D((2, 2)))
+
+    # Second Convolutional Layer
+    model.add(layers.Conv2D(64, (k, k), activation='relu'))
+    model.add(layers.Conv2D(64, (k, k), activation='relu'))
+    model.add(layers.MaxPooling2D((2, 2)))
+
+    # Third Convolutional Layer
+    model.add(layers.Conv2D(64, (k, k), activation='relu'))
+
+    # Flatten the output and add Dense layers
+    model.add(layers.Flatten())
+    model.add(layers.Dense(64, activation='relu'))
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(1, activation='linear'))
+
+    model.compile(
+        optimizer='adam',
+        loss='mae',
+        metrics=['mae']
+    )
+    return model
+
 
 # === Main program
 
 def main(
-        config_file: Path = typer.Argument(..., help="Path to the YAML configuration file."),
-        output_dir: Path = typer.Option(
-            '', "-o", "--output", help="Directory to store output files (e.g., model training results, plots)."
-        ),
-        split_method: Callable = typer.Option(
-            model_setup.random_split_Xy, help="Function used to split the dataset (default: random_split_Xy)."
-        ),
+        config_file: Path = typer.Argument("/Users/ntin/DermaML/bin/config.yaml", help="Path to the YAML configuration file."),
+        # split_method = typer.Option(
+        #     model_setup.random_split_Xy, help="Function used to split the dataset (default: random_split_Xy)."
+        # ),
         experiment_name: str = typer.Option(
             "cnn", help="Name of the experiment for logging and output file naming."
         ),
@@ -111,30 +146,34 @@ def main(
     Returns:
         None: Results are saved to files.
 
-    Generated with an LLM 2025 March 13.
     """
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
-    now = datetime.today('%Y-$M-%D %H-%M')
+    now = datetime.today().strftime('%Y-%m-%d %H-%M')
+    config = model_setup.read_config_yaml(config_file)
 
     # set saving location
     output_loc = config.get('paths', {})['output_dir']
     metadata_used = config.get('paths', {})['metadata_file'].split('/')[-1]
     folder_name = '{}_simple_cnn_{}'.format(now, metadata_used)
     output_dir = os.path.join(output_loc, folder_name)
-    os.mkdir(output_dir)
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
 
     # --- Check inputs and prepare images
     config = model_setup.read_config_yaml(config_file)
     X, y = model_setup.prepare_image_datasets(
         config=config
     )
+    X = X / 255
 
     # --- Split dataset
-    x_train, y_train, x_test, y_test = split_method(X, y)
+    x_train, x_test, y_train, y_test =  train_test_split(
+        X, y, 
+        test_size=0.3, 
+        random_state=42    
+    )
 
     # --- Initalize Model
-    model = simple_cnn_model()
+    model = deeper_cnn_model_1()
 
     # --- Perform CNN training
     history = model.fit(
@@ -146,14 +185,16 @@ def main(
     test_loss, test_mae = model.evaluate(x_test, y_test, verbose=2)
     print(f'\nTest MAE: {test_mae}')
 
-    
+    plot_model(model, to_file=f'{output_dir}/model.png', show_shapes=True, show_layer_names=True)
+
     plt.plot(history.history['mae'], label='MAE')
     plt.plot(history.history['val_mae'], label = 'val_MAE')
     plt.xlabel('Epoch')
     plt.ylabel('MAE')
     plt.legend(loc='lower right')
-    plt.savefig(f'{today}_{experiment_name}_loss.png')
-    plt.show()
+    plt.title(f'\nTest MAE: {test_mae}')
+    plt.savefig(f'{output_dir}/{now}_{experiment_name}_loss.png')
+    plt.close()
 
 
 # --- Run app

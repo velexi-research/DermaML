@@ -25,13 +25,16 @@ import os
 import typer
 import csv
 import logging
+import random
 import datetime
 from pathlib import Path
 
 # External packages
 import dermaml.model_setup as model_setup
 from pycaret import regression
-import yaml
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 
 # --- Main program
 # FIXME write results to file with date
@@ -40,8 +43,8 @@ def main(
         config_file: Path=typer.Argument(
             "/Users/ntin/DermaML/bin/config.yaml", help="Path to the YAML configuration file."
         ),
-        num_best: int = typer.Option(
-            5, help="Number of top models to select during AutoML evaluation. Must be strictly positive."
+        iters: int = typer.Option(
+            100, help="Number of models to generate to bootstrap from."
         ),
         experiment_name: str = typer.Option(
             "automl", help="Name for the AutoML experiment (for logging purposes)."
@@ -72,7 +75,7 @@ def main(
     Generated with an LLM 2025 March 13.
     """
     # --- Check arguments
-    if num_best <= 0:
+    if iters <= 0:
         typer.echo(
             "num-best must be strictly positive",
             err=True)
@@ -80,74 +83,85 @@ def main(
 
     # --- Preparations
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+        level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
     )
     now = datetime.datetime.today().strftime('%Y-%m-%d %H-%M')
     
     # read configuration files
     config = model_setup.read_config_yaml(config_file)
     metadata_target = config['metadata_target']
+    print('HELLOO')
 
     # set saving location
     output_loc = config.get('paths', {})['output_dir']
     metadata_used = config.get('paths', {})['metadata_file'].split('/')[-1]
     folder_name = '{}_automl_{}'.format(now, metadata_used)
     output_dir = os.path.join(output_loc, folder_name)
-    os.mkdir(output_dir)
+    # output_dir = output_loc
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
 
     # prepare saving files
-    save_best_models = os.path.join(output_dir, 'automl-best.yaml')
+    # save_best_models = os.path.join(output_dir, 'automl-best.yaml')
     save_results = os.path.join(output_dir, 'automl-scores.csv')
     save_predictions = os.path.join(output_dir, 'automl-predictions.csv')
+    scores = pd.DataFrame()
+    predictions = pd.DataFrame(columns=['iter', 'predicted', 'actual'])
 
-    # prepare dataset
-    train, test = model_setup.tabular_input(config)
-    logging.info(f'using metadata: {metadata_used}')
-    # logging.info(f'train contents: {train.columns}')
-    # logging.info(f'test set indices: {test.index}')
-    logging.info(f'train size: {train.shape}, test size: {test.shape}')
+    for i in range(iters):
+        # prepare dataset
+        Xy, _train, _test = model_setup.tabular_input(config, random_state=random.randint(0,500))
+        train, test = _train.drop(columns=['metadata_instance_id']), _test.drop(columns=['metadata_instance_id'])
+        logging.info(f'using metadata: {metadata_used}')
+        logging.info(f'train size: {train.shape}, test size: {test.shape}')
+        
 
+        # --- Perform AutoML evaluation
+        # Set up the dataset for AutoML
+        regression.setup(
+            data=train,
+            test_data=test,
+            target=metadata_target,
+            experiment_name=experiment_name,
+        )
 
-    # --- Perform AutoML evaluation
-    # automl = regression.regression()
+        # Automatically train, test, and evaluate models
+        best_models = regression.compare_models(sort='mae')
+        prediction_table = regression.predict_model(best_models, data=test)
 
-    # Set up the dataset for AutoML
-    regression.setup(
-        data=train,
-        test_data=test,
-        target=metadata_target,
-        experiment_name=experiment_name,
-    )
+        # Predictions
 
-    # Automatically train, test, and evaluate models
-    best_models = regression.compare_models(sort='mae')
-    prediction_table = regression.predict_model(best_models)
-    regression.plot_model(best_models, 
-                          plot='error',
-                          save=output_dir,
-                        #   use_train_data=False
-                          )
+        predictions = pd.concat(
+            [predictions, 
+             pd.DataFrame({
+            "iter":i,
+            "predicted": prediction_table['prediction_label'],
+            'actual':test[metadata_target],
+            'metadata_ID':_test['metadata_instance_id'],})
+            ],
+            ignore_index=True
+        )
+        
+        # Model scores
+        scores = pd.concat([scores, regression.pull()])
+    
+    predictions.to_csv(save_predictions)
+    pd.DataFrame(scores).to_csv(
+            save_results, 
+            index=False,
+            quoting=csv.QUOTE_NONNUMERIC
+        )
+    
+    # --- Plot residuals
+    sns.set_context('paper')
+    sns.set_theme()
+    sns.scatterplot(data=predictions, x='actual', y='predicted', 
+                    hue='iter', style='iter')
+    plt.savefig(os.path.join(output_dir, 'residuals.png'))
 
-    # --- Save results
-
-    # Best models
-    # best_models = [' '.join(s.strip() for s in str(model).split('\n'))
-    #                for model in best_models]
-    # with open(save_best_models, 'w') as file:
-    #     yaml.dump(best_models, file, width=float("inf"))
-    regression.save_model(best_models, save_best_models)
-
-    # Predictions
-    prediction_table.to_csv(save_predictions)
-
-    # Model scores
-    regression.pull().to_csv(
-        save_results, 
-        index=False,
-        quoting=csv.QUOTE_NONNUMERIC
-    )
     logging.info(f'Saved to {save_results}')
 
+    
 # --- Run app
 
 if __name__ == "__main__":
